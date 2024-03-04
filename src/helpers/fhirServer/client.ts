@@ -1,30 +1,39 @@
-import { FhirClient } from 'fume-fhir-converter';
+import axios, { AxiosInstance } from 'axios';
 
-export class ExtendedFhirClient extends FhirClient {
-  public async create (resource: object, resourceType: string) {
-    if (this.fhirServer) {
-      const response = await this.fhirServer.post(`/${resourceType}`, resource);
-      return response.data;
-    }
-    return undefined;
-  }
+export interface HttpOptions {
+  method: string
+  header: Record<string, string>
+  url: string
+  baseUrl: string
+  body: any
+  params: Record<string, string>
+  timeout: number
+};
 
-  public async update (resourceType: string, resourceId: string, resource: object) {
-    if (this.fhirServer) {
-      const response = await this.fhirServer.put(
-        `/${resourceType}/${resourceId}`,
-        resource
-      );
-      return response.data;
-    }
-    return undefined;
-  }
+export const server: AxiosInstance = axios.create();
 
-  public async simpleDelete (resourceType: string, resourceId: string) {
-    if (this.fhirServer) {
-      const response = await this.fhirServer.delete(`/${resourceType}/${resourceId}`);
-      return response.data;
+export const http = async (options: HttpOptions) => {
+  try {
+    if (server) {
+      const response = await server.request({
+        url: '/' + options.url,
+        method: options.method,
+        baseURL: options.baseUrl,
+        headers: options.header,
+        params: options.params,
+        data: options.body,
+        timeout: options.timeout ?? 10000,
+        validateStatus: function (status) {
+          return true;
+        }
+      });
+      delete response.config;
+      delete response.request;
+      return response;
     }
-    return undefined;
+  } catch (e) {
+    console.error(e);
+    return e;
   }
+  return undefined;
 };

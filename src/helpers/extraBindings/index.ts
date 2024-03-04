@@ -1,2 +1,4 @@
 // additional function to bind and use within expressions
-export const extraBindings = {};
+import { http } from '../fhirServer/client';
+
+export const extraBindings = { http };

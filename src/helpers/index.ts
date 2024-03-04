@@ -1,2 +1,2 @@
-export { ExtendedFhirClient } from './fhirServer/client';
+export { http, HttpOptions } from './fhirServer/client';
 export { extraBindings } from './extraBindings';
