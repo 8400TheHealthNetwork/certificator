@@ -1,6 +1,6 @@
 {
   "name": "il-fhir-certificator",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "FHIR Certificator for Israeli MoH",
   "scripts": {
     "build": "tsc -b",
@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "dotenv": "^16.4.5",
-    "fume-fhir-converter": "2.0.5",
+    "fume-fhir-converter": "~2.0.9",
     "axios": "^1.1.3"
   },
   "author": "Ministry of Health Israel",
