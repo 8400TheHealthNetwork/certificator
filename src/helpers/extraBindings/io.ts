@@ -19,3 +19,8 @@ export const writeFile = (content: any[], fileName: string) => {
   fs.writeFileSync(filePath, data);
   console.log(`File ${filePath} created successfully.`);
 };
+
+export const readFile = (fileName: string) => {
+  const filePath: string = path.join(ioFolderPath, fileName);
+  return fs.readFileSync(filePath).toJSON;
+};
