@@ -22,5 +22,12 @@ export const writeFile = (content: any[], fileName: string) => {
 
 export const readFile = (fileName: string) => {
   const filePath: string = path.join(ioFolderPath, fileName);
-  return JSON.parse(fs.readFileSync(filePath).toString());
+  const data: string = fs.readFileSync(filePath).toString();
+  let res;
+  try {
+    res = JSON.parse(data);
+  } catch {
+    res = data;
+  }
+  return res;
 };
