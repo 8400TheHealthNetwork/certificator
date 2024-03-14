@@ -22,5 +22,5 @@ export const writeFile = (content: any[], fileName: string) => {
 
 export const readFile = (fileName: string) => {
   const filePath: string = path.join(ioFolderPath, fileName);
-  return fs.readFileSync(filePath).toJSON;
+  return JSON.parse(fs.readFileSync(filePath).toString());
 };
