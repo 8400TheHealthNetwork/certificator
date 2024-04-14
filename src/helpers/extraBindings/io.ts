@@ -31,3 +31,19 @@ export const readFile = (fileName: string) => {
   }
   return res;
 };
+
+export const readDir = (subDir?: string): string[] => {
+  const dirPath: string = subDir ? path.join(ioFolderPath, subDir) : ioFolderPath;
+  const fileList: string[] = fs.readdirSync(dirPath);
+  return fileList;
+};
+
+export const makeDir = (relativePath: string) => {
+  const absPath: string = path.join(ioFolderPath, relativePath);
+  if (!fs.existsSync(absPath)) {
+    fs.mkdirSync(absPath, { recursive: true });
+    console.log(`Directory '${absPath}' created successfully.`);
+  } else {
+    console.log(`Directory '${absPath}' already exists.`);
+  }
+};
