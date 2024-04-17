@@ -14,6 +14,7 @@ const getAssets = (packageList: string[]) => {
     assetsObj[fileName] = path.join(assetsFolderPath, 'fhirPackages', fileName);
   });
   assetsObj['validator_cli.jar'] = path.join(assetsFolderPath, 'validator_cli.jar');
+  assetsObj['fhirPackageList.txt'] = path.join(workingDir, 'fhirPackageList.txt');
   return assetsObj;
 };
 

@@ -1,6 +1,7 @@
 io
 assets
 sea-config.json
+*.jar
 
 # Logs
 logs

@@ -18,11 +18,14 @@
     "bundler": "npm run build && npm run download-assets && npm run create-bundle && npm run rename-bundle && npm run create-sea-config && npm run create-blob && npm run copy-node-exe && npm run remove-signature && npm run inject-blob"
   },
   "dependencies": {
+    "@inquirer/prompts": "^5.0.1",
     "axios": "^1.1.3",
     "dotenv": "^16.4.5",
     "fs": "^0.0.1-security",
     "fume-fhir-converter": "^2.1.2",
-    "path": "^0.12.7"
+    "path": "^0.12.7",
+    "tar": "^6.2.0",
+    "temp": "^0.9.4"
   },
   "author": "Ministry of Health Israel",
   "license": "AGPL-3.0",
