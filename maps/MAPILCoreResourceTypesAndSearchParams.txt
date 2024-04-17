@@ -1,0 +1,165 @@
+/*List IL core profiles resourceType, relevant search parameters and associated paths*/
+
+(
+  $ILCoreResourceTypesSearchParamsPaths := 
+  [{
+    "resourceType" : "RelatedPerson"
+  },
+  {
+    "resourceType" : "QuestionnaireResponse"
+  },
+  {
+    "resourceType" : "Questionnaire"
+  },
+  {
+    "resourceType" : "Procedure",
+    "searchParams" : "date",
+    "elementPath" : "performed"
+  },
+  {
+    "resourceType" : "PractitionerRole"
+  },
+  {
+    "resourceType" : "Practitioner"
+  },
+  {
+    "resourceType" : "PlanDefinition"
+  },
+  {
+    "resourceType" : "Patient",
+    "searchParams" : "birthdate",
+    "elementPath" : "birthDate"
+  },
+  {
+    "resourceType" : "Organization"
+  },
+  {
+    "resourceType" : "Observation",
+    "searchParams" : "date",
+    "elementPath" : "effective"
+  },
+  {
+    "resourceType" : "MolecularSequence"
+  },
+  {
+    "resourceType" : "MedicationStatement"
+  },
+  {
+    "resourceType" : "MedicationRequest"
+  },
+  {
+    "resourceType" : "MedicationDispense",
+    "searchParams" : "whenhandedover",
+    "elementPath" : "whenHandedOver"
+  },
+  {
+    "resourceType" : "MedicationAdministration",
+    "searchParams" : "effective-time",
+    "elementPath" : "effective"
+  },
+  {
+    "resourceType" : "Medication"
+  },
+  {
+    "resourceType" : "Media",
+    "searchParams" : "created",
+    "elementPath" : "created"
+  },
+  {
+    "resourceType" : "Location"
+  },
+  {
+    "resourceType" : "ImmunizationRecommendation",
+    "searchParams" : "date",
+    "elementPath" : "date"
+  },
+  {
+    "resourceType" : "Immunization",
+    "searchParams" : "date",
+    "elementPath" : "occurrence"
+  },
+  {
+    "resourceType" : "ImagingStudy",
+    "searchParams" : "started",
+    "elementPath" : "started"
+  },
+  {
+    "resourceType" : "Group"
+  },
+  {
+    "resourceType" : "FamilyMemberHistory",
+    "searchParams" : "date",
+    "elementPath" : "date"
+  },
+  {
+    "resourceType" : "Encounter",
+    "searchParams" : "date",
+    "elementPath" : "period"
+  },
+  {
+    "resourceType" : "Dosage"
+  },
+  {
+    "resourceType" : "DocumentReference"
+  },
+  {
+    "resourceType" : "DiagnosticReport",
+    "searchParams" : "date",
+    "elementPath" : "effective"
+  },
+  {
+    "resourceType" : "DeviceDefinition"
+  },
+  {
+    "resourceType" : "Device"
+  },
+  {
+    "resourceType" : "CoverageEligibilityResponse",
+    "searchParams" : "created",
+    "elementPath" : "created"
+  },
+  {
+    "resourceType" : "CoverageEligibilityRequest",
+    "searchParams" : "created",
+    "elementPath" : "created"
+  },
+  {
+    "resourceType" : "Coverage"
+  },
+  {
+    "resourceType" : "Condition",
+    "searchParams" : "recorded-date",
+    "elementPath" : "recordedDate"
+  },
+  {
+    "resourceType" : "Claim",
+    "searchParams" : "created",
+    "elementPath" : "created"
+  },
+  {
+    "resourceType" : "CareTeam",
+    "searchParams" : "date",
+    "elementPath" : "period"
+  },
+  {
+    "resourceType" : "AllergyIntolerance",
+    "searchParams" : "date",
+    "elementPath" : "recordedDate"
+  },
+  {
+    "resourceType" : "Address"
+  },
+  {
+    "resourceType" : "Substance"
+  },
+  {
+    "resourceType" : "Specimen",
+    "searchParams" : "collected",
+    "elementPath" : "collection.collected"
+  },
+  {
+    "resourceType" : "ServiceRequest"
+  }];
+
+  $writeFile($ILCoreResourceTypesSearchParamsPaths,'ILCoreResourceTypesSearchParamsPaths.json')
+)

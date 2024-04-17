@@ -1,7 +1,0 @@
-{
-  "main": "./dist/bundled/certificator.js",
-  "output": "./dist/bundled/certificator.blob",
-  "disableExperimentalSEAWarning": true,
-  "useSnapshot": false,
-  "useCodeCache": false
-} 

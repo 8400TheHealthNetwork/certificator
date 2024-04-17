@@ -1,0 +1,40 @@
+/*Count instances per resource type and month*/
+
+(
+  /*List Foundation Resources which arent relevant for sampling*/
+    $FoundationResources := $readFile('FoundationResources.json');
+
+  /*IL Core ResourceTypes*/
+    $ILCoreResourceTypes := $readFile('ILCoreResourceTypes.json');
+
+  /*List all supported resource types on the server*/
+    $SupportedResources := $resolve('metadata').rest.resource.type;
+
+  /*List relevant resourceTypes for sampling - resource types that are both supported and have IL core profile, excluding Foundation Resources*/
+    $RelevantResources := $SupportedResources[$ in $FoundationResources = false];
+    $RelevantResources := $RelevantResources[$ in $ILCoreResourceTypes = true];
+  
+  /*Count relevant resourcesType*/
+    $CountByResourceType := $RelevantResources.(
+    $RelevantResources := $;
+    $search($RelevantResources & '?_count=1').{'resourceType':$RelevantResources, 'total':total});
+
+ $CountByResourceType
+  /*Define sampling search param for relevant resourcesType*/
+    /*$ResourceType*/
+    /*$searchParam*/
+    /*$searchElementPath*/
+    /*List date search params supported by a particular server*/
+
+ /*Cehck Min and Max dates for relevant resourcesType*/
+/*  $RelevantResources.$search($, {'_count': 1, '_sort': $searchParam}).entry.resource.$searchElementPath*/
+  /*$RelevantResources.$search($, {'_count': 1, '_sort': '-' & $searchParam}).entry.resource.$searchElementPath*/
+
+ /*Calculate relevant resourcesType count disterbution by months to detrmine sampling period*/
+  /*[1966..2024].($y := $;*/
+  /*[1..12].($join([$string($y),$pad($string($),-2,'0')],'-'))).($date := $;$search('Encounter', {'_summary': 'count'}).{*/
+    /*'month': $date,*/
+    /*'total': total*/
+  /*}*/
+  /*)*/
+)
