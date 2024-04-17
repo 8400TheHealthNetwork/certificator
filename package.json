@@ -7,14 +7,15 @@
     "serve": "node dist/app.js",
     "start": "npm run build && npm run serve",
     "dev": "cross-env NODE_ENV=dev nodemon -w src --exec \"npm run start\"",
-    "download-assets": "npm run build && node dist/downloadAssets.js",
-    "create-bundle": "ncc build src/app.ts --minify --out dist/bundled",
-    "rename-bundle": "node -e \"require('fs').rename('dist/bundled/index.js', 'dist/bundled/certificator.js', function(err) { if (err) console.log(err); console.log('Bundled file (dist/bundle/certificator.js) created and renamed successfully!') })\"",
+    "download-assets": "node dist/downloadAssets.js",
+    "create-bundle": "ncc build src/app.ts --minify --out dist/bin",
+    "rename-bundle": "node -e \"require('fs').rename('dist/bin/index.js', 'dist/bin/certificator.js', function(err) { if (err) console.log(err); console.log('Bundled file (dist/bin/certificator.js) created and renamed successfully!') })\"",
+    "create-sea-config": "node dist/generateSeaConfig.js",
     "create-blob": "node --experimental-sea-config sea-config.json",
-    "copy-node-exe": "node -e \"require('fs').copyFileSync(process.execPath, 'dist/bundled/certificator.exe')\"",
-    "remove-signature": "signtool remove /s dist/bundled/certificator.exe",
-    "inject-blob": "postject dist/bundled/certificator.exe NODE_SEA_BLOB dist/bundled/certificator.blob --sentinel-fuse NODE_SEA_FUSE_fce680ab2cc467b6e072b8b5df1996b2",
-    "bundler": "npm run download-assets && npm run create-bundle && npm run rename-bundle && npm run create-blob && npm run copy-node-exe && npm run remove-signature && npm run inject-blob"
+    "copy-node-exe": "node -e \"require('fs').copyFileSync(process.execPath, 'dist/bin/certificator.exe')\"",
+    "remove-signature": "signtool remove /s dist/bin/certificator.exe",
+    "inject-blob": "postject dist/bin/certificator.exe NODE_SEA_BLOB dist/bin/certificator.blob --sentinel-fuse NODE_SEA_FUSE_fce680ab2cc467b6e072b8b5df1996b2",
+    "bundler": "npm run build && npm run download-assets && npm run create-bundle && npm run rename-bundle && npm run create-sea-config && npm run create-blob && npm run copy-node-exe && npm run remove-signature && npm run inject-blob"
   },
   "dependencies": {
     "axios": "^1.1.3",

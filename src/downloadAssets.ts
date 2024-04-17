@@ -1,7 +1,7 @@
 import fs from 'fs-extra';
 import path from 'path';
 import axios, { AxiosInstance } from 'axios';
-import seaConfig from '../sea-config.json';
+import { getList } from './getPackageList';
 
 const validatorUrl: string = 'https://github.com/hapifhir/org.hl7.fhir.core/releases/latest/download/validator_cli.jar';
 const registryUrl: string = 'https://packages.fhir.org';
@@ -41,9 +41,8 @@ const downloadPackageTar = async (packageName: string, version: string) => {
 
 void downloadValidator();
 
-Object.keys(seaConfig.assets).map(async (p) => {
-  if (p !== 'validator_cli.jar') {
-    const parts: string[] = p.split('#');
-    await downloadPackageTar(parts[0], parts[1]);
-  }
+getList().map(async (p) => {
+  console.log(`Downloading package ${p}`);
+  const parts: string[] = p.split('#');
+  await downloadPackageTar(parts[0], parts[1]);
 });
