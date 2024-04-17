@@ -7,6 +7,7 @@
     "serve": "node dist/app.js",
     "start": "npm run build && npm run serve",
     "dev": "cross-env NODE_ENV=dev nodemon -w src --exec \"npm run start\"",
+    "download-assets": "npm run build && node dist/downloadAssets.js",
     "create-bundle": "ncc build src/app.ts --minify --out dist/bundled",
     "rename-bundle": "node -e \"require('fs').rename('dist/bundled/index.js', 'dist/bundled/certificator.js', function(err) { if (err) console.log(err); console.log('Bundled file (dist/bundle/certificator.js) created and renamed successfully!') })\"",
     "create-blob": "node --experimental-sea-config sea-config.json",

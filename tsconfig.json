@@ -28,6 +28,7 @@
     "src/**/*"
   ],
   "exclude": [
-    "dist/**/*"
+    "dist/**/*",
+    "assets/**/*"
   ]
 }
