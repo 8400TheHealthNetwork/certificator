@@ -1,4 +1,5 @@
 import fs from 'fs';
+import os from 'os';
 import path from 'path';
 
 const ioFolderPath = './io';
@@ -46,4 +47,17 @@ export const makeDir = (relativePath: string) => {
   } else {
     console.log(`Directory '${absPath}' already exists.`);
   }
+};
+
+export const readPackageIndex = (packageId: string, version: string) => {
+  const filePath: string = path.join(os.homedir(), '.fhir', 'packages', `${packageId}#${version}`, 'package', '.index.json');
+  return JSON.parse(fs.readFileSync(filePath).toString());
+};
+
+export const resolveCanonical = (packageId: string, version: string, url: string) => {
+  const index = readPackageIndex(packageId, version);
+  const fileRecord = index.files.filter((file: Record<string, string>) => file.url === url)[0];
+  const filePath: string = path.join(os.homedir(), '.fhir', 'packages', `${packageId}#${version}`, 'package', fileRecord.filename);
+  const resource = JSON.parse(fs.readFileSync(filePath).toString());
+  return resource;
 };

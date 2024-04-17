@@ -1,0 +1,271 @@
+(
+  $BaseSearchParamBundle := $BaseSearchParams();
+  $IBParams := $InfoBasketDateParams()[IncludeInCapStat='1'];
+  $USCapStat := $USCoreCapStat();
+  $allUsParams := $USCapStat.rest.resource.searchParam.{
+    'resource_type': %.type,
+    'name': name,
+    'definition': $resolveCanonical('hl7.fhir.us.core', '6.1.0', definition).derivedFrom,
+    'type': type
+  };
+
+  {
+    'igs': [
+      {
+        'canonical': 'http://hl7.org/fhir/smart-app-launch/ImplementationGuide/hl7.fhir.uv.smart-app-launch|2.1.0',
+        'hyperlink': {
+          'target': 'https://hl7.org/fhir/smart-app-launch', 
+          'display': 'SMART App Launch Framework 2.1.0 Implementation Guide'
+        },
+        'name': 'SmartAppLaunch',
+        'level': 'SHALL'
+      },
+      {
+        'canonical': 'http://fhir.health.gov.il/ImplementationGuide/il.core.fhir.r4',
+        'hyperlink': {
+          'target': 'http://fhir.health.gov.il/ImplementationGuide/il.core.fhir.r4', 
+          'display': 'Israel Core Implementation Guide'
+        },
+        'name': 'ILCore',
+        'level': 'SHALL'
+      }
+    ],
+    'compartments': [{
+      'canonical': 'http://hl7.org/fhir/CompartmentDefinition/patient',
+      'hyperlink': {
+        'target': 'http://hl7.org/fhir/R4/compartmentdefinition-patient.html',
+        'display': 'Base FHIR compartment definition for Patient'
+      },
+      'name': 'PatientCompartment',
+      'level': 'SHALL',
+      'comments': [{
+        'text': 'All references that constitute the inclusion criteria to the Patient compartment **SHALL** be literal references and **SHALL** be resolvable.'
+      }]
+    }],
+    'functional_lists': {
+      'hyperlink': {
+        'target': 'https://www.hl7.org/fhir/R4/lifecycle.html#current',
+        'display': 'Current Resource Lists'
+      },
+      'comment': {
+        'text': 'Servers **SHALL** make a resource representation of the functional list available through the Restful API using the List $find operation and **SHOULD** support searching for resources referenced by functional lists using the _list search parameter.',
+        'hyperlinks': [
+          {
+            'target': 'https://www.hl7.org/fhir/R4/list-operation-find.html',
+            'display': 'Operation $find on List'
+          },
+          {
+            'target': 'https://www.hl7.org/fhir/R4/search.html#list',
+            'display': 'Searching by list'
+          }
+        ]
+      },
+      'lists': [
+        {
+        'name': '$current-problems',
+        'description': 'The "Current Problem List" - A list of current and active diagnoses as well as past diagnoses relevant to the current care of the patient'
+        },
+        {
+          'name': '$current-medications',
+          'description': 'A list of all medications that the patient is taking. The "current medications list" sometimes may include a mix of prescribed and over-the-counter medications - or only some of them. The list may contain a mix of prescriptions and more general statements, or only one of the two. The list may also correspond to a formal reconciled medication administration schedule, but more often does not.'
+        },
+        {
+          'name': '$current-allergies',
+          'description': 'A list of known or suspected propensities to medications, foods, or environmental agents that is provided to help prevent reactions while care is occurring.'
+        },
+        {
+          'name': '$current-drug-allergies',
+          'description': 'A list of known or suspected propensities to medications that is provided to help prevent reactions while care is occurring. This list is a subset of the full allergies list.'
+        }
+      ],
+      'list_search_param': ['Condition', 'MedicationStatement', 'MedicationRequest', 'AllergyIntolerance']
+    },
+    'search_params': {
+      'global': [
+        {
+          'name': '_sort',
+          'type': 'string',
+          'documentation': 'Enables the client to indicate in which order to return the results',
+          'hyperlink': {
+            'target': 'https://www.hl7.org/fhir/R4/search.html#_sort',
+            'display': 'Sorting'
+          },
+          'comment': {
+            'text': 'Servers **SHALL** support sorting by all ordered search parameters (types number, date, and quantity) that they are required to support - either by this CapabilityStatement or by any other applicable regulation. Servers **SHOULD** also support sorting by all other ordered search parameters they support, and MAY also support sorting by search parameters of non-ordered types such as string, token and uri'
+          },
+          'level': 'SHALL'
+        },
+        {
+          "name": "_count",
+          "type": "number",
+          "documentation": "The number of resources returned per page",
+          'hyperlink': {
+            'target': 'https://www.hl7.org/fhir/R4/search.html#count',
+            'display': 'Page Count'
+          },
+          'level': 'SHALL'
+        },
+        {
+          "name": "_has",
+          "type": "string",
+          "documentation": "Enables querying a reverse chain",
+          'hyperlink': {
+            'target': 'https://www.hl7.org/fhir/R4/search.html#has',
+            'display': 'Reverse Chaining'
+          },
+          'comment': {
+            'text': 'See "Chaining and Reverse Chaining"'
+          },
+          'level': 'SHALL'
+        },
+        {
+          "name": "_security",
+          "definition": "http://hl7.org/fhir/SearchParameter/Resource-security",
+          "type": "token",
+          "documentation": "Security Labels applied to this resource",
+          'level': 'SHALL'
+        },
+        {
+          "name": "_id",
+          "definition": "http://hl7.org/fhir/SearchParameter/Resource-id",
+          "type": "token",
+          "documentation": "Logical id of this artifact",
+          'level': 'SHALL'
+        },
+        {
+          "name": "_lastUpdated",
+          "definition": "http://hl7.org/fhir/SearchParameter/Resource-lastUpdated",
+          "type": "date",
+          "documentation": "When the resource version last changed",
+          'level': 'SHALL'
+        },
+        {
+          'name': '_filter',
+          'type': 'string',
+          'documentation' : 'Allows expressing a set of query expressions using a defined syntax',
+          'hyperlink': {
+            'target': 'https://hl7.org/fhir/R4/search_filter.html',
+            'display': '_filter Parameter'
+          },
+          'level': 'SHALL'
+        }
+      ],
+      'per_type': {
+        'us_core_params': (
+          $USCapStat.rest.resource.searchParam[extension[url='http://hl7.org/fhir/StructureDefinition/capabilitystatement-expectation'].valueCode = 'SHALL'].{
+            'resource_type': %.type,
+            'name': name,
+            'definition': $resolveCanonical('hl7.fhir.us.core', '6.1.0', definition).derivedFrom,
+            'type': type
+          }
+        ),
+        'us_params_from_combinations': (
+          $USCapStat.rest.resource.extension[url='http://hl7.org/fhir/StructureDefinition/capabilitystatement-search-parameter-combination' and extension[url='http://hl7.org/fhir/StructureDefinition/capabilitystatement-expectation'].valueCode='SHALL'].extension[url='required'].valueString.(
+            $rt := %.%.%.type;
+            $name := $;
+            $def := $allUsParams[resource_type = $rt and name = $name];
+            {
+              'resource_type': $rt,
+              'name': $name,
+              'definition': $def.definition,
+              'type': $def.type
+            }
+          ) ~> $distinct
+        ),
+        'patient_compartment': (
+          $PatientCompartment().resource.param@$p.(
+            $rt := %.code;
+            $spResource := $BaseSearchParamBundle.entry[resource.code = $p and $rt in resource.base].resource;
+            {
+              'resource_type': $rt,
+              'name': $p,
+              'definition': $spResource.url,
+              'type': $spResource.type
+            }
+          )
+        ),
+        'info_basket_date_params': $IBParams.(
+          $code := name;
+          $rt := resourceType;
+          $spResource := $BaseSearchParamBundle.entry[resource.code = $code and $rt in resource.base].resource;
+          {
+            'resource_type': resourceType,
+            'name': name,
+            'definition': $spResource.url,
+            'type': type
+          }
+        ),
+        'il_core_params': [
+          {
+            'resource_type': 'Patient',
+            'name': 'hmo',
+            'definition': 'http://fhir.health.gov.il/SearchParameter/patient-hmo',
+            'type': 'token',
+            'documentation': 'Search patients by their HMO'
+          }
+        ],
+        'identifier': $BaseSearchParams().entry.resource[code='identifier'].base.{
+          'resource_type': $,
+          'name': %.code,
+          'definition': %.url,
+          'type': %.type
+        }[],
+        'list_item': [{
+          'resource_type': 'List',
+          'name': 'item',
+          'definition': 'http://hl7.org/fhir/SearchParameter/List-item',
+          'type': 'reference',
+          'documentation': 'Actual entry'
+        }]
+      }
+    },
+    'operations': [
+      {
+        'scope': 'resource-type',
+        'resource_type': 'Patient',
+        "name": "everything",
+        "definition": "http://hl7.org/fhir/OperationDefinition/Patient-everything",
+        'hyperlink': {
+          'target': 'https://hl7.org/fhir/r4/operation-patient-everything.html',
+          'display': 'Operation $everything on Patient'
+        },
+        'level': 'SHALL'
+      },
+      {
+        'scope': 'resource-type',
+        'resource_type': 'List',
+        'name': 'find',
+        'definition': 'http://hl7.org/fhir/OperationDefinition/List-find',
+        'hyperlink': {
+          'target': 'https://www.hl7.org/fhir/R4/list-operation-find.html',
+          'display': 'Operation $find on List'
+        },
+        'level': 'SHALL'
+      }
+    ],
+    'mandatory_resources': ['Patient', 'List'],
+    'patient_compartment_resources': $PatientCompartment().resource[param].code[],
+    'us_core_resources': $USCapStat.rest.resource[extension[url='http://hl7.org/fhir/StructureDefinition/capabilitystatement-expectation'].valueCode = 'SHALL'].type[],
+    'info_basket_resources': $distinct($InfoBasketDateParams().resourceType)[],
+    'profiles': (
+      $readPackageIndex('il.core.fhir.r4', '0.13.2').files[resourceType='StructureDefinition' and kind='resource'].(
+        $resource := $resolveCanonical('il.core.fhir.r4', '0.13.2', url);
+        $startsWith($resource.baseDefinition, 'http://hl7.org/fhir/StructureDefinition/' & $resource.type) and $resource.id != 'il-core-immunization-reaction-observation' ? $resource.{
+          'resource_type': type,
+          'url': url,
+          'name': name
+        }
+      )
+    ),
+    'server_interactions': [
+      {
+        'code': 'transaction',
+        'level': 'SHALL'
+      },
+      {
+        'code': 'batch',
+        'level': 'SHOULD'
+      }
+    ]
+  }
+)

@@ -1,0 +1,626 @@
+[
+  {
+    "resourceType": "AllergyIntolerance",
+    "name": "date",
+    "type": "date",
+    "description": "Multiple Resources: \n\n* [AllergyIntolerance](allergyintolerance.html): Date first version of the resource instance was recorded\n* [CarePlan](careplan.html): Time period plan covers\n* [CareTeam](careteam.html): Time period team covers\n* [ClinicalImpression](clinicalimpression.html): When the assessment was documented\n* [Composition](composition.html): Composition editing time\n* [Consent](consent.html): When this Consent was created or indexed\n* [DiagnosticReport](diagnosticreport.html): The clinically relevant time of the report\n* [Encounter](encounter.html): A date within the period the Encounter lasted\n* [EpisodeOfCare](episodeofcare.html): The provided date search value falls within the episode of care's period\n* [FamilyMemberHistory](familymemberhistory.html): When history was recorded or last updated\n* [Flag](flag.html): Time period when flag is active\n* [Immunization](immunization.html): Vaccination  (non)-Administration Date\n* [List](list.html): When the list was prepared\n* [Observation](observation.html): Obtained date/time. If the obtained element is a period, a date that falls in the period\n* [Procedure](procedure.html): When the procedure was performed\n* [RiskAssessment](riskassessment.html): When was assessment made?\n* [SupplyRequest](supplyrequest.html): When the request was made",
+    "path": "AllergyIntolerance.recordedDate",
+    "IncludeInCapStat": "1"
+  },
+  {
+    "resourceType": "AllergyIntolerance",
+    "name": "last-date",
+    "type": "date",
+    "description": "Date(/time) of last known occurrence of a reaction",
+    "path": "AllergyIntolerance.lastOccurrence",
+    "IncludeInCapStat": "0"
+  },
+  {
+    "resourceType": "AllergyIntolerance",
+    "name": "onset",
+    "type": "date",
+    "description": "Date(/time) when manifestations showed",
+    "path": "AllergyIntolerance.reaction.onset",
+    "IncludeInCapStat": "0"
+  },
+  {
+    "resourceType": "Appointment",
+    "name": "date",
+    "type": "date",
+    "description": "Appointment date/time.",
+    "path": "Appointment.start",
+    "IncludeInCapStat": "1"
+  },
+  {
+    "resourceType": "CarePlan",
+    "name": "date",
+    "type": "date",
+    "description": "Multiple Resources: \n\n* [AllergyIntolerance](allergyintolerance.html): Date first version of the resource instance was recorded\n* [CarePlan](careplan.html): Time period plan covers\n* [CareTeam](careteam.html): Time period team covers\n* [ClinicalImpression](clinicalimpression.html): When the assessment was documented\n* [Composition](composition.html): Composition editing time\n* [Consent](consent.html): When this Consent was created or indexed\n* [DiagnosticReport](diagnosticreport.html): The clinically relevant time of the report\n* [Encounter](encounter.html): A date within the period the Encounter lasted\n* [EpisodeOfCare](episodeofcare.html): The provided date search value falls within the episode of care's period\n* [FamilyMemberHistory](familymemberhistory.html): When history was recorded or last updated\n* [Flag](flag.html): Time period when flag is active\n* [Immunization](immunization.html): Vaccination  (non)-Administration Date\n* [List](list.html): When the list was prepared\n* [Observation](observation.html): Obtained date/time. If the obtained element is a period, a date that falls in the period\n* [Procedure](procedure.html): When the procedure was performed\n* [RiskAssessment](riskassessment.html): When was assessment made?\n* [SupplyRequest](supplyrequest.html): When the request was made",
+    "path": "CarePlan.period",
+    "IncludeInCapStat": "1"
+  },
+  {
+    "resourceType": "CarePlan",
+    "name": "activity-date",
+    "type": "date",
+    "description": "Specified date occurs within period specified by CarePlan.activity.detail.scheduled[x]",
+    "path": "CarePlan.activity.detail.scheduled",
+    "IncludeInCapStat": "0"
+  },
+  {
+    "resourceType": "CareTeam",
+    "name": "date",
+    "type": "date",
+    "description": "Multiple Resources: \n\n* [AllergyIntolerance](allergyintolerance.html): Date first version of the resource instance was recorded\n* [CarePlan](careplan.html): Time period plan covers\n* [CareTeam](careteam.html): Time period team covers\n* [ClinicalImpression](clinicalimpression.html): When the assessment was documented\n* [Composition](composition.html): Composition editing time\n* [Consent](consent.html): When this Consent was created or indexed\n* [DiagnosticReport](diagnosticreport.html): The clinically relevant time of the report\n* [Encounter](encounter.html): A date within the period the Encounter lasted\n* [EpisodeOfCare](episodeofcare.html): The provided date search value falls within the episode of care's period\n* [FamilyMemberHistory](familymemberhistory.html): When history was recorded or last updated\n* [Flag](flag.html): Time period when flag is active\n* [Immunization](immunization.html): Vaccination  (non)-Administration Date\n* [List](list.html): When the list was prepared\n* [Observation](observation.html): Obtained date/time. If the obtained element is a period, a date that falls in the period\n* [Procedure](procedure.html): When the procedure was performed\n* [RiskAssessment](riskassessment.html): When was assessment made?\n* [SupplyRequest](supplyrequest.html): When the request was made",
+    "path": "CareTeam.period",
+    "IncludeInCapStat": "1"
+  },
+  {
+    "resourceType": "Claim",
+    "name": "created",
+    "type": "date",
+    "description": "The creation date for the Claim",
+    "path": "Claim.created",
+    "IncludeInCapStat": "1"
+  },
+  {
+    "resourceType": "Communication",
+    "name": "received",
+    "type": "date",
+    "description": "When received",
+    "path": "Communication.received",
+    "IncludeInCapStat": "0"
+  },
+  {
+    "resourceType": "Communication",
+    "name": "sent",
+    "type": "date",
+    "description": "When sent",
+    "path": "Communication.sent",
+    "IncludeInCapStat": "0"
+  },
+  {
+    "resourceType": "CommunicationRequest",
+    "name": "authored",
+    "type": "date",
+    "description": "When request transitioned to being actionable",
+    "path": "CommunicationRequest.authoredOn",
+    "IncludeInCapStat": "1"
+  },
+  {
+    "resourceType": "CommunicationRequest",
+    "name": "occurrence",
+    "type": "date",
+    "description": "When scheduled",
+    "path": "CommunicationRequest.occurrenceasdateTime",
+    "IncludeInCapStat": "0"
+  },
+  {
+    "resourceType": "Condition",
+    "name": "abatement-date",
+    "type": "date",
+    "description": "Date-related abatements (dateTime and period)",
+    "path": "Condition.abatement.asdateTime",
+    "IncludeInCapStat": "0"
+  },
+  {
+    "resourceType": "Condition",
+    "name": "abatement-date",
+    "type": "date",
+    "description": "Date-related abatements (dateTime and period)",
+    "path": "Condition.abatement.asPeriod",
+    "IncludeInCapStat": "0"
+  },
+  {
+    "resourceType": "Condition",
+    "name": "onset-date",
+    "type": "date",
+    "description": "Date related onsets (dateTime and Period)",
+    "path": "Condition.onset.asdateTime",
+    "IncludeInCapStat": "0"
+  },
+  {
+    "resourceType": "Condition",
+    "name": "onset-date",
+    "type": "date",
+    "description": "Date related onsets (dateTime and Period)",
+    "path": "Condition.onset.asPeriod",
+    "IncludeInCapStat": "0"
+  },
+  {
+    "resourceType": "Condition",
+    "name": "recorded-date",
+    "type": "date",
+    "description": "Date record was first recorded",
+    "path": "Condition.recordedDate",
+    "IncludeInCapStat": "1"
+  },
+  {
+    "resourceType": "Consent",
+    "name": "date",
+    "type": "date",
+    "description": "Multiple Resources: \n\n* [AllergyIntolerance](allergyintolerance.html): Date first version of the resource instance was recorded\n* [CarePlan](careplan.html): Time period plan covers\n* [CareTeam](careteam.html): Time period team covers\n* [ClinicalImpression](clinicalimpression.html): When the assessment was documented\n* [Composition](composition.html): Composition editing time\n* [Consent](consent.html): When this Consent was created or indexed\n* [DiagnosticReport](diagnosticreport.html): The clinically relevant time of the report\n* [Encounter](encounter.html): A date within the period the Encounter lasted\n* [EpisodeOfCare](episodeofcare.html): The provided date search value falls within the episode of care's period\n* [FamilyMemberHistory](familymemberhistory.html): When history was recorded or last updated\n* [Flag](flag.html): Time period when flag is active\n* [Immunization](immunization.html): Vaccination  (non)-Administration Date\n* [List](list.html): When the list was prepared\n* [Observation](observation.html): Obtained date/time. If the obtained element is a period, a date that falls in the period\n* [Procedure](procedure.html): When the procedure was performed\n* [RiskAssessment](riskassessment.html): When was assessment made?\n* [SupplyRequest](supplyrequest.html): When the request was made",
+    "path": "Consent.dateTime",
+    "IncludeInCapStat": "1"
+  },
+  {
+    "resourceType": "Consent",
+    "name": "period",
+    "type": "date",
+    "description": "Timeframe for this rule",
+    "path": "Consent.provision.period",
+    "IncludeInCapStat": "0"
+  },
+  {
+    "resourceType": "CoverageEligibilityRequest",
+    "name": "created",
+    "type": "date",
+    "description": "The creation date for the EOB",
+    "path": "CoverageEligibilityRequest.created",
+    "IncludeInCapStat": "1"
+  },
+  {
+    "resourceType": "CoverageEligibilityResponse",
+    "name": "created",
+    "type": "date",
+    "description": "The creation date",
+    "path": "CoverageEligibilityResponse.created",
+    "IncludeInCapStat": "1"
+  },
+  {
+    "resourceType": "DeviceRequest",
+    "name": "authored-on",
+    "type": "date",
+    "description": "When the request transitioned to being actionable",
+    "path": "DeviceRequest.authoredOn",
+    "IncludeInCapStat": "1"
+  },
+  {
+    "resourceType": "DeviceRequest",
+    "name": "event-date",
+    "type": "date",
+    "description": "When service should occur",
+    "path": "DeviceRequest.occurrenceasdateTime",
+    "IncludeInCapStat": "0"
+  },
+  {
+    "resourceType": "DeviceRequest",
+    "name": "event-date",
+    "type": "date",
+    "description": "When service should occur",
+    "path": "DeviceRequest.occurrenceasPeriod",
+    "IncludeInCapStat": "0"
+  },
+  {
+    "resourceType": "DiagnosticReport",
+    "name": "date",
+    "type": "date",
+    "description": "Multiple Resources: \n\n* [AllergyIntolerance](allergyintolerance.html): Date first version of the resource instance was recorded\n* [CarePlan](careplan.html): Time period plan covers\n* [CareTeam](careteam.html): Time period team covers\n* [ClinicalImpression](clinicalimpression.html): When the assessment was documented\n* [Composition](composition.html): Composition editing time\n* [Consent](consent.html): When this Consent was created or indexed\n* [DiagnosticReport](diagnosticreport.html): The clinically relevant time of the report\n* [Encounter](encounter.html): A date within the period the Encounter lasted\n* [EpisodeOfCare](episodeofcare.html): The provided date search value falls within the episode of care's period\n* [FamilyMemberHistory](familymemberhistory.html): When history was recorded or last updated\n* [Flag](flag.html): Time period when flag is active\n* [Immunization](immunization.html): Vaccination  (non)-Administration Date\n* [List](list.html): When the list was prepared\n* [Observation](observation.html): Obtained date/time. If the obtained element is a period, a date that falls in the period\n* [Procedure](procedure.html): When the procedure was performed\n* [RiskAssessment](riskassessment.html): When was assessment made?\n* [SupplyRequest](supplyrequest.html): When the request was made",
+    "path": "DiagnosticReport.effective",
+    "IncludeInCapStat": "0"
+  },
+  {
+    "resourceType": "DiagnosticReport",
+    "name": "issued",
+    "type": "date",
+    "description": "When the report was issued",
+    "path": "DiagnosticReport.issued",
+    "IncludeInCapStat": "1"
+  },
+  {
+    "resourceType": "DocumentReference",
+    "name": "date",
+    "type": "date",
+    "description": "When this document reference was created",
+    "path": "DocumentReference.date",
+    "IncludeInCapStat": "1"
+  },
+  {
+    "resourceType": "DocumentReference",
+    "name": "period",
+    "type": "date",
+    "description": "Time of service that is being documented",
+    "path": "DocumentReference.context.period",
+    "IncludeInCapStat": "0"
+  },
+  {
+    "resourceType": "Encounter",
+    "name": "date",
+    "type": "date",
+    "description": "Multiple Resources: \n\n* [AllergyIntolerance](allergyintolerance.html): Date first version of the resource instance was recorded\n* [CarePlan](careplan.html): Time period plan covers\n* [CareTeam](careteam.html): Time period team covers\n* [ClinicalImpression](clinicalimpression.html): When the assessment was documented\n* [Composition](composition.html): Composition editing time\n* [Consent](consent.html): When this Consent was created or indexed\n* [DiagnosticReport](diagnosticreport.html): The clinically relevant time of the report\n* [Encounter](encounter.html): A date within the period the Encounter lasted\n* [EpisodeOfCare](episodeofcare.html): The provided date search value falls within the episode of care's period\n* [FamilyMemberHistory](familymemberhistory.html): When history was recorded or last updated\n* [Flag](flag.html): Time period when flag is active\n* [Immunization](immunization.html): Vaccination  (non)-Administration Date\n* [List](list.html): When the list was prepared\n* [Observation](observation.html): Obtained date/time. If the obtained element is a period, a date that falls in the period\n* [Procedure](procedure.html): When the procedure was performed\n* [RiskAssessment](riskassessment.html): When was assessment made?\n* [SupplyRequest](supplyrequest.html): When the request was made",
+    "path": "Encounter.period",
+    "IncludeInCapStat": "1"
+  },
+  {
+    "resourceType": "Encounter",
+    "name": "location-period",
+    "type": "date",
+    "description": "Time period during which the patient was present at the location",
+    "path": "Encounter.location.period",
+    "IncludeInCapStat": "0"
+  },
+  {
+    "resourceType": "EpisodeOfCare",
+    "name": "date",
+    "type": "date",
+    "description": "Multiple Resources: \n\n* [AllergyIntolerance](allergyintolerance.html): Date first version of the resource instance was recorded\n* [CarePlan](careplan.html): Time period plan covers\n* [CareTeam](careteam.html): Time period team covers\n* [ClinicalImpression](clinicalimpression.html): When the assessment was documented\n* [Composition](composition.html): Composition editing time\n* [Consent](consent.html): When this Consent was created or indexed\n* [DiagnosticReport](diagnosticreport.html): The clinically relevant time of the report\n* [Encounter](encounter.html): A date within the period the Encounter lasted\n* [EpisodeOfCare](episodeofcare.html): The provided date search value falls within the episode of care's period\n* [FamilyMemberHistory](familymemberhistory.html): When history was recorded or last updated\n* [Flag](flag.html): Time period when flag is active\n* [Immunization](immunization.html): Vaccination  (non)-Administration Date\n* [List](list.html): When the list was prepared\n* [Observation](observation.html): Obtained date/time. If the obtained element is a period, a date that falls in the period\n* [Procedure](procedure.html): When the procedure was performed\n* [RiskAssessment](riskassessment.html): When was assessment made?\n* [SupplyRequest](supplyrequest.html): When the request was made",
+    "path": "EpisodeOfCare.period",
+    "IncludeInCapStat": "1"
+  },
+  {
+    "resourceType": "FamilyMemberHistory",
+    "name": "date",
+    "type": "date",
+    "description": "Multiple Resources: \n\n* [AllergyIntolerance](allergyintolerance.html): Date first version of the resource instance was recorded\n* [CarePlan](careplan.html): Time period plan covers\n* [CareTeam](careteam.html): Time period team covers\n* [ClinicalImpression](clinicalimpression.html): When the assessment was documented\n* [Composition](composition.html): Composition editing time\n* [Consent](consent.html): When this Consent was created or indexed\n* [DiagnosticReport](diagnosticreport.html): The clinically relevant time of the report\n* [Encounter](encounter.html): A date within the period the Encounter lasted\n* [EpisodeOfCare](episodeofcare.html): The provided date search value falls within the episode of care's period\n* [FamilyMemberHistory](familymemberhistory.html): When history was recorded or last updated\n* [Flag](flag.html): Time period when flag is active\n* [Immunization](immunization.html): Vaccination  (non)-Administration Date\n* [List](list.html): When the list was prepared\n* [Observation](observation.html): Obtained date/time. If the obtained element is a period, a date that falls in the period\n* [Procedure](procedure.html): When the procedure was performed\n* [RiskAssessment](riskassessment.html): When was assessment made?\n* [SupplyRequest](supplyrequest.html): When the request was made",
+    "path": "FamilyMemberHistory.date",
+    "IncludeInCapStat": "1"
+  },
+  {
+    "resourceType": "Flag",
+    "name": "date",
+    "type": "date",
+    "description": "Multiple Resources: \n\n* [AllergyIntolerance](allergyintolerance.html): Date first version of the resource instance was recorded\n* [CarePlan](careplan.html): Time period plan covers\n* [CareTeam](careteam.html): Time period team covers\n* [ClinicalImpression](clinicalimpression.html): When the assessment was documented\n* [Composition](composition.html): Composition editing time\n* [Consent](consent.html): When this Consent was created or indexed\n* [DiagnosticReport](diagnosticreport.html): The clinically relevant time of the report\n* [Encounter](encounter.html): A date within the period the Encounter lasted\n* [EpisodeOfCare](episodeofcare.html): The provided date search value falls within the episode of care's period\n* [FamilyMemberHistory](familymemberhistory.html): When history was recorded or last updated\n* [Flag](flag.html): Time period when flag is active\n* [Immunization](immunization.html): Vaccination  (non)-Administration Date\n* [List](list.html): When the list was prepared\n* [Observation](observation.html): Obtained date/time. If the obtained element is a period, a date that falls in the period\n* [Procedure](procedure.html): When the procedure was performed\n* [RiskAssessment](riskassessment.html): When was assessment made?\n* [SupplyRequest](supplyrequest.html): When the request was made",
+    "path": "Flag.period",
+    "IncludeInCapStat": "1"
+  },
+  {
+    "resourceType": "Goal",
+    "name": "start-date",
+    "type": "date",
+    "description": "When goal pursuit begins",
+    "path": "Goal.startasdate",
+    "IncludeInCapStat": "1"
+  },
+  {
+    "resourceType": "Goal",
+    "name": "target-date",
+    "type": "date",
+    "description": "Reach goal on or before",
+    "path": "Goal.target.dueasdate",
+    "IncludeInCapStat": "0"
+  },
+  {
+    "resourceType": "ImagingStudy",
+    "name": "started",
+    "type": "date",
+    "description": "When the study was started",
+    "path": "ImagingStudy.started",
+    "IncludeInCapStat": "1"
+  },
+  {
+    "resourceType": "Immunization",
+    "name": "date",
+    "type": "date",
+    "description": "Multiple Resources: \n\n* [AllergyIntolerance](allergyintolerance.html): Date first version of the resource instance was recorded\n* [CarePlan](careplan.html): Time period plan covers\n* [CareTeam](careteam.html): Time period team covers\n* [ClinicalImpression](clinicalimpression.html): When the assessment was documented\n* [Composition](composition.html): Composition editing time\n* [Consent](consent.html): When this Consent was created or indexed\n* [DiagnosticReport](diagnosticreport.html): The clinically relevant time of the report\n* [Encounter](encounter.html): A date within the period the Encounter lasted\n* [EpisodeOfCare](episodeofcare.html): The provided date search value falls within the episode of care's period\n* [FamilyMemberHistory](familymemberhistory.html): When history was recorded or last updated\n* [Flag](flag.html): Time period when flag is active\n* [Immunization](immunization.html): Vaccination  (non)-Administration Date\n* [List](list.html): When the list was prepared\n* [Observation](observation.html): Obtained date/time. If the obtained element is a period, a date that falls in the period\n* [Procedure](procedure.html): When the procedure was performed\n* [RiskAssessment](riskassessment.html): When was assessment made?\n* [SupplyRequest](supplyrequest.html): When the request was made",
+    "path": "Immunization.occurrence",
+    "IncludeInCapStat": "1"
+  },
+  {
+    "resourceType": "Immunization",
+    "name": "reaction-date",
+    "type": "date",
+    "description": "When reaction started",
+    "path": "Immunization.reaction.date",
+    "IncludeInCapStat": "0"
+  },
+  {
+    "resourceType": "ImmunizationRecommendation",
+    "name": "date",
+    "type": "date",
+    "description": "Date recommendation(s) created",
+    "path": "ImmunizationRecommendation.date",
+    "IncludeInCapStat": "1"
+  },
+  {
+    "resourceType": "Measure",
+    "name": "date",
+    "type": "date",
+    "description": "The measure publication date",
+    "path": "Measure.date",
+    "IncludeInCapStat": "1"
+  },
+  {
+    "resourceType": "Measure",
+    "name": "effective",
+    "type": "date",
+    "description": "The time during which the measure is intended to be in use",
+    "path": "Measure.effectivePeriod",
+    "IncludeInCapStat": "0"
+  },
+  {
+    "resourceType": "MeasureReport",
+    "name": "date",
+    "type": "date",
+    "description": "The date of the measure report",
+    "path": "MeasureReport.date",
+    "IncludeInCapStat": "1"
+  },
+  {
+    "resourceType": "MeasureReport",
+    "name": "period",
+    "type": "date",
+    "description": "The period of the measure report",
+    "path": "MeasureReport.period",
+    "IncludeInCapStat": "0"
+  },
+  {
+    "resourceType": "Media",
+    "name": "created",
+    "type": "date",
+    "description": "When Media was collected",
+    "path": "Media.created",
+    "IncludeInCapStat": "1"
+  },
+  {
+    "resourceType": "Medication",
+    "name": "expiration-date",
+    "type": "date",
+    "description": "Returns medications in a batch with this expiration date",
+    "path": "Medication.batch.expirationDate",
+    "IncludeInCapStat": "1"
+  },
+  {
+    "resourceType": "MedicationAdministration",
+    "name": "effective-time",
+    "type": "date",
+    "description": "Date administration happened (or did not happen)",
+    "path": "MedicationAdministration.effective",
+    "IncludeInCapStat": "1"
+  },
+  {
+    "resourceType": "MedicationDispense",
+    "name": "whenhandedover",
+    "type": "date",
+    "description": "Returns dispenses handed over on this date",
+    "path": "MedicationDispense.whenHandedOver",
+    "IncludeInCapStat": "1"
+  },
+  {
+    "resourceType": "MedicationDispense",
+    "name": "whenprepared",
+    "type": "date",
+    "description": "Returns dispenses prepared on this date",
+    "path": "MedicationDispense.whenPrepared",
+    "IncludeInCapStat": "0"
+  },
+  {
+    "resourceType": "MedicationRequest",
+    "name": "authoredon",
+    "type": "date",
+    "description": "Return prescriptions written on this date",
+    "path": "MedicationRequest.authoredOn",
+    "IncludeInCapStat": "1"
+  },
+  {
+    "resourceType": "MedicationRequest",
+    "name": "date",
+    "type": "date",
+    "description": "Multiple Resources: \n\n* [MedicationRequest](medicationrequest.html): Returns medication request to be administered on a specific date\n",
+    "path": "MedicationRequest.dosageInstruction.timing.event",
+    "IncludeInCapStat": "0"
+  },
+  {
+    "resourceType": "MedicationStatement",
+    "name": "effective",
+    "type": "date",
+    "description": "Date when patient was taking (or not taking) the medication",
+    "path": "MedicationStatement.effective",
+    "IncludeInCapStat": "1"
+  },
+  {
+    "resourceType": "NutritionOrder",
+    "name": "datetime",
+    "type": "date",
+    "description": "Return nutrition orders requested on this date",
+    "path": "NutritionOrder.dateTime",
+    "IncludeInCapStat": "1"
+  },
+  {
+    "resourceType": "Observation",
+    "name": "date",
+    "type": "date",
+    "description": "Multiple Resources: \n\n* [AllergyIntolerance](allergyintolerance.html): Date first version of the resource instance was recorded\n* [CarePlan](careplan.html): Time period plan covers\n* [CareTeam](careteam.html): Time period team covers\n* [ClinicalImpression](clinicalimpression.html): When the assessment was documented\n* [Composition](composition.html): Composition editing time\n* [Consent](consent.html): When this Consent was created or indexed\n* [DiagnosticReport](diagnosticreport.html): The clinically relevant time of the report\n* [Encounter](encounter.html): A date within the period the Encounter lasted\n* [EpisodeOfCare](episodeofcare.html): The provided date search value falls within the episode of care's period\n* [FamilyMemberHistory](familymemberhistory.html): When history was recorded or last updated\n* [Flag](flag.html): Time period when flag is active\n* [Immunization](immunization.html): Vaccination  (non)-Administration Date\n* [List](list.html): When the list was prepared\n* [Observation](observation.html): Obtained date/time. If the obtained element is a period, a date that falls in the period\n* [Procedure](procedure.html): When the procedure was performed\n* [RiskAssessment](riskassessment.html): When was assessment made?\n* [SupplyRequest](supplyrequest.html): When the request was made",
+    "path": "Observation.effective",
+    "IncludeInCapStat": "1"
+  },
+  {
+    "resourceType": "Observation",
+    "name": "value-date",
+    "type": "date",
+    "description": "The value of the observation, if the value is a date or period of time",
+    "path": "Observation.valueasdateTime",
+    "IncludeInCapStat": "0"
+  },
+  {
+    "resourceType": "Observation",
+    "name": "value-date",
+    "type": "date",
+    "description": "The value of the observation, if the value is a date or period of time",
+    "path": "Observation.valueasPeriod",
+    "IncludeInCapStat": "0"
+  },
+  {
+    "resourceType": "Patient",
+    "name": "birthdate",
+    "type": "date",
+    "description": "Multiple Resources: \n\n* [Patient](patient.html): The patient's date of birth\n* [Person](person.html): The person's date of birth\n* [RelatedPerson](relatedperson.html): The Related Person's date of birth\n",
+    "path": "Patient.birthDate",
+    "IncludeInCapStat": "1"
+  },
+  {
+    "resourceType": "Patient",
+    "name": "death-date",
+    "type": "date",
+    "description": "The date of death has been provided and satisfies this search value",
+    "path": "Patient.deceasedasdateTime",
+    "IncludeInCapStat": "0"
+  },
+  {
+    "resourceType": "PlanDefinition",
+    "name": "date",
+    "type": "date",
+    "description": "The plan definition publication date",
+    "path": "PlanDefinition.date",
+    "IncludeInCapStat": "1"
+  },
+  {
+    "resourceType": "PlanDefinition",
+    "name": "effective",
+    "type": "date",
+    "description": "The time during which the plan definition is intended to be in use",
+    "path": "PlanDefinition.effectivePeriod",
+    "IncludeInCapStat": "0"
+  },
+  {
+    "resourceType": "PractitionerRole",
+    "name": "date",
+    "type": "date",
+    "description": "The period during which the practitioner is authorized to perform in these role(s)",
+    "path": "PractitionerRole.period",
+    "IncludeInCapStat": "1"
+  },
+  {
+    "resourceType": "Procedure",
+    "name": "date",
+    "type": "date",
+    "description": "Multiple Resources: \n\n* [AllergyIntolerance](allergyintolerance.html): Date first version of the resource instance was recorded\n* [CarePlan](careplan.html): Time period plan covers\n* [CareTeam](careteam.html): Time period team covers\n* [ClinicalImpression](clinicalimpression.html): When the assessment was documented\n* [Composition](composition.html): Composition editing time\n* [Consent](consent.html): When this Consent was created or indexed\n* [DiagnosticReport](diagnosticreport.html): The clinically relevant time of the report\n* [Encounter](encounter.html): A date within the period the Encounter lasted\n* [EpisodeOfCare](episodeofcare.html): The provided date search value falls within the episode of care's period\n* [FamilyMemberHistory](familymemberhistory.html): When history was recorded or last updated\n* [Flag](flag.html): Time period when flag is active\n* [Immunization](immunization.html): Vaccination  (non)-Administration Date\n* [List](list.html): When the list was prepared\n* [Observation](observation.html): Obtained date/time. If the obtained element is a period, a date that falls in the period\n* [Procedure](procedure.html): When the procedure was performed\n* [RiskAssessment](riskassessment.html): When was assessment made?\n* [SupplyRequest](supplyrequest.html): When the request was made",
+    "path": "Procedure.performed",
+    "IncludeInCapStat": "1"
+  },
+  {
+    "resourceType": "Questionnaire",
+    "name": "date",
+    "type": "date",
+    "description": "The questionnaire publication date",
+    "path": "Questionnaire.date",
+    "IncludeInCapStat": "1"
+  },
+  {
+    "resourceType": "Questionnaire",
+    "name": "effective",
+    "type": "date",
+    "description": "The time during which the questionnaire is intended to be in use",
+    "path": "Questionnaire.effectivePeriod",
+    "IncludeInCapStat": "0"
+  },
+  {
+    "resourceType": "QuestionnaireResponse",
+    "name": "authored",
+    "type": "date",
+    "description": "When the questionnaire response was last changed",
+    "path": "QuestionnaireResponse.authored",
+    "IncludeInCapStat": "1"
+  },
+  {
+    "resourceType": "RelatedPerson",
+    "name": "birthdate",
+    "type": "date",
+    "description": "Multiple Resources: \n\n* [Patient](patient.html): The patient's date of birth\n* [Person](person.html): The person's date of birth\n* [RelatedPerson](relatedperson.html): The Related Person's date of birth\n",
+    "path": "RelatedPerson.birthDate",
+    "IncludeInCapStat": "1"
+  },
+  {
+    "resourceType": "ResearchStudy",
+    "name": "date",
+    "type": "date",
+    "description": "When the study began and ended",
+    "path": "ResearchStudy.period",
+    "IncludeInCapStat": "1"
+  },
+  {
+    "resourceType": "ResearchSubject",
+    "name": "date",
+    "type": "date",
+    "description": "Start and end of participation",
+    "path": "ResearchSubject.period",
+    "IncludeInCapStat": "1"
+  },
+  {
+    "resourceType": "RiskAssessment",
+    "name": "date",
+    "type": "date",
+    "description": "Multiple Resources: \n\n* [AllergyIntolerance](allergyintolerance.html): Date first version of the resource instance was recorded\n* [CarePlan](careplan.html): Time period plan covers\n* [CareTeam](careteam.html): Time period team covers\n* [ClinicalImpression](clinicalimpression.html): When the assessment was documented\n* [Composition](composition.html): Composition editing time\n* [Consent](consent.html): When this Consent was created or indexed\n* [DiagnosticReport](diagnosticreport.html): The clinically relevant time of the report\n* [Encounter](encounter.html): A date within the period the Encounter lasted\n* [EpisodeOfCare](episodeofcare.html): The provided date search value falls within the episode of care's period\n* [FamilyMemberHistory](familymemberhistory.html): When history was recorded or last updated\n* [Flag](flag.html): Time period when flag is active\n* [Immunization](immunization.html): Vaccination  (non)-Administration Date\n* [List](list.html): When the list was prepared\n* [Observation](observation.html): Obtained date/time. If the obtained element is a period, a date that falls in the period\n* [Procedure](procedure.html): When the procedure was performed\n* [RiskAssessment](riskassessment.html): When was assessment made?\n* [SupplyRequest](supplyrequest.html): When the request was made",
+    "path": "RiskAssessment.occurrenceasdateTime",
+    "IncludeInCapStat": "1"
+  },
+  {
+    "resourceType": "Schedule",
+    "name": "date",
+    "type": "date",
+    "description": "Search for Schedule resources that have a period that contains this date specified",
+    "path": "Schedule.planningHorizon",
+    "IncludeInCapStat": "1"
+  },
+  {
+    "resourceType": "ServiceRequest",
+    "name": "authored",
+    "type": "date",
+    "description": "Date request signed",
+    "path": "ServiceRequest.authoredOn",
+    "IncludeInCapStat": "1"
+  },
+  {
+    "resourceType": "ServiceRequest",
+    "name": "occurrence",
+    "type": "date",
+    "description": "When service should occur",
+    "path": "ServiceRequest.occurrence",
+    "IncludeInCapStat": "0"
+  },
+  {
+    "resourceType": "Slot",
+    "name": "start",
+    "type": "date",
+    "description": "Appointment date/time.",
+    "path": "Slot.start",
+    "IncludeInCapStat": "1"
+  },
+  {
+    "resourceType": "Specimen",
+    "name": "collected",
+    "type": "date",
+    "description": "The date the specimen was collected",
+    "path": "Specimen.collection.collected",
+    "IncludeInCapStat": "1"
+  },
+  {
+    "resourceType": "Substance",
+    "name": "expiry",
+    "type": "date",
+    "description": "Expiry date of package or container of substance",
+    "path": "Substance.instance.expiry",
+    "IncludeInCapStat": "1"
+  },
+  {
+    "resourceType": "SupplyRequest",
+    "name": "date",
+    "type": "date",
+    "description": "Multiple Resources: \n\n* [AllergyIntolerance](allergyintolerance.html): Date first version of the resource instance was recorded\n* [CarePlan](careplan.html): Time period plan covers\n* [CareTeam](careteam.html): Time period team covers\n* [ClinicalImpression](clinicalimpression.html): When the assessment was documented\n* [Composition](composition.html): Composition editing time\n* [Consent](consent.html): When this Consent was created or indexed\n* [DiagnosticReport](diagnosticreport.html): The clinically relevant time of the report\n* [Encounter](encounter.html): A date within the period the Encounter lasted\n* [EpisodeOfCare](episodeofcare.html): The provided date search value falls within the episode of care's period\n* [FamilyMemberHistory](familymemberhistory.html): When history was recorded or last updated\n* [Flag](flag.html): Time period when flag is active\n* [Immunization](immunization.html): Vaccination  (non)-Administration Date\n* [List](list.html): When the list was prepared\n* [Observation](observation.html): Obtained date/time. If the obtained element is a period, a date that falls in the period\n* [Procedure](procedure.html): When the procedure was performed\n* [RiskAssessment](riskassessment.html): When was assessment made?\n* [SupplyRequest](supplyrequest.html): When the request was made",
+    "path": "SupplyRequest.authoredOn",
+    "IncludeInCapStat": "1"
+  },
+  {
+    "resourceType": "Task",
+    "name": "authored-on",
+    "type": "date",
+    "description": "Search by creation date",
+    "path": "Task.authoredOn",
+    "IncludeInCapStat": "1"
+  },
+  {
+    "resourceType": "Task",
+    "name": "modified",
+    "type": "date",
+    "description": "Search by last modification date",
+    "path": "Task.lastModified",
+    "IncludeInCapStat": "0"
+  },
+  {
+    "resourceType": "Task",
+    "name": "period",
+    "type": "date",
+    "description": "Search by period Task is/was underway",
+    "path": "Task.executionPeriod",
+    "IncludeInCapStat": "0"
+  }
+]
