@@ -1,0 +1,274 @@
+/*DQA tests https://app.clickup.com/t/8693t1zyv*/
+
+(
+  /*Clear files*/
+    $writeFile('','DQAidentifiers.json');
+    $writeFile('','CountByResourceType.json');
+    $writeFile('','DQAElementsDisterbutions.json');
+    $writeFile('','DQACodeableConcept.json');
+    $writeFile('','DQAReferenceIdentifier.json');
+    $writeFile('','DQAReferenceReference.json');
+    $writeFile('','DQACoding.json');
+    $writeFile('','ValidationResultesFlat.json');
+    $writeFile('','DQADateTime.json');
+
+  /*Elements disterbutions*/
+  
+    $SampledResources:= $readFile('SampledResources.json');
+
+    /*extract elemens*/
+
+      /*Test19 - identifier disterbutions, Patient*/
+        $identifiers := $SampledResources.identifier.system.{
+          'resourceType' : %.%.resourceType
+          ,'resourceId' : %.%.id
+          ,'use' : %.use
+          ,'system' : %.system
+          ,'value' : %.value
+          };
+
+        $writeFile($identifiers,'DQAidentifiers.json');
+
+      /*Test13 - Patient.gender disterbution*/
+        $values_gender :=  $SampledResources.gender.{
+        'resourceType' : %.resourceType
+        ,'resourceId' : %.id
+        ,'path' : 'gender'
+        ,'pathValue' : $
+        };
+
+      /*Test12 - Patient.birthDate disterbution*/
+        $birthDate :=  $SampledResources.birthDate.{
+          'resourceType' : %.resourceType
+          ,'resourceId' : %.id
+          ,'path' : 'birthDate'
+          ,'pathValue' : $
+          };
+
+      /*Test14 - Patient.birthDate disterbution*/
+        $maritalStatus :=  $SampledResources.maritalStatus.{
+          'resourceType' : %.resourceType
+          ,'resourceId' : %.id
+          ,'path' : 'maritalStatus'
+          ,'pathValue' : $
+          };
+        
+    /*combine extracted elements*/
+      $DQAElementsDisterbutions := [$values_identifier_system,$values_gender,$birthDate,$maritalStatus];
+
+      $writeFile($DQAElementsDisterbutions,'DQAElementsDisterbutions.json');
+  
+  /*Test15 - Resource count*/
+      $SupportedResourceTypes := $resolve('metadata').rest.resource.type;
+
+      $CountByResourceType := $SupportedResourceTypes.(
+        $SupportedResourceType := $;
+        $search($SupportedResourceType & '?_count=1').{'resourceType':$SupportedResourceType, 'total':total}
+        );
+      
+      $writeFile($CountByResourceType,'CountByResourceType.json');
+
+  /*Test18 - Validation resultes*/ 
+    /*Extract data from validator file, filter and flatten*/ 
+       
+      $ValidationResultesFlat := $readFile('ValidationResultesFilesNames.json').$readFile($string($)).entry.resource.issue.expression.{
+      'resourceType' : $substringBefore($substringAfter(%.%.extension.valueString,'['),']')
+      ,'resourceInstance' : %.%.extension.valueString
+      ,'severity' : %.severity
+      ,'expression' : $
+      ,'code' : %.code
+      ,'Details' : %.details.text
+      };
+
+    /*Write to flat file for analysis*/
+      $writeFile($ValidationResultesFlat,'ValidationResultesFlat.json');
+  
+  /*Test20 - CodeableConcept, Encounter.type*/
+    $DQACodeableConcept := $readFile('SampledResources.json')[resourceType = 'Encounter'].type.{
+      'resourceType' : %.resourceType
+      ,'resourceId' : %.id
+      ,'path' : 'Encounter.type'
+      ,'text' : $exists(text) ? text : ''
+      ,'system' : $exists(*.system) ? *.system : ''
+      ,'code' : $exists(*.code) ? *.code : ''
+      ,'version' : $exists(*.version) ? *.version : ''
+      ,'display' : $exists(*.display) ? *.display : ''
+      ,'userSelected' : $exists(*.userSelected) ? *.userSelected : ''
+    };
+
+    $writeFile([$readFile('DQACodeableConcept.json'),$DQACodeableConcept],'DQACodeableConcept.json');
+
+  /*Test21 - Coding, Encounter.class*/
+    $DQACoding := $readFile('SampledResources.json')[resourceType = 'Encounter'].class.{
+      'resourceType' : %.resourceType
+      ,'resourceId' : %.id
+      ,'path' : 'Encounter.class'
+      ,'system' : $exists(system) ? system : ''
+      ,'code' : $exists(code) ? code : ''
+      ,'version' : $exists(version) ? version : ''
+      ,'display' : $exists(display) ? display : ''
+      ,'userSelected' : $exists(userSelected) ? userSelected : ''
+    };
+
+    $writeFile([$readFile('DQACoding.json'),$DQACoding],'DQACoding.json');
+    
+  /*Test22 - ReferenceReference - , Encounter.location.location*/
+    $DQAReferenceReference := $readFile('SampledResources.json')[resourceType = 'Encounter'].location.location.{
+      'resourceType' : %.%.resourceType
+      ,'resourceId' : %.%.id
+      ,'path' : 'Encounter.location.location'
+      ,'reference' : $exists(reference) ? reference : ''
+      ,'type' : $exists(type) ? type : ''
+      ,'display' : $exists(display) ? display : ''
+    };
+
+    $writeFile([$readFile('DQAReferenceReference.json'),$DQAReferenceReference],'DQAReferenceReference.json');
+
+  /*Test22 - ReferenceIdentifier, Encounter.location.location*/
+    $DQAReferenceIdentifier := $readFile('SampledResources.json')[resourceType = 'Encounter'].location.location.identifier.{
+      'resourceType' : %.resourceType
+      ,'resourceId' : %.id
+      ,'path' : 'Encounter.location.location'
+      ,'use' : $exists(use) ? use : ''
+      ,'system' : $exists(system) ? system : ''
+      ,'value' : $exists(value) ? value : ''
+    };
+
+    $writeFile([$readFile('DQAReferenceIdentifier.json'),$DQAReferenceIdentifier],'DQAReferenceIdentifier.json');
+
+  /*Test23 - CodeableConcept, PractitionerRole.specialty*/
+    $DQACodeableConcept := $readFile('SampledResources.json')[resourceType = 'PractitionerRole'].specialty.{
+      'resourceType' : %.resourceType
+      ,'resourceId' : %.id
+      ,'path' : 'PractitionerRole.specialt'
+      ,'text' : $exists(text) ? text : ''
+      ,'system' : $exists(*.system) ? *.system : ''
+      ,'code' : $exists(*.code) ? *.code : ''
+      ,'version' : $exists(*.version) ? *.version : ''
+      ,'display' : $exists(*.display) ? *.display : ''
+      ,'userSelected' : $exists(*.userSelected) ? *.userSelected : ''
+    };
+
+    $writeFile([$readFile('DQACodeableConcept.json'),$DQACodeableConcept],'DQACodeableConcept.json');
+
+  /*Test24 - CodeableConcept, Practitioner.communication*/
+    $DQACodeableConcept := $readFile('SampledResources.json')[resourceType = 'Practitioner'].communication.{
+      'resourceType' : %.resourceType
+      ,'resourceId' : %.id
+      ,'path' : 'Practitioner.communication'
+      ,'text' : $exists(text) ? text : ''
+      ,'system' : $exists(*.system) ? *.system : ''
+      ,'code' : $exists(*.code) ? *.code : ''
+      ,'version' : $exists(*.version) ? *.version : ''
+      ,'display' : $exists(*.display) ? *.display : ''
+      ,'userSelected' : $exists(*.userSelected) ? *.userSelected : ''
+    };
+
+    $writeFile([$readFile('DQACodeableConcept.json'),$DQACodeableConcept],'DQACodeableConcept.json');
+
+  /*Test25 - CodeableConcept, Practitioner.qualification.code*/
+    $DQACodeableConcept := $readFile('SampledResources.json')[resourceType = 'Practitioner'].qualification.code.{
+      'resourceType' : %.resourceType
+      ,'resourceId' : %.id
+      ,'path' : 'Practitioner.qualification.code'
+      ,'text' : $exists(text) ? text : ''
+      ,'system' : $exists(*.system) ? *.system : ''
+      ,'code' : $exists(*.code) ? *.code : ''
+      ,'version' : $exists(*.version) ? *.version : ''
+      ,'display' : $exists(*.display) ? *.display : ''
+      ,'userSelected' : $exists(*.userSelected) ? *.userSelected : ''
+    };
+
+    $writeFile([$readFile('DQACodeableConcept.json'),$DQACodeableConcept],'DQACodeableConcept.json');
+
+  /*Test26 - CodeableConcept, Observation.category*/
+    $DQACodeableConcept := $readFile('SampledResources.json')[resourceType = 'Observation'].category.{
+      'resourceType' : %.resourceType
+      ,'resourceId' : %.id
+      ,'path' : 'Observation.category'
+      ,'text' : $exists(text) ? text : ''
+      ,'system' : $exists(*.system) ? *.system : ''
+      ,'code' : $exists(*.code) ? *.code : ''
+      ,'version' : $exists(*.version) ? *.version : ''
+      ,'display' : $exists(*.display) ? *.display : ''
+      ,'userSelected' : $exists(*.userSelected) ? *.userSelected : ''
+    };
+
+    $writeFile([$readFile('DQACodeableConcept.json'),$DQACodeableConcept],'DQACodeableConcept.json');
+
+  /*Test27 - CodeableConcept, Observation.code*/
+
+    $DQACodeableConcept := $readFile('SampledResources.json')[resourceType = 'Observation'].code.{
+      'resourceType' : %.resourceType
+      ,'resourceId' : %.id
+      ,'path' : 'Observation.code'
+      ,'text' : $exists(text) ? text : ''
+      ,'system' : $exists(*.system) ? *.system : ''
+      ,'code' : $exists(*.code) ? *.code : ''
+      ,'version' : $exists(*.version) ? *.version : ''
+      ,'display' : $exists(*.display) ? *.display : ''
+      ,'userSelected' : $exists(*.userSelected) ? *.userSelected : ''
+    };
+
+    $writeFile([$readFile('DQACodeableConcept.json'),$DQACodeableConcept],'DQACodeableConcept.json');
+
+  /*Test30 - ReferenceReference - PractitionerRole.location*/
+    $DQAReferenceReference := $readFile('SampledResources.json')[resourceType = 'PractitionerRole'].location.{
+      'resourceType' : %.resourceType
+      ,'resourceId' : %.id
+      ,'path' : 'PractitionerRole.location'
+      ,'reference' : $exists(reference) ? reference : ''
+      ,'type' : $exists(type) ? type : ''
+      ,'display' : $exists(display) ? display : ''
+    };
+
+    $writeFile([$readFile('DQAReferenceReference.json'),$DQAReferenceReference],'DQAReferenceReference.json');
+
+  /*Test30 - ReferenceIdentifier - PractitionerRole.location*/
+    $DQAReferenceReference := $readFile('SampledResources.json')[resourceType = 'PractitionerRole'].location.{
+      'resourceType' : %.resourceType
+      ,'resourceId' : %.id
+      ,'path' : 'PractitionerRole.location'
+      ,'use' : $exists(use) ? use : ''
+      ,'system' : $exists(system) ? system : ''
+      ,'value' : $exists(value) ? value : ''
+    };
+
+    $writeFile([$readFile('DQAReferenceIdentifier.json'),$DQAReferenceIdentifier],'DQAReferenceIdentifier.json');
+
+  /*Test31 - ReferenceReference - PractitionerRole.healthcareService*/
+    $DQAReferenceReference := $readFile('SampledResources.json')[resourceType = 'PractitionerRole'].healthcareService.{
+      'resourceType' : %.resourceType
+      ,'resourceId' : %.id
+      ,'path' : 'PractitionerRole.location'
+      ,'reference' : $exists(reference) ? reference : ''
+      ,'type' : $exists(type) ? type : ''
+      ,'display' : $exists(display) ? display : ''
+    };
+
+    $writeFile([$readFile('DQAReferenceReference.json'),$DQAReferenceReference],'DQAReferenceReference.json');
+
+  /*Test31 - ReferenceIdentifier - PractitionerRole.healthcareService*/
+    $DQAReferenceReference := $readFile('SampledResources.json')[resourceType = 'PractitionerRole'].healthcareService.{
+      'resourceType' : %.resourceType
+      ,'resourceId' : %.id
+      ,'path' : 'PractitionerRole.location'
+      ,'use' : $exists(use) ? use : ''
+      ,'system' : $exists(system) ? system : ''
+      ,'value' : $exists(value) ? value : ''
+    };
+
+    $writeFile([$readFile('DQAReferenceIdentifier.json'),$DQAReferenceIdentifier],'DQAReferenceIdentifier.json');
+
+  /*Test32 - DateTime elements - Encounter.period*/
+    $DQADateTime := $readFile('SampledResources.json')[resourceType = 'Encounter'].period.{
+      'resourceType' : %.resourceType
+      ,'resourceId' : %.id
+      ,'path' : 'Encounter.period'
+      ,'start' : $exists(start) ? start : ''
+      ,'end' : $exists(end) ? end : ''
+    };
+
+    $writeFile([$readFile('DQADateTime.json'),$DQADateTime],'DQADateTime.json');
+
+)

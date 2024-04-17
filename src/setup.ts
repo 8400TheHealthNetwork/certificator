@@ -109,3 +109,20 @@ export const checkValidator = () => {
     console.log('Not running in SEA mode, skipping validator jar check');
   }
 };
+
+export const checkMaps = () => {
+  if (sea.isSea()) {
+    if (!fs.existsSync('maps')) {
+      fs.mkdirSync('maps');
+      const fileList = JSON.parse(Buffer.from(sea.getAsset('mapFileList.json')).toString());
+      if (Array.isArray(fileList) && typeof fileList[0] === 'string') {
+        fileList.forEach(filename => {
+          const filePath: string = path.join('maps', filename);
+          fs.writeFileSync(filePath, Buffer.from(sea.getAsset(filename)));
+        });
+      }
+    }
+  } else {
+    console.log('Not running in SEA mode, skipping map folder check');
+  }
+};

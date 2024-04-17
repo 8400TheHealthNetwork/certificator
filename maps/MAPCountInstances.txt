@@ -1,0 +1,12 @@
+/*Count instances*/
+
+(
+  /*Define search function*/
+    $CountInstances := function($resourceType){([2013..2024].
+      ($y := $;[1..12].($join([$string($y),$pad($string($),-2,'0')],'-'))).
+        ($date := $;$search($resourceType, {'_summary': 'count', 'date': $date}).
+          {'resourceType' : $resourceType, 'month': $date, 'total': total}))};
+
+  /*Loop over certification relevant resource types*/
+   $readFile('ILCoreResourceTypesSearchParamsPaths.json').{'resourceType':resourceType}.$CountInstances(resourceType)
+)

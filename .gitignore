@@ -2,6 +2,7 @@ io
 assets
 sea-config.json
 *.jar
+mapFileList.json
 
 # Logs
 logs
