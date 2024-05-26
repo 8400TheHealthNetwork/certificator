@@ -23,6 +23,7 @@
     "dotenv": "^16.4.5",
     "fs": "^0.0.1-security",
     "fume-fhir-converter": "^2.1.2",
+    "json2md": "^2.0.1",
     "path": "^0.12.7",
     "tar": "^6.2.0",
     "temp": "^0.9.4"
