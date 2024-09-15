@@ -1,0 +1,6 @@
+/*This map Assert Content-Type='application/fhir+json'*/
+(
+  $contains(
+    ($readFile('getCapabilityStatement.json').headers.'content-type')
+    ,'application/fhir+json')
+)

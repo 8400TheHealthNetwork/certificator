@@ -1,0 +1,4 @@
+/*This map checks if the response for fetching the serveres CapabilityStatement indludes status = 200*/
+(
+  $readFile('getCapabilityStatement.json').status = 200
+)

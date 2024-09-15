@@ -1,0 +1,43 @@
+/*This map generates a bat file that runs the java validator for the desired resource type (and other params)*/
+(
+  $ValidatorCmd := function($ValidatorPath, $ResourcesPath, $ResourcesFileName, $resourceType, $IGidORurl, $ProfileUrl)
+    {(
+      $ValidationString := (
+          'cd ' & $ValidatorPath & '\n'
+          & 'java -jar validator_cli.jar '
+          & $ResourcesPath & '\\' & $ResourcesFileName
+          & ' -output ' & $ResourcesPath & '\\ValidationResults-' & $resourceType & '.json'
+          & ' -ig ' & $IGidORurl
+          & ' -profile ' & $ProfileUrl
+          & ' -show-times'
+          /*& ' -Dfile.encoding=UTF-8'*/ /*WARNING: Default file encoding is windows-1255 which may cause unexpected results. To fix this issue, run this program with the parameter '-Dfile.encoding=UTF-8' Future releases may not be able to run at all with encoding windows-1255*/
+          & ' -tx n/a' /*Use parameter '-tx n/a' to run without using terminology services to validate LOINC, SNOMED, ICD-X etc. Error = org.hl7.fhir.exceptions.FHIRException: Error fetching the server's capability statement: Connect timed out*/
+          & ' -txLog ' &$ResourcesPath& '/ValidationLog.txt \n\n'
+      );
+      
+      (
+        /*Add validation string and timestamp to log */
+        'cd ' & $ValidatorPath & '\n'
+        & 'echo Validation started on => Date %date% Time %time% >> ValidationLog.txt 2>&1 \n'
+        & 'echo Validation string is => ' & $trim($ValidationString) & ' >> ValidationLog.txt 2>&1 \n'
+        & $ValidationString
+        & 'echo Validation finished on => Date %date% Time %time% >> ValidationLog.txt 2>&1 \n'
+      )
+    )};
+
+  $ValidatorCmds := $.$ValidatorCmd(ValidatorPath, ResourcesPath, ResourcesFileName, resourceType, IGidORurl, ProfileUrl);
+
+  $writeFile($join($ValidatorCmds, '\n'),'ValidatorCmd-'&$.resourceType&'.bat')
+)
+
+/*Sample input*/
+/*[*/
+	/*{*/
+		/*"ValidatorPath": "C:/\/certificator"*/
+		/*,"ResourcesPath": "C:/\/certificator/\/io"*/
+		/*,"resourceType": "CapabilityStatement"*/
+		/*,"ResourcesFileName": "[CapabilityStatement]_[*].json"*/
+		/*,"IGidORurl": ""*/
+		/*,"ProfileUrl": ""*/
+	/*}*/
+/*]*/

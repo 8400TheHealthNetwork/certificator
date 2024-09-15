@@ -1,0 +1,90 @@
+{
+  "actions": [
+    {
+      "id": "get-metadata",
+      "description": "GET /metadata",
+      "mapping": "getMetadata"
+    },
+    {
+      "id": "metadata-http-200",
+      "description": "Assert HTTP status=200",
+      "mapping": "isMetaDataHttp200" 
+    },
+    {
+      "id": "metadata-content-type",
+      "description": "Assert Content-Type='application/fhir+json'",
+      "mapping": 
+    },
+    {
+      "id": "capstat-validate",
+      "description": "Pass input to validation map for CapabilityStatement",
+      "mapping": "capstatValidate"
+    },
+    {
+      "id": "capstat-validation-success",
+      "description": "Assert validation succeeded",
+      "mapping": "isCapstatValidationSuccess"
+    },
+    {
+      "id": "validate-resourceType",
+      "description": "Run validator on desired resourceType with additional input params",
+      "mapping": "validateResourceType"
+    }
+  ],
+  "kits": [
+    {
+      "id": "data-portability",
+      "name": "IL Data Portability Law",
+      "description": "This test kit is meant to provide information on the level of conformance to the Israeli regulation regarding health data portability",
+      "children": [
+        {
+          "id": "cap-stat",
+          "name": "CapabilityStatement",
+          "children": [
+            {
+              "id": "capstat-exists",
+              "name": "Existence",
+              "children": [
+                {
+                  "id": "test1",
+                  "name": "Check there is a CapabilityStatement",
+                  "description": "Check there is a CapabilityStatement",
+                  "details": "Check GET metadata returns a CapabilityStatement.\n Applications SHALL return a resource that describes the functionality of the server end-point.\n https://hl7.org/fhir/R4/http.html#capabilities \n RESTful servers are required to provide this resource on demand. Servers SHALL specify what resource types and operations are supported \n https://hl7.org/fhir/R4/capabilitystatement.html#notes",
+                  "actions": [
+                    "get-metadata",
+                    "metadata-http-200"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "capstat-validity",
+              "name": "Validity",
+              "children": [
+                {
+                  "id": "capstat-content-type",
+                  "name": "CapabilityStatement Content-Type",
+                  "description": "IF CapabilityStatement was returned, check Content-Type validity",
+                  "details": "The response headers from /metadata must include Content-Type: application/fhir+json",
+                  "actions": [
+                    "metadata-content-type"
+                  ]
+                },
+                {
+                  "id": "capstat-base-valid",
+                  "name": "Base Validation",
+                  "description": "IF there is a CapabilityStatement - validate it against the base resource",
+                  "details": "https://hl7.org/fhir/R4/capabilitystatement.html",
+                  "actions": [
+                    "capstat-validate",
+                    "capstat-validation-success"
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

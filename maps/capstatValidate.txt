@@ -1,0 +1,10 @@
+[
+	{
+		"ValidatorPath": "C:/\/certificator"
+		,"ResourcesPath": "C:/\/certificator/\/io"
+		,"resourceType": "CapabilityStatement"
+		,"ResourcesFileName": "[CapabilityStatement]_[*].json"
+		,"IGidORurl": ""
+		,"ProfileUrl": ""
+	}
+]
