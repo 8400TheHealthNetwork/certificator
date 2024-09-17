@@ -4,7 +4,7 @@
   "description": "FHIR Certificator for Israeli MoH",
   "scripts": {
     "build": "tsc -b",
-    "serve": "node dist/app.js",
+    "serve": "node dist/src/app.js",
     "start": "npm run build && npm run serve",
     "dev": "cross-env NODE_ENV=dev nodemon -w src --exec \"npm run start\"",
     "download-assets": "node dist/downloadAssets.js",
