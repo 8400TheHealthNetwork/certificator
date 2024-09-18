@@ -12,7 +12,7 @@ import { IConfig } from 'fume-fhir-converter';
 import { input, password, select } from '@inquirer/prompts';
 import { getList } from './getPackageList';
 
-export const checkEnv = async (config: IConfig): Promise<IConfig> => {
+export const ensureEnv = async (config: IConfig): Promise<IConfig> => {
   if (!fs.existsSync('.env')) {
     console.log('.env file is missing, let\'s create one');
     const FHIR_SERVER_BASE: string = await input({ message: 'What is the FHIR server address?' });
