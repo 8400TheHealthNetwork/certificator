@@ -6,6 +6,6 @@ export const setFumeServer = (server: IFumeServer<IConfig>): void => {
   fumeServer = server;
 };
 
-export const getFumeServer = () => {
+export const getFumeServer = (): IFumeServer<IConfig> | undefined => {
   return fumeServer;
 };

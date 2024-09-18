@@ -12,7 +12,7 @@ import { IConfig } from 'fume-fhir-converter';
 import { input, password, select } from '@inquirer/prompts';
 import { getList } from './getPackageList';
 
-export const checkEnv = async (config: IConfig): Promise<IConfig> => {
+export const ensureEnv = async (config: IConfig): Promise<IConfig> => {
   if (!fs.existsSync('.env')) {
     console.log('.env file is missing, let\'s create one');
     const FHIR_SERVER_BASE: string = await input({ message: 'What is the FHIR server address?' });
@@ -93,8 +93,6 @@ export const checkPackages = () => {
         fs.moveSync(tempDirectory, packagePath);
       }
     });
-  } else {
-    console.log('Not running in SEA mode, skipping package check');
   }
 };
 
@@ -105,8 +103,6 @@ export const checkValidator = () => {
       const jarFile = sea.getAsset('validator_cli.jar');
       fs.writeFileSync('validator_cli.jar', Buffer.from(jarFile));
     }
-  } else {
-    console.log('Not running in SEA mode, skipping validator jar check');
   }
 };
 
@@ -122,7 +118,5 @@ export const checkMaps = () => {
         });
       }
     }
-  } else {
-    console.log('Not running in SEA mode, skipping map folder check');
   }
 };

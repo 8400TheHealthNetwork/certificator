@@ -1,0 +1,55 @@
+#root {
+  max-width: 1000px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.header {
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+}
+.header-title {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 20px;
+  flex-grow: 2;
+}
+.title-text {
+  font-weight: 700;
+  font-size: 36px;
+}
+.subtitle-text {
+  font-weight: 300;
+  font-size: 30px;
+}
+.logo {
+  height: 10em;
+}
+.flameInline {
+  float: none; 
+  margin: 0px; 
+  padding: 0px; 
+  vertical-align: bottom;
+  width: 18px;
+  height: 18px;
+}
+.israel-logo {
+  height: 8em;
+  padding-left: 1em;
+  padding-top: 1.9em;
+}
+
+.card {
+  padding: 2em;
+  background-color: #f1f7ff;
+}
+
+.copyrigh-footer {
+  color: #888;
+  font-size: 12px;
+}
