@@ -93,8 +93,6 @@ export const checkPackages = () => {
         fs.moveSync(tempDirectory, packagePath);
       }
     });
-  } else {
-    console.log('Not running in SEA mode, skipping package check');
   }
 };
 
@@ -105,8 +103,6 @@ export const checkValidator = () => {
       const jarFile = sea.getAsset('validator_cli.jar');
       fs.writeFileSync('validator_cli.jar', Buffer.from(jarFile));
     }
-  } else {
-    console.log('Not running in SEA mode, skipping validator jar check');
   }
 };
 
@@ -122,7 +118,5 @@ export const checkMaps = () => {
         });
       }
     }
-  } else {
-    console.log('Not running in SEA mode, skipping map folder check');
   }
 };
