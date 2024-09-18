@@ -8,6 +8,7 @@ import { version as CERTIFICATOR_VERSION } from '../package.json';
 import type { Request, Response, NextFunction } from 'express';
 
 let configObject: IConfig;
+const port: number = 8401;
 
 // middleware function for handling healthcheck api routes
 const reRouter = async (req: Request, res: Response, next: NextFunction) => {
@@ -34,6 +35,7 @@ async function init () {
   try {
     // parse env file and set config object
     const newConfig: IConfig = await ensureEnv(config);
+    newConfig.SERVER_PORT = port;
     configObject = newConfig;
     // create a fume server
     const fumeServer = new FumeServer<IConfig>();
@@ -53,7 +55,7 @@ async function init () {
     await fumeServer.warmUp(newConfig);
     // load and register maps
     loadMapFiles();
-    console.log('Engine ready :)');
+    console.log(`Engine ready and listening on port ${port}`);
   } catch (err) {
     console.error('Error in engine warmup: ', err);
   }
