@@ -1,0 +1,160 @@
+.dropdown {
+  display: flex;
+  align-items: center;
+}
+.dropdown-title {
+  font-weight: 500;
+  font-size: 24px;
+}
+.Dropdown-root {
+  margin-left: 1em;
+  width: 100%;
+  max-width: 400px;
+}
+.Dropdown-control {
+  border: 1px solid #eee;
+  color: #0c3058;
+  text-align: start;
+}
+.Dropdown-menu {
+ border: 1px solid #eee;
+}
+.Dropdown-option {
+  color: #0c3058;
+  text-align: start;
+}
+.status-title {
+  font-weight: 500;
+  font-size: 24px;
+  flex-grow: 2;
+  text-align: end;
+}
+.description {
+  text-align: start;
+  padding: 8px 0 2em 0;
+  font-weight: 100;
+}
+.content {
+  display: flex;
+  width: 100%;
+  padding-bottom: 2em;
+}
+.checkbox {
+    font-size: 16px;
+    user-select: none;
+    box-sizing: content-box;
+    text-align: start;
+    flex: 1 1 0px;
+    width: 0;
+  }
+  
+  .checkbox .tree,
+  .checkbox .tree-node,
+  .checkbox .tree-node-group {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .checkbox .tree-branch-wrapper,
+  .checkbox .tree-node__leaf {
+    outline: none;
+  }
+  
+  .checkbox .tree-node {
+    cursor: pointer;
+    display: flex;
+    padding: 2px;
+    align-items: center;
+  }
+  
+  .checkbox .tree-node .name:hover {
+    background: #0c2f5810
+  }
+  
+  .checkbox .checkbox-icon {
+    margin: 0 5px;
+    vertical-align: middle;
+  }
+
+  .item {
+    display: flex;
+    width: 100%;
+  }
+  
+  .checkbox button {
+    border: none;
+    background: transparent;
+    cursor: pointer;
+  }
+  
+  .checkbox .arrow {
+    margin-left: 5px;
+    vertical-align: middle;
+  }
+  
+  .checkbox .arrow--open {
+    transform: rotate(90deg);
+  }
+
+  .name {
+    padding-right: 6px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex-shrink: 100;
+  }
+
+  .passed {
+    color: green;
+  }
+
+  .failed {
+    color: red;
+  }
+
+  /* .abort {
+    background-color: red;
+  }
+
+  .run {
+    background-color: green;
+  } */
+
+.loader {
+  width: 1em;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: 
+    radial-gradient(farthest-side,#00b0d2 94%,#0000) top/2px 2px no-repeat,
+    conic-gradient(#0000 30%,#00b0d2);
+  -webkit-mask: radial-gradient(farthest-side,#0000 calc(100% - 2px),#000 0);
+  animation: l13 1s infinite linear;
+}
+@keyframes l13{ 
+  100%{transform: rotate(1turn)}
+}
+
+.properties {
+  flex: 2 1 0px;
+  width: 0;
+  background-color: #fff;
+  box-shadow: 0 2px 7px rgba(0, 0, 0, .078);
+  text-align: start;
+  display: flex;
+  flex-direction: column;
+  padding: 1em;
+  margin-left: 1em;
+}
+
+.property {
+  max-width: 100%;
+  font-size: 16px;
+}
+.property-key {
+  font-weight: 600;
+}
+.property-value {
+  font-weight: 300;
+  white-space: pre-line;
+}

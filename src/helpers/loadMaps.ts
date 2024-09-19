@@ -1,7 +1,4 @@
-/**
- * © Copyright Outburn Ltd. 2022-2024 All Rights Reserved
- *   Project name: FUME
- */
+
 import fs from 'fs-extra';
 import path from 'path';
 import { getFumeServer } from '../config';
@@ -14,7 +11,6 @@ const toFunction = (mapping: string) => {
 };
 
 const cacheMapping = (mappingId: string, mappingExpr: string) => {
-  // fork: os
   const mappingFunc = toFunction(mappingExpr);
   const cacheEntry = {
     expression: mappingExpr,
@@ -22,9 +18,20 @@ const cacheMapping = (mappingId: string, mappingExpr: string) => {
   };
   const { compiledMappings } = getFumeServer().getCache();
   compiledMappings.set(mappingId, cacheEntry);
+  console.log(`Registered mapping '${mappingId}'`);
+};
+
+const clearMappingCache = () => {
+  const mappingCache = getFumeServer().getCache().compiledMappings;
+  const mappingIds = mappingCache.keys();
+  mappingIds.forEach((key: string) => {
+    mappingCache.remove(key);
+  });
+  console.log('Cleared mapping cache');
 };
 
 export const loadMapFiles = () => {
+  clearMappingCache();
   const folderPath: string = path.resolve('maps');
   if (fs.existsSync(folderPath)) {
     const list: string[] = fs.readdirSync(folderPath);

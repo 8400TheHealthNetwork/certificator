@@ -12,7 +12,7 @@ import { IConfig } from 'fume-fhir-converter';
 import { input, password, select } from '@inquirer/prompts';
 import { getList } from './getPackageList';
 
-export const checkEnv = async (config: IConfig): Promise<IConfig> => {
+export const ensureEnv = async (config: IConfig): Promise<IConfig> => {
   if (!fs.existsSync('.env')) {
     console.log('.env file is missing, let\'s create one');
     const FHIR_SERVER_BASE: string = await input({ message: 'What is the FHIR server address?' });
@@ -24,8 +24,8 @@ export const checkEnv = async (config: IConfig): Promise<IConfig> => {
       FHIR_SERVER_PW = await password({ message: 'Please enter the password', mask: true });
     }
     const FHIR_VERSION = '4.0.1';
-    const SERVER_PORT: string = await input({ message: 'Please enter a port for the Certificator API', default: '42420' });
-    const FHIR_SERVER_TIMEOUT = await input({ message: 'Timeout (in Milliseconds) for FHIR server API calls? (default: 60000)', default: '60000' });
+    const SERVER_PORT: string = await input({ message: 'Please enter a port for the Certificator API (default: 8400)', default: '8400' });
+    const FHIR_SERVER_TIMEOUT = await input({ message: 'Timeout (in Milliseconds) for FHIR server API calls? (default: 30000)', default: '30000' });
 
     const dotEnvFile: string = `
 # FHIR Server address
@@ -93,8 +93,6 @@ export const checkPackages = () => {
         fs.moveSync(tempDirectory, packagePath);
       }
     });
-  } else {
-    console.log('Not running in SEA mode, skipping package check');
   }
 };
 
@@ -105,8 +103,6 @@ export const checkValidator = () => {
       const jarFile = sea.getAsset('validator_cli.jar');
       fs.writeFileSync('validator_cli.jar', Buffer.from(jarFile));
     }
-  } else {
-    console.log('Not running in SEA mode, skipping validator jar check');
   }
 };
 
@@ -122,7 +118,5 @@ export const checkMaps = () => {
         });
       }
     }
-  } else {
-    console.log('Not running in SEA mode, skipping map folder check');
   }
 };
