@@ -10,6 +10,7 @@ logs
 npm-debug.log*
 
 dist
+bin
 
 # Runtime data
 pids
