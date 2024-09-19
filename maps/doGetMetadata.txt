@@ -17,13 +17,13 @@
         
         $writeFile($readResponse,'getCapabilityStatement.json')
   
-    /*Prep completed msg*/
+  /*Prep completed msg*/
     ;$msgCompleted :={
       'statusCode':'MapCompleted'
       ,'statusText':'Map Completed'
     }
 
-  /*Write pass/fail msg based on test results*/
+  /*Write completed msg*/
     ;$writeFile($msgCompleted,'actionStatus_doGetMetadata.json')
   )}
 )
