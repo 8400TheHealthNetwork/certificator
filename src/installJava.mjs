@@ -4,7 +4,7 @@ import { x } from 'tar';
 import fs from 'fs-extra';
 import AdmZip from 'adm-zip';
 import { $ } from 'execa';
-import utils from './utils.js';
+import utils from './utils.mjs';
 const { getJrePath, getJreBin, fetch } = utils;
 
 const unzipDirectory = async (inputFilePath, outputDirectory) => {

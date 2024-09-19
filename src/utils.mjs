@@ -37,7 +37,7 @@ const getJreVersionPath = () => {
   return undefined;
 };
 
-const getJreBin = () => {
+export const getJreBin = () => {
   const versionPath = getJreVersionPath();
   if (versionPath) {
     return path.join(versionPath, 'bin', 'java');
@@ -45,11 +45,11 @@ const getJreBin = () => {
   return undefined;
 };
 
-const getValidatorPath = () => {
+export const getValidatorPath = () => {
   return path.join(workingDir, 'bin', 'validator_cli.jar');
 };
 
-const getIoFolderPath = () => {
+export const getIoFolderPath = () => {
   return path.join(workingDir, 'io');
 };
 
