@@ -1,6 +1,31 @@
-/*This map Assert Content-Type='application/fhir+json'*/
+/*isCapstatValidationSuccess - This map Asserts CapabilityStatement validtion is done on the correct file & did not raise any errors*/
 (
-  $contains(
-    ($readFile('getCapabilityStatement.json').headers.'content-type')
-    ,'application/fhir+json')
+    /*Write initial map status for UI to status file*/
+    {
+      'statusCode':'MapStarted'
+      ,'statusText':'Map started'
+    } ~> $writeFile('actionStatus_isCapstatValidationSuccess.json')
+
+  /*Perform test*/
+    ;$testResult := (
+      /*Check we are evluating a file that looks like the validation results of CapStat*/
+        ($readFile('ValidationResults-CapabilityStatement.json').extension[url='http://hl7.org/fhir/StructureDefinition/operationoutcome-file'].valueString~>$contains('[CapabilityStatement]_['))
+      and
+      /*check there are no errors*/
+        $not('error' in $ValidationResultsCapabilityStatement.issue.severity)
+      )
+  
+  /*Prep pass & fail msg*/
+    ;$msgPassed :={
+      'statusCode':'MapPassed'
+      ,'statusText':'Map Passed'
+    }
+  
+    ;$msgFailed := {
+      'statusCode':'MapFailed'
+      ,'statusText':'Map Failed'
+    }
+
+  /*Write pass/fail msg based on test results*/
+    ;$writeFile(($testResult ? $msgPassed : $msgFailed),'actionStatus_isCapstatValidationSuccess.json')
 )

@@ -1,0 +1,27 @@
+/*isMetadataContentTypeOk - This map Assert Content-Type='application/fhir+json'*/
+(
+    /*Write initial map status for UI to status file*/
+    {
+      'statusCode':'MapStarted'
+      ,'statusText':'Map started'
+    } ~> $writeFile('actionStatus_isMetadataResourceTypeOk.json')
+
+  /*Perform test*/
+    ;$testResult :=   $contains(
+      ($readFile('getCapabilityStatement.json').headers.'content-type')
+    ,'application/fhir+json')
+  
+  /*Prep pass & fail msg*/
+    ;$msgPassed :={
+      'statusCode':'MapPassed'
+      ,'statusText':'Map Passed'
+    }
+  
+    ;$msgFailed := {
+      'statusCode':'MapFailed'
+      ,'statusText':'Map Failed'
+    }
+
+  /*Write pass/fail msg based on test results*/
+    ;$writeFile(($testResult ? $msgPassed : $msgFailed),'actionStatus_isMetadataContentTypeOk.json')
+)
