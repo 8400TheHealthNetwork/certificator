@@ -13,7 +13,7 @@
     {
       "id": "metadata-content-type",
       "description": "Assert Content-Type='application/fhir+json'",
-      "mapping": 
+      "mapping": "isMetadataContentTypeOk"
     },
     {
       "id": "capstat-validate",
@@ -29,6 +29,11 @@
       "id": "validate-resourceType",
       "description": "Run validator on desired resourceType with additional input params",
       "mapping": "validateResourceType"
+    },
+    {
+      "id": "extract-identifiers",
+      "description": "Extract resource identifiers from all sampled instances",
+      "mapping": "doExtractidentifiers"
     }
   ],
   "kits": [

@@ -1,0 +1,28 @@
+/*doExtractidentifiers - extract resource identifiers from all sampled instances*/
+(
+  /*Write initial map status for UI to status file*/
+    {
+      'statusCode':'MapStarted'
+      ,'statusText':'Map started'
+    } ~> $writeFile('actionStatus_doExtractidentifiers.json')
+
+  /*Extract identifiers*/
+    $identifiers := $SampledResources.identifier.system.{
+        'resourceType' : %.%.resourceType
+        ,'resourceId' : %.%.id
+        ,'use' : %.use
+        ,'system' : %.system
+        ,'value' : %.value
+        };
+
+      $$writeFile($identifiers,'DQAidentifiers.json');
+
+  /*Prep completed msg*/
+    ;$msgCompleted :={
+      'statusCode':'MapCompleted'
+      ,'statusText':'Map Completed'
+    }
+
+  /*Write completed msg*/
+    ;$writeFile($msgCompleted,'actionStatus_doExtractidentifiers.json')
+)

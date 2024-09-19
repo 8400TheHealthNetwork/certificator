@@ -1,14 +1,14 @@
-/*isMetaDataHttp200 - This map checks if the response for fetching the serveres CapabilityStatement indludes status = 200*/
+/*isMetadataResourceTypeOk - This map Asserts resourceType='CapabilityStatement'*/
 (
   /*Write initial map status for UI to status file*/
     {
       'statusCode':'MapStarted'
       ,'statusText':'Map started'
-    } ~> $writeFile('actionStatus_isMetaDataHttp200.json')
+    } ~> $writeFile('actionStatus_isMetadataResourceTypeOk.json')
 
   /*Perform test*/
-    ;$testResult := $readFile('getCapabilityStatement.json').status = 200
-
+    ;$testResult := $readFile('getCapabilityStatement.json').data.resourceType='CapabilityStatement'
+  
   /*Prep pass & fail msg*/
     ;$msgPassed :={
       'statusCode':'MapPassed'
@@ -21,5 +21,5 @@
     }
 
   /*Write pass/fail msg based on test results*/
-    ;$writeFile(($testResult ? $msgPassed : $msgFailed),'actionStatus_isMetaDataHttp200.json')
+    ;$writeFile(($testResult ? $msgPassed : $msgFailed),'actionStatus_isMetadataResourceTypeOk.json')
 )

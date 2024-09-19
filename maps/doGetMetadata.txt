@@ -1,0 +1,29 @@
+/*doGetMetadata - This map trys to fetch the provided server CapabilityStatement and saves it to file for later steps*/
+(
+  /*Write initial map status for UI to status file*/
+    {
+      'statusCode':'MapStarted'
+      ,'statusText':'Map started'
+    } ~> $writeFile('actionStatus_doGetMetadata.json')
+  
+  /*Get metadata and write it to file*/
+    $getCapabilityStatement := function($baseUrl){(
+      $readResponse := $http({
+            'method':'get',
+            'baseUrl': $baseUrl,
+            'headers' : {'content-type': 'application/fhir+json'},
+            'url': 'metadata'
+            });
+        
+        $writeFile($readResponse,'getCapabilityStatement.json')
+  
+  /*Prep completed msg*/
+    ;$msgCompleted :={
+      'statusCode':'MapCompleted'
+      ,'statusText':'Map Completed'
+    }
+
+  /*Write completed msg*/
+    ;$writeFile($msgCompleted,'actionStatus_doGetMetadata.json')
+  )}
+)
