@@ -1,0 +1,22 @@
+.table-chart-report {
+  padding: 2em;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.table-chart-js {
+  width: 100%;
+}
+
+tr {
+  color: #0c3058 !important;
+}
+
+tr:hover {
+  color: #0c2f58cc !important;
+}
+
+td {
+  text-align: start;
+}
