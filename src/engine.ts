@@ -56,6 +56,7 @@ async function init () {
     // load and register maps
     loadMapFiles();
     console.log(`Engine ready and listening on port ${port}`);
+    process.send('ready');
   } catch (err) {
     console.error('Error in engine warmup: ', err);
   }

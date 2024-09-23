@@ -7,6 +7,7 @@ import cors from 'cors';
 import express from 'express';
 import axios from 'axios';
 import type { Express, Request, Response } from 'express';
+import chalk from 'chalk';
 
 const app: Express = express();
 const port: number = 8400;
@@ -43,6 +44,11 @@ const isFiletypeChunked = {
 };
 
 const getUiFileFromDisk = (route: string) => {
+  if (route === '/report' || route === '/report/') {
+    route = '/report/index.html';
+  } else if (route === '/') {
+    route = '/index.html';
+  }
   const filePath = path.join(uiDistPath, route);
   let file: Buffer;
   let filename: string;
@@ -52,7 +58,11 @@ const getUiFileFromDisk = (route: string) => {
     return { filename, file };
   } catch {
     if (path.basename(filePath) !== 'index.html') {
-      return getUiFileFromDisk('index.html');
+      if (route.startsWith('/report/')) {
+        return getUiFileFromDisk('report/index.html');
+      } else {
+        return getUiFileFromDisk('index.html');
+      }
     } else {
       return undefined;
     }
@@ -82,9 +92,9 @@ const handler = async (req: Request, res: Response) => {
       // handle healthcheck url
       const engineResponse = await engineApi.get(route);
       res.status(engineResponse.status).json(engineResponse.data);
-    } else if (route.startsWith('/Action/')) {
+    } else if (route.startsWith('/api/')) {
       // handle action call
-      const mappingId: string = route.substring(8);
+      const mappingId: string = route.substring(5);
       console.log(`Mapping: ${mappingId}`);
       res.status(200).send(`Mapping: ${mappingId}`);
     } else {
@@ -101,7 +111,7 @@ const handler = async (req: Request, res: Response) => {
         res.set('Content-Disposition', `inline; filename="${filename}"`);
         if (isFiletypeChunked[extension]) {
           res.set('Accept-Ranges', 'bytes');
-          await res.status(200).write(file);
+          res.status(200).write(file);
           res.end();
         } else {
           res.status(200).send(file);
@@ -134,13 +144,23 @@ const init = async () => {
       console.log('Engine warming up...');
     });
 
-    // setup express app
-    app.use(cors());
-    app.get('*', handler);
-
-    // start listening
-    app.listen(port, () => {
-      console.log(`Certificator listening on port ${port}`);
+    engine.on('message', (message) => {
+      if (message === 'ready') {
+        // setup and start express app after engine is ready
+        app.use(cors());
+        app.get('*', handler);
+        // start listening
+        app.listen(port, () => {
+          console.log(
+            chalk`
+    {green  ╔═════════════════════════════════════════════════════════════════════════════════╗}
+    {green  ║                            Certificator is ready!                               ║}
+    {green  ║                                                                                 ║}
+    {green  ║}     Access the UI by opening this URL in a browser: {yellow http://localhost:${port}/}      {green ║}
+    {green  ╚═════════════════════════════════════════════════════════════════════════════════╝}
+            `);
+        });
+      }
     });
   } catch (err) {
     console.error('Error initializing: ', err);
