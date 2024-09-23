@@ -3,26 +3,26 @@ import { tmpdir as _tmpdir } from 'os';
 import { x } from 'tar';
 import fs from 'fs-extra';
 import AdmZip from 'adm-zip';
-import { $ } from 'execa';
-import utils from './utils.mjs';
+import utils from './utils';
 const { getJrePath, getJreBin, fetch } = utils;
 
-const unzipDirectory = async (inputFilePath, outputDirectory) => {
+const unzipDirectory = async (inputFilePath: string, outputDirectory: string) => {
   const zip = new AdmZip(inputFilePath);
-  return new Promise((resolve, reject) => {
-    zip.extractAllToAsync(outputDirectory, true, (error) => {
+  const res = new Promise((resolve, reject) => {
+    zip.extractAllToAsync(outputDirectory, true, false, (error) => {
       if (error) {
         console.log(error);
         reject(error);
       } else {
         console.log(`Extracted to "${outputDirectory}" successfully`);
-        resolve();
+        resolve(undefined);
       }
     });
   });
+  return await res;
 };
 
-const extractFileName = (contentDisposition) => {
+const extractFileName = (contentDisposition: string | undefined) => {
   let filename = 'OpenJDK11.zip'; // default
   if (typeof contentDisposition === 'string' && contentDisposition.startsWith('attachment;')) {
     const parts = contentDisposition.split(';');
@@ -38,13 +38,13 @@ const extractFileName = (contentDisposition) => {
   return filename;
 };
 
-const download = async (dir, url) => {
+const download = async (dir: string, url: string) => {
   console.log(`Downloading JRE archive from ${url} into ${dir}`);
   fs.ensureDirSync(dir);
   const response = await fetch(url);
   const attachmentName = extractFileName(response?.headers['content-disposition']);
   const destFile = path.join(dir, attachmentName);
-  if (response && response?.data) {
+  if (response?.data) {
     console.log(`Downloaded the JRE archive, saving as '${destFile}'`);
     fs.writeFileSync(destFile, response.data);
     console.log(`Saved JRE archive in: ${destFile}`);
@@ -62,14 +62,14 @@ const move = (file) => {
   return newFile;
 };
 
-const extractTarGz = async (file, dir) => {
+const extractTarGz = async (file: string, dir: string) => {
   console.log(`Extracting ${file} into ${dir}`);
-  x({ file, cwd: dir });
+  await x({ file, cwd: dir });
   fs.unlinkSync(file);
   return dir;
 };
 
-const extract = async (file) => {
+const extract = async (file: string) => {
   const dir = getJrePath();
   fs.ensureDirSync(dir);
   const extension = path.extname(file);
@@ -140,28 +140,23 @@ const install = async () => {
   return await extract(newFile);
 };
 
-const isJavaInstalled = async () => {
-  const jreBin = getJreBin();
-  if (jreBin) {
-    const result = await $`${jreBin} -version`;
-    return result.exitCode === 0;
-  } else {
-    return false;
-  }
+const isJavaInstalled = () => {
+  const jreBin = getJreBin() + '.exe';
+  return fs.existsSync(jreBin);
 };
 
 const ensure = async () => {
   let javaInstalled = false;
   console.log('Checking for JRE...');
-  javaInstalled = await isJavaInstalled();
+  javaInstalled = isJavaInstalled();
   if (!javaInstalled) {
     const javaDir = await installJre();
     if (javaDir) {
-      javaInstalled = await isJavaInstalled();
+      javaInstalled = isJavaInstalled();
     }
   }
   console.log({ javaInstalled });
   return javaInstalled;
 };
 
-ensure();
+export const ensurePromise = ensure();
