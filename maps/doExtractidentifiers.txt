@@ -7,15 +7,19 @@
     } ~> $writeFile('actionStatus_doExtractidentifiers.json')
 
   /*Extract identifiers*/
-    $identifiers := $SampledResources.identifier.system.{
+    /*List all sampled resources file names*/
+      ;$sampledResources := $readDir()[$contains($,/\[.*\]_\[.*\].json/i)]
+    
+    /*For each sampled resource, extract and faltten the identifer and write to disk*/
+      ;$identifiers := $sampledResources.$readFile($).identifier.system.{
         'resourceType' : %.%.resourceType
         ,'resourceId' : %.%.id
         ,'use' : %.use
         ,'system' : %.system
         ,'value' : %.value
-        };
+        }
 
-      $$writeFile($identifiers,'DQAidentifiers.json');
+      ;$writeFile($identifiers,'DQAidentifiers.json')
 
   /*Prep completed msg*/
     ;$msgCompleted :={

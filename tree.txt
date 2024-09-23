@@ -33,7 +33,7 @@
     {
       "id": "extract-identifiers",
       "description": "Extract resource identifiers from all sampled instances",
-      "mapping": "doExtractidentifiers"
+      "mapping": "doExtractIdentifiers"
     }
   ],
   "kits": [
