@@ -1,0 +1,11 @@
+.line-chart-report {
+  padding: 2em;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.line-chart-js {
+  height: 500px;
+  width: 100%;
+}

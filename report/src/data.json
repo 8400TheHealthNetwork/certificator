@@ -1,0 +1,120 @@
+{
+  "charts": [
+    {
+      "id": "11234",
+      "title": "My Table",
+      "type": "table",
+      "columns": [
+        {
+          "property": "name",
+          "label": "Name"
+        },
+        {
+          "property": "deadline",
+          "label": "Deadline"
+        },
+        {
+          "property": "type",
+          "label": "Type"
+        },
+        {
+          "property": "isComplete",
+          "label": "Completed"
+        }
+      ],
+      "data": [
+        {
+          "name": "row 1",
+          "deadline": "22 Mar 2005",
+          "type": "Task",
+          "isComplete": "True"
+        },
+        {
+          "name": "row 2",
+          "deadline": "19 Aug 2024",
+          "type": "Task",
+          "isComplete": "True"
+        },
+        {
+          "name": "row 3",
+          "deadline": "27 Sep 2018",
+          "type": "Task",
+          "isComplete": "False"
+        }
+      ]
+    },
+    {
+      "id": "0",
+      "title": "My Line Report",
+      "type": "line",
+      "data": [
+        {
+          "label": "my label",
+          "value": 20
+        },
+        {
+          "label": "my label 2",
+          "value": 35
+        },
+        {
+          "label": "my label 6",
+          "value": 18
+        },
+        {
+          "label": "my label 2",
+          "value": 42
+        },
+        {
+          "label": "my label 4",
+          "value": 35
+        },
+        {
+          "label": "my label 2",
+          "value": 47
+        },
+        {
+          "label": "my label 3",
+          "value": 55
+        }
+      ]
+    },
+    {
+      "id": "1",
+      "title": "My Pie Report",
+      "type": "pie",
+      "data": [
+        {
+          "label": "my label",
+          "value": 20
+        },
+        {
+          "label": "my label 2",
+          "value": 120
+        },
+        {
+          "label": "my label 3",
+          "value": 55
+        }
+      ]
+    },
+    {
+      "id": "2",
+      "title": "My Pie Report",
+      "type": "pie",
+      "data": [
+        {
+          "label": "my label",
+          "value": 20
+        },
+        {
+          "label": "my label 2",
+          "value": 120
+        },
+        {
+          "label": "my label 3",
+          "value": 55
+        }
+      ]
+    }
+  ]
+}

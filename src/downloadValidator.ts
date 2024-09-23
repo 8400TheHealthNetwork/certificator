@@ -1,5 +1,5 @@
 import fs from 'fs-extra';
-import utils from './utils.mjs';
+import utils from './utils';
 const { fetch, getValidatorPath } = utils;
 
 const validatorUrl = 'https://github.com/hapifhir/org.hl7.fhir.core/releases/latest/download/validator_cli.jar';
@@ -27,4 +27,4 @@ const ensure = async () => {
   return validatorExists;
 };
 
-ensure();
+export const ensurePromise = ensure();
