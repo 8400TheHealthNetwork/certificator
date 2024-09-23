@@ -123,6 +123,17 @@ const handler = async (req: Request, res: Response) => {
   };
 };
 
+const printReadyBox = () => {
+  console.log(
+    chalk`
+    {green  ╔════════════════════════════════════════════════════════════════════════════════╗}
+    {green  ║                            Certificator is ready!                              ║}
+    {green  ║                                                                                ║}
+    {green  ║}     Access the UI by opening this URL in a browser: {yellow http://localhost:${port}/}     {green ║}
+    {green  ╚════════════════════════════════════════════════════════════════════════════════╝}
+    `);
+};
+
 const init = async () => {
   try {
     await ensureEnv(config);
@@ -150,16 +161,7 @@ const init = async () => {
         app.use(cors());
         app.get('*', handler);
         // start listening
-        app.listen(port, () => {
-          console.log(
-            chalk`
-    {green  ╔═════════════════════════════════════════════════════════════════════════════════╗}
-    {green  ║                            Certificator is ready!                               ║}
-    {green  ║                                                                                 ║}
-    {green  ║}     Access the UI by opening this URL in a browser: {yellow http://localhost:${port}/}      {green ║}
-    {green  ╚═════════════════════════════════════════════════════════════════════════════════╝}
-            `);
-        });
+        app.listen(port, printReadyBox);
       }
     });
   } catch (err) {
