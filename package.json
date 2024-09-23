@@ -34,7 +34,7 @@
     "axios": "^1.7.7",
     "chalk": "^4.1.2",
     "dotenv": "^16.4.5",
-    "fs": "^0.0.1-security",
+    "fs-extra": "^11.2.0",
     "fume-fhir-converter": "^2.15.1",
     "json2md": "^2.0.1",
     "path": "^0.12.7",
