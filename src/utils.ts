@@ -6,13 +6,13 @@ const server = axios.create({ timeout: 60000 });
 
 const workingDir = path.resolve('.');
 
-const fetch = async (url) => {
+const fetch = async (url: string) => {
   console.log(`Fetching ${url}...`);
   const res = await server.get(url, { responseType: 'arraybuffer' });
   return res;
 };
 
-const getJrePath = () => {
+export const getJrePath = () => {
   return path.join(workingDir, 'bin', 'jre');
 };
 
