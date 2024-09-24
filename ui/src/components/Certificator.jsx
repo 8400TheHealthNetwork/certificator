@@ -70,7 +70,8 @@ class Certificator extends React.Component {
       if (!this.state.selectedKit || kitId !== this.state.selectedKit.id) return
       const tree = res.data;
       const flatTree = flattenTree(tree);
-      const treeMode = this.state.selectedKit.status === 'completed' ? 'disabled' : 'edit'
+      const selectedKitStatus = this.state.selectedKit.status;
+      const treeMode = (selectedKitStatus === 'completed' || selectedKitStatus === 'aborted') ? 'disabled' : 'edit'
       let checkedTests;
       if (treeMode === 'disabled') {
         checkedTests = /*this.state.checkedTests.length > 0 ? this.state.checkedTests :*/
