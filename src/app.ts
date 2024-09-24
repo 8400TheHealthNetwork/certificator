@@ -8,11 +8,17 @@ import express from 'express';
 import axios from 'axios';
 import type { Express, Request, Response } from 'express';
 import chalk from 'chalk';
+import kits from '../kits.json';
+import jsonata from 'jsonata';
+import type { Expression } from 'jsonata';
+import contentTypeMap from './helpers/contentTypeMap.json';
 
 const app: Express = express();
 const port: number = 8400;
 const workingDir = path.resolve('.');
 const uiDistPath = path.join(workingDir, 'ui', 'dist');
+let getKitTransformer: Expression;
+let getKitstransformer: Expression;
 
 const engineApi = axios.create({
   baseURL: 'http://localhost:8401'
@@ -21,19 +27,6 @@ const engineApi = axios.create({
 // cache for ui files
 const cachedFiles = {};
 
-// map of file extensions to mime types
-const contentTypeMap = {
-  '.ico': 'image/x-icon',
-  '.html': 'text/html; charset=utf-8',
-  '.json': 'application/json; charset=utf-8',
-  '.js': 'application/javascript; charset=utf-8',
-  '.css': 'text/css; charset=utf-8',
-  '.png': 'image/png',
-  '.woff2': 'font/woff2',
-  '.ttf': 'font/ttf',
-  '.svg': 'image/svg+xml'
-};
-
 // file types that should be sent using a write stream
 const isFiletypeChunked = {
   '.js': true,
@@ -41,6 +34,86 @@ const isFiletypeChunked = {
   '.ico': true,
   '.css': true,
   '.svg': true
+};
+
+const getKitStatus = (kitId: string) => {
+  // TODO: implement
+  return 'ready';
+};
+
+const getKits = async (res: Response) => {
+  if (!getKitstransformer) {
+    getKitstransformer = jsonata(`
+      {
+        'kits': kits.{
+          'id': id,
+          'name': name,
+          'description': description,
+          'status': $getKitStatus(id)
+        }[]
+      }`
+    );
+  };
+  const transformed = await getKitstransformer.evaluate(kits, { getKitStatus });
+  res.status(200).json(transformed);
+};
+
+const getKit = async (req: Request, res: Response) => {
+  const kitId: string = req.originalUrl.substring(10);
+  if (!getKitTransformer) {
+    getKitTransformer = jsonata(`
+      (
+        $actionsMap := actions{
+          id: description
+        };
+  
+        kits[id=$kitId].{
+          'children': children.{
+            'id': id,
+            'name': name,
+            'metadata': description ? {
+              'description': description,
+              'status': 'ready'
+            },
+            'children': children.{
+              'id': id,
+              'name': name,
+              'metadata': {
+                'status': 'ready'
+              },
+              'children': children.{
+                'id': id,
+                'name': name,
+                'metadata': {
+                  'Description': description,
+                  'Status': 'ready',
+                  'Details': details,
+                  'Actions': '\n' & (actions#$i.(
+                    $string($i + 1) & '. ' & $lookup($actionsMap, $) & ' (ready)'
+                  ) ~> $join( '\n'))
+                }
+              }[]
+            }[]
+          }[]
+        }
+      )
+    `);
+  };
+  const transformed = await getKitTransformer.evaluate(kits, { kitId });
+  res.status(200).json(transformed);
+};
+
+const runKit = async (req: Request, res: Response) => {
+  res.status(202).send('Accepted');
+};
+
+const abortRun = async (req: Request, res: Response) => {
+  res.status(202).send('Accepted');
+};
+
+const stashRun = async (req: Request, res: Response) => {
+  // move current run dir into stash and clear it
+  res.status(200).send('Stashed');
 };
 
 const getUiFileFromDisk = (route: string) => {
@@ -86,17 +159,19 @@ const getContent = (route: string) => {
 };
 
 const handler = async (req: Request, res: Response) => {
-  if (req.method.toLowerCase() === 'get') {
-    const route = req.originalUrl;
+  const route = req.originalUrl;
+  const method = req.method.toLowerCase();
+  if (method === 'get') {
     if (route === '/health') {
       // handle healthcheck url
       const engineResponse = await engineApi.get(route);
       res.status(engineResponse.status).json(engineResponse.data);
     } else if (route.startsWith('/api/')) {
-      // handle action call
-      const mappingId: string = route.substring(5);
-      console.log(`Mapping: ${mappingId}`);
-      res.status(200).send(`Mapping: ${mappingId}`);
+      if (route === '/api/kits') {
+        await getKits(res);
+      } else if (route.startsWith('/api/kits/')) {
+        await getKit(req, res);
+      }
     } else {
       // handle all else (assuming it's a ui file)
       const content = getContent(route);
@@ -120,7 +195,28 @@ const handler = async (req: Request, res: Response) => {
         res.status(404).send('Not found');
       }
     }
+  } else if (method === 'post') {
+    if (route === '/api/kits/$run') {
+      await runKit(req, res);
+    } else if (route === '/api/kits/$abort') {
+      await abortRun(req, res);
+    } else if (route === '/api/kits/$stash') {
+      await stashRun(req, res);
+    } else {
+      res.status(404).send('Not found');
+    }
   };
+};
+
+const printReadyBox = () => {
+  console.log(
+    chalk`
+    {green  ╔════════════════════════════════════════════════════════════════════════════════╗}
+    {green  ║                            Certificator is ready!                              ║}
+    {green  ║                                                                                ║}
+    {green  ║}     Access the UI by opening this URL in a browser: {yellow http://localhost:${port}/}     {green ║}
+    {green  ╚════════════════════════════════════════════════════════════════════════════════╝}
+    `);
 };
 
 const init = async () => {
@@ -148,18 +244,11 @@ const init = async () => {
       if (message === 'ready') {
         // setup and start express app after engine is ready
         app.use(cors());
+        app.use(express.json({ limit: '50mb', type: ['application/json'] }));
         app.get('*', handler);
+        app.post('*', handler);
         // start listening
-        app.listen(port, () => {
-          console.log(
-            chalk`
-    {green  ╔═════════════════════════════════════════════════════════════════════════════════╗}
-    {green  ║                            Certificator is ready!                               ║}
-    {green  ║                                                                                 ║}
-    {green  ║}     Access the UI by opening this URL in a browser: {yellow http://localhost:${port}/}      {green ║}
-    {green  ╚═════════════════════════════════════════════════════════════════════════════════╝}
-            `);
-        });
+        app.listen(port, printReadyBox);
       }
     });
   } catch (err) {
