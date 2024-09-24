@@ -11,6 +11,7 @@ import temp from 'temp';
 import { IConfig } from 'fume-fhir-converter';
 import { input, password, select } from '@inquirer/prompts';
 import { getList } from './getPackageList';
+import chalk from 'chalk';
 
 export const ensureEnv = async (config: IConfig): Promise<IConfig> => {
   if (!fs.existsSync('.env')) {
@@ -119,4 +120,22 @@ export const checkMaps = () => {
       }
     }
   }
+};
+
+export const ensureRunsDir = () => {
+  if (!fs.existsSync('runs')) {
+    fs.mkdirSync('runs');
+    fs.mkdirSync(path.join('runs', 'current'));
+  }
+};
+
+export const printReadyBox = (port: string) => {
+  console.log(
+    chalk`
+    {green  ╔════════════════════════════════════════════════════════════════════════════════╗}
+    {green  ║                            Certificator is ready!                              ║}
+    {green  ║                                                                                ║}
+    {green  ║}     Access the UI by opening this URL in a browser: {yellow http://localhost:${port}/}     {green ║}
+    {green  ╚════════════════════════════════════════════════════════════════════════════════╝}
+    `);
 };

@@ -12,6 +12,7 @@ npm-debug.log*
 dist
 bin
 snapshots
+runs
 
 # Runtime data
 pids

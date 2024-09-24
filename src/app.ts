@@ -1,145 +1,92 @@
 import config from './serverConfig';
 import fs from 'fs-extra';
-import { ensureEnv, checkPackages, checkValidator, checkMaps } from './setup';
+import { ensureEnv, checkPackages, checkValidator, checkMaps, ensureRunsDir, printReadyBox } from './setup';
+import { getKitTransformer, getKitsTransformer, runWorkflowTransformer } from './helpers/transformers';
 import { fork } from 'node:child_process';
 import path from 'path';
 import cors from 'cors';
 import express from 'express';
 import axios from 'axios';
-import type { Express, Request, Response } from 'express';
-import chalk from 'chalk';
 import kits from '../kits.json';
-import jsonata from 'jsonata';
-import type { Expression } from 'jsonata';
+import { isFiletypeChunked } from './helpers/chunkedFileTypes';
+import { getUiFileFromDisk } from './helpers/getUiFileFromDisk';
+
 import contentTypeMap from './helpers/contentTypeMap.json';
 
-const app: Express = express();
+import type { Express, Request, Response } from 'express';
+
 const port: number = 8400;
+const enginePort: number = 8401;
+
+const app: Express = express();
 const workingDir = path.resolve('.');
-const uiDistPath = path.join(workingDir, 'ui', 'dist');
-let getKitTransformer: Expression;
-let getKitstransformer: Expression;
+const currentRunDir = path.join(workingDir, 'runs', 'current');
+const ioDir = path.join(workingDir, 'io');
 
 const engineApi = axios.create({
-  baseURL: 'http://localhost:8401'
+  baseURL: `http://localhost:${enginePort.toString()}`
 });
 
 // cache for ui files
 const cachedFiles = {};
 
-// file types that should be sent using a write stream
-const isFiletypeChunked = {
-  '.js': true,
-  '.ttf': true,
-  '.ico': true,
-  '.css': true,
-  '.svg': true
-};
-
 const getKitStatus = (kitId: string) => {
-  // TODO: implement
+  const kitStatusFilePath = path.join(currentRunDir, 'kitStatus.json');
+  if (fs.existsSync(kitStatusFilePath)) {
+    const kitStatusFileContent = JSON.parse(fs.readFileSync(kitStatusFilePath).toString());
+    if (kitStatusFileContent?.kitId === kitId) {
+      return kitStatusFileContent?.status;
+    };
+  };
   return 'ready';
 };
 
 const getKits = async (res: Response) => {
-  if (!getKitstransformer) {
-    getKitstransformer = jsonata(`
-      {
-        'kits': kits.{
-          'id': id,
-          'name': name,
-          'description': description,
-          'status': $getKitStatus(id)
-        }[]
-      }`
-    );
-  };
-  const transformed = await getKitstransformer.evaluate(kits, { getKitStatus });
+  const transformed = await getKitsTransformer.evaluate(kits, { getKitStatus });
   res.status(200).json(transformed);
 };
 
 const getKit = async (req: Request, res: Response) => {
   const kitId: string = req.originalUrl.substring(10);
-  if (!getKitTransformer) {
-    getKitTransformer = jsonata(`
-      (
-        $actionsMap := actions{
-          id: description
-        };
-  
-        kits[id=$kitId].{
-          'children': children.{
-            'id': id,
-            'name': name,
-            'metadata': description ? {
-              'description': description,
-              'status': 'ready'
-            },
-            'children': children.{
-              'id': id,
-              'name': name,
-              'metadata': {
-                'status': 'ready'
-              },
-              'children': children.{
-                'id': id,
-                'name': name,
-                'metadata': {
-                  'Description': description,
-                  'Status': 'ready',
-                  'Details': details,
-                  'Actions': '\n' & (actions#$i.(
-                    $string($i + 1) & '. ' & $lookup($actionsMap, $) & ' (ready)'
-                  ) ~> $join( '\n'))
-                }
-              }[]
-            }[]
-          }[]
-        }
-      )
-    `);
-  };
   const transformed = await getKitTransformer.evaluate(kits, { kitId });
   res.status(200).json(transformed);
 };
 
 const runKit = async (req: Request, res: Response) => {
   res.status(202).send('Accepted');
+  const kitId: string = req.body.kitId;
+  const selectedTests: string[] = req.body.selected;
+  const workflow = await runWorkflowTransformer.evaluate(kits, { kitId, selectedTests });
+  fs.ensureDirSync(currentRunDir);
+  fs.writeFileSync(path.join(currentRunDir, 'workflow.json'), JSON.stringify(workflow));
+  fs.writeFileSync(path.join(currentRunDir, 'kitStatus.json'), JSON.stringify({ kitId, status: 'in-progress' }));
 };
 
-const abortRun = async (req: Request, res: Response) => {
-  res.status(202).send('Accepted');
+const abortRun = (res?: Response) => {
+  if (res) res.status(202).send('Accepted');
+  const kitStatusFilePath: string = path.join(currentRunDir, 'kitStatus.json');
+  if (fs.existsSync(kitStatusFilePath)) {
+    const kitStatusFileContent = JSON.parse(fs.readFileSync(kitStatusFilePath).toString());
+    const kitId: string = kitStatusFileContent.kitId;
+    const currentStatus: string = kitStatusFileContent.status;
+    if (currentStatus === 'in-progress') fs.writeFileSync(path.join(currentRunDir, 'kitStatus.json'), JSON.stringify({ kitId, status: 'aborted' }));
+  }
 };
 
-const stashRun = async (req: Request, res: Response) => {
+const stashRun = (res: Response) => {
   // move current run dir into stash and clear it
+  const workflowFilePath = path.join(currentRunDir, 'workflow.json');
+  if (fs.existsSync(workflowFilePath)) {
+    const workflowFileContent = JSON.parse(fs.readFileSync(workflowFilePath).toString());
+    const runTimestamp = workflowFileContent?.timestamp;
+    const stashDir: string = path.join(workingDir, 'runs', runTimestamp);
+    fs.renameSync(currentRunDir, stashDir);
+    fs.copySync(ioDir, path.join(stashDir, 'io'));
+    fs.removeSync(ioDir);
+    fs.ensureDirSync(ioDir);
+    ensureRunsDir();
+  }
   res.status(200).send('Stashed');
-};
-
-const getUiFileFromDisk = (route: string) => {
-  if (route === '/report' || route === '/report/') {
-    route = '/report/index.html';
-  } else if (route === '/') {
-    route = '/index.html';
-  }
-  const filePath = path.join(uiDistPath, route);
-  let file: Buffer;
-  let filename: string;
-  try {
-    file = fs.readFileSync(filePath);
-    filename = path.basename(filePath);
-    return { filename, file };
-  } catch {
-    if (path.basename(filePath) !== 'index.html') {
-      if (route.startsWith('/report/')) {
-        return getUiFileFromDisk('report/index.html');
-      } else {
-        return getUiFileFromDisk('index.html');
-      }
-    } else {
-      return undefined;
-    }
-  }
 };
 
 const getContent = (route: string) => {
@@ -199,24 +146,13 @@ const handler = async (req: Request, res: Response) => {
     if (route === '/api/kits/$run') {
       await runKit(req, res);
     } else if (route === '/api/kits/$abort') {
-      await abortRun(req, res);
+      abortRun(res);
     } else if (route === '/api/kits/$stash') {
-      await stashRun(req, res);
+      stashRun(res);
     } else {
       res.status(404).send('Not found');
     }
   };
-};
-
-const printReadyBox = () => {
-  console.log(
-    chalk`
-    {green  ╔════════════════════════════════════════════════════════════════════════════════╗}
-    {green  ║                            Certificator is ready!                              ║}
-    {green  ║                                                                                ║}
-    {green  ║}     Access the UI by opening this URL in a browser: {yellow http://localhost:${port}/}     {green ║}
-    {green  ╚════════════════════════════════════════════════════════════════════════════════╝}
-    `);
 };
 
 const init = async () => {
@@ -225,6 +161,9 @@ const init = async () => {
     checkPackages();
     checkValidator();
     checkMaps();
+    ensureRunsDir();
+    abortRun();
+
     // TODO: This will not work in SEA mode
     // will need to have engine.js as asset and export to file.
     // + possibly another node.exe will be needed
@@ -248,7 +187,7 @@ const init = async () => {
         app.get('*', handler);
         app.post('*', handler);
         // start listening
-        app.listen(port, printReadyBox);
+        app.listen(port, () => printReadyBox(port.toString()));
       }
     });
   } catch (err) {
