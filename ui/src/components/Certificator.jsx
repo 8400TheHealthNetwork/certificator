@@ -136,6 +136,16 @@ class Certificator extends React.Component {
     ).then(() => this.updateKits());
   }
 
+  async onAbortClicked() {
+    await axios.post(`${getKitsUrl}/$abort`
+    ).then(() => this.updateKits());
+  }
+
+  async onNewClicked() {
+    await axios.post(`${getKitsUrl}/$stash`
+    ).then(() => this.updateKits());
+  }
+
   getCheckedIds() {
     if (this.state.userTreeState) {
       const checkedIds = []
@@ -250,7 +260,7 @@ class Certificator extends React.Component {
         {!this.state.loadingTree &&
           <span>
             {!this.state.runningKit && this.state.treeMode === 'disabled' &&
-              <button className="new" onClick={() => console.log('NEW')}>New</button>
+              <button className="new" onClick={async () => { await this.onNewClicked() }}>New</button>
             }
             {!this.state.runningKit && this.state.treeMode === 'edit' &&
               <button className="run"
@@ -258,7 +268,7 @@ class Certificator extends React.Component {
                 onClick={async () => { await this.onRunClicked() }}>Run</button>
             }
             {this.state.runningKit && this.state.runningKit.id === this.state.selectedKit.id &&
-              <button className="abort" onClick={() => console.log('ABORT')}>Abort</button>
+              <button className="abort" onClick={async () => { await this.onAbortClicked() }}>Abort</button>
             }
           </span>
         }
