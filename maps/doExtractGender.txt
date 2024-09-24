@@ -1,0 +1,33 @@
+// ?
+// doExtractGender - extract Geneder from sampeled Patient instances and write to flat file
+(
+  /*Write initial map status for UI to status file*/
+    {
+      'statusCode':'MapStarted'
+      ,'statusText':'Map started'
+    } ~> $writeFile('actionStatus_doExtractGender.json')
+
+  /*List all sampled resources file names*/
+    ;$sampledResourcesNames := $readDir()[$contains(/\[Patient\]_\[[A-Za-z0-9\-\.]{1,64}\]\.json/)]^($)
+    // ;$count($sampledResourcesNames)
+
+  /*Extract relevant elements from all sampled resources and flatten*/
+    ;$gender := $sampledResourcesNames.$readFile($).gender.{
+      'resourceType' : %.resourceType
+      ,'resourceId' : %.id
+      ,'path' : 'gender'
+      ,'pathValue' : $
+      }
+
+  // /*Write flatten results to folder*/
+    ;$writeFile($gender,'distributionGender.json')
+
+  /*Prep completed msg*/
+    ;$msgCompleted :={
+      'statusCode':'MapCompleted'
+      ,'statusText':'Map Completed'
+    }
+
+  /*Write completed msg*/
+    ;$writeFile($msgCompleted,'actionStatus_doExtractGender.json')
+)
