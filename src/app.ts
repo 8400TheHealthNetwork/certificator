@@ -1,12 +1,11 @@
 import config from './serverConfig';
 import fs from 'fs-extra';
-import { ensureEnv, checkPackages, checkValidator, checkMaps, ensureRunsDir } from './setup';
+import { ensureEnv, checkPackages, checkValidator, checkMaps, ensureRunsDir, printReadyBox } from './setup';
 import { fork } from 'node:child_process';
 import path from 'path';
 import cors from 'cors';
 import express from 'express';
 import axios from 'axios';
-import chalk from 'chalk';
 import kits from '../kits.json';
 import jsonata from 'jsonata';
 import contentTypeMap from './helpers/contentTypeMap.json';
@@ -245,17 +244,6 @@ const handler = async (req: Request, res: Response) => {
   };
 };
 
-const printReadyBox = () => {
-  console.log(
-    chalk`
-    {green  ╔════════════════════════════════════════════════════════════════════════════════╗}
-    {green  ║                            Certificator is ready!                              ║}
-    {green  ║                                                                                ║}
-    {green  ║}     Access the UI by opening this URL in a browser: {yellow http://localhost:${port}/}     {green ║}
-    {green  ╚════════════════════════════════════════════════════════════════════════════════╝}
-    `);
-};
-
 const init = async () => {
   try {
     await ensureEnv(config);
@@ -288,7 +276,7 @@ const init = async () => {
         app.get('*', handler);
         app.post('*', handler);
         // start listening
-        app.listen(port, printReadyBox);
+        app.listen(port, () => printReadyBox(port.toString()));
       }
     });
   } catch (err) {
