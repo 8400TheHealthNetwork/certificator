@@ -1,6 +1,6 @@
 {
   "name": "il-fhir-certificator",
-  "version": "1.7.0",
+  "version": "1.8.0",
   "description": "FHIR Certificator for Israeli MoH",
   "scripts": {
     "clean": "rimraf dist && rimraf ui\\dist && rimraf report\\dist",
@@ -37,6 +37,7 @@
     "fs-extra": "^11.2.0",
     "fume-fhir-converter": "^2.15.1",
     "json2md": "^2.0.1",
+    "jsonata": "^2.0.5",
     "path": "^0.12.7",
     "tar": "^6.2.0",
     "temp": "^0.9.4"

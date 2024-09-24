@@ -12,7 +12,7 @@ import { Anchorme } from 'react-anchorme'
 
 import { MdCheck, MdClose } from "react-icons/md";
 
-const API_URL = 'https://server.develop.fume.health'
+const getKitsUrl = 'http://localhost:8400/api/kits';
 
 class Certificator extends React.Component {
   constructor(props) {
@@ -39,7 +39,7 @@ class Certificator extends React.Component {
   }
 
   async initialLoadKits() {
-    await axios.post(`${API_URL}/Mapping/certMockKits`).then((res) => {
+    await axios.get(getKitsUrl).then((res) => {
       const kits = res.data.kits;
       const runningKit = kits.find(kit => kit.status === 'in-progress');
       const completedKits = kits.filter(kit => kit.status === 'completed');
@@ -66,9 +66,7 @@ class Certificator extends React.Component {
   async initialLoadTree() {
     if (!this.state.selectedKit) return;
     const kitId = this.state.selectedKit.id;
-    await axios.post(`${API_URL}/Mapping/certMockGetKit`,
-      { id: kitId }
-    ).then((res) => {
+    await axios.get(`${getKitsUrl}/${kitId}`).then((res) => {
       if (!this.state.selectedKit || kitId !== this.state.selectedKit.id) return
       const tree = res.data;
       const flatTree = flattenTree(tree);
@@ -97,7 +95,7 @@ class Certificator extends React.Component {
   }
 
   async updateKits() {
-    await axios.post(`${API_URL}/Mapping/certMockKits`).then((res) => {
+    await axios.get(getKitsUrl).then((res) => {
       const kits = res.data.kits;
       const runningKit = kits.find(kit => kit.status === 'in-progress');
       this.setState({
@@ -110,9 +108,7 @@ class Certificator extends React.Component {
   async updateTree() {
     if (!this.state.selectedKit) return;
     const kitId = this.state.selectedKit.id;
-    await axios.post(`${API_URL}/Mapping/certMockGetKit`,
-      { id: kitId }
-    ).then((res) => {
+    await axios.get(`${getKitsUrl}/${kitId}`).then((res) => {
       if (!this.state.selectedKit || kitId !== this.state.selectedKit.id) return
       const tree = res.data;
       const flatTree = flattenTree(tree);
@@ -132,9 +128,9 @@ class Certificator extends React.Component {
 
   async onRunClicked() {
     console.log(this.getCheckedIds())
-    await axios.post(`${API_URL}/Mapping/certMockGetKit`,
+    await axios.post(`${getKitsUrl}/$run`,
       {
-        id: this.state.selectedKit.id,
+        kitId: this.state.selectedKit.id,
         selected: this.getCheckedIds()
       }
     ).then(() => this.updateKits());
