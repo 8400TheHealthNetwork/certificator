@@ -29,3 +29,14 @@ e.g actionStatus_[mapping].json => actionStatus_isMetadataResourceTypeOk.json
 **TBD**
 
 ## Test run
+
+# Orchestrator
+## Deployment
+Running the Certificator (either as the EXE distribution or using `npm start` from the root folder of the project) will spawn two HTTP servers:
+### Orchestrator
+On: `http://localhost:8400`
+This serves both the UI (at the root endpoint) and the orchestration API's (at the `/api/` endpoint).
+The report web page is also served under this port at the  `/report` endpoint.
+### Engine
+On: `http://localhost:8401`
+This is the backend services engine that handles Actions. The Orchestrator API's are communicating with this server in a synchronous manner (running Actions and waiting for them to finish or fail) while exposing an asynchronous API for the UI.
