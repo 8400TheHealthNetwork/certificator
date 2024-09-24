@@ -120,3 +120,10 @@ export const checkMaps = () => {
     }
   }
 };
+
+export const ensureRunsDir = () => {
+  if (!fs.existsSync('runs')) {
+    fs.mkdirSync('runs');
+    fs.mkdirSync(path.join('runs', 'current'));
+  }
+};
