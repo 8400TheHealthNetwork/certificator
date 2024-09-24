@@ -1,97 +1,34 @@
 import config from './serverConfig';
 import fs from 'fs-extra';
 import { ensureEnv, checkPackages, checkValidator, checkMaps, ensureRunsDir, printReadyBox } from './setup';
+import { getKitTransformer, getKitsTransformer, runWorkflowTransformer } from './helpers/transformers';
 import { fork } from 'node:child_process';
 import path from 'path';
 import cors from 'cors';
 import express from 'express';
 import axios from 'axios';
 import kits from '../kits.json';
-import jsonata from 'jsonata';
+import { isFiletypeChunked } from './helpers/chunkedFileTypes';
+import { getUiFileFromDisk } from './helpers/getUiFileFromDisk';
+
 import contentTypeMap from './helpers/contentTypeMap.json';
-import type { Expression } from 'jsonata';
+
 import type { Express, Request, Response } from 'express';
 
-const app: Express = express();
 const port: number = 8400;
+const enginePort: number = 8401;
+
+const app: Express = express();
 const workingDir = path.resolve('.');
-const uiDistPath = path.join(workingDir, 'ui', 'dist');
 const currentRunDir = path.join(workingDir, 'runs', 'current');
 const ioDir = path.join(workingDir, 'io');
-const getKitTransformer: Expression = jsonata(`
-  (
-    $actionsMap := actions{
-      id: description
-    };
-
-    kits[id=$kitId].{
-      'children': children.{
-        'id': id,
-        'name': name,
-        'metadata': description ? {
-          'description': description,
-          'status': 'ready'
-        },
-        'children': children.{
-          'id': id,
-          'name': name,
-          'metadata': {
-            'status': 'ready'
-          },
-          'children': children.{
-            'id': id,
-            'name': name,
-            'metadata': {
-              'Description': description,
-              'Status': 'ready',
-              'Details': details,
-              'Actions': '\n' & (actions#$i.(
-                $string($i + 1) & '. ' & $lookup($actionsMap, $) & ' (ready)'
-              ) ~> $join( '\n'))
-            }
-          }[]
-        }[]
-      }[]
-    }
-  )
-`);
-const getKitsTransformer: Expression = jsonata(`
-  {
-    'kits': kits.{
-      'id': id,
-      'name': name,
-      'description': description,
-      'status': $getKitStatus(id)
-    }[]
-  }`
-);
-const runWorkflowTransformer: Expression = jsonata(`
-    {
-      'timestamp': $fromMillis($millis(), '[Y0000][M00][D00]_[H00][m00][s00]'),
-      'kitId': $kitId,
-      'tests': kits[id = $kitId].children.children.children.{
-        'testId': id,
-        'skipped': $not(id in $selectedTests)
-      }[]
-    }
-  `
-);
 
 const engineApi = axios.create({
-  baseURL: 'http://localhost:8401'
+  baseURL: `http://localhost:${enginePort.toString()}`
 });
 
 // cache for ui files
 const cachedFiles = {};
-
-// file types that should be sent using a write stream
-const isFiletypeChunked = {
-  '.js': true,
-  '.ttf': true,
-  '.ico': true,
-  '.css': true,
-  '.svg': true
-};
 
 const getKitStatus = (kitId: string) => {
   const kitStatusFilePath = path.join(currentRunDir, 'kitStatus.json');
@@ -150,32 +87,6 @@ const stashRun = (res: Response) => {
     ensureRunsDir();
   }
   res.status(200).send('Stashed');
-};
-
-const getUiFileFromDisk = (route: string) => {
-  if (route === '/report' || route === '/report/') {
-    route = '/report/index.html';
-  } else if (route === '/') {
-    route = '/index.html';
-  }
-  const filePath = path.join(uiDistPath, route);
-  let file: Buffer;
-  let filename: string;
-  try {
-    file = fs.readFileSync(filePath);
-    filename = path.basename(filePath);
-    return { filename, file };
-  } catch {
-    if (path.basename(filePath) !== 'index.html') {
-      if (route.startsWith('/report/')) {
-        return getUiFileFromDisk('report/index.html');
-      } else {
-        return getUiFileFromDisk('index.html');
-      }
-    } else {
-      return undefined;
-    }
-  }
 };
 
 const getContent = (route: string) => {
