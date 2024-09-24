@@ -107,6 +107,15 @@ const runKit = async (req: Request, res: Response) => {
   res.status(202).send('Accepted');
 };
 
+const abortRun = async (req: Request, res: Response) => {
+  res.status(202).send('Accepted');
+};
+
+const stashRun = async (req: Request, res: Response) => {
+  // move current run dir into stash and clear it
+  res.status(200).send('Stashed');
+};
+
 const getUiFileFromDisk = (route: string) => {
   if (route === '/report' || route === '/report/') {
     route = '/report/index.html';
@@ -189,6 +198,10 @@ const handler = async (req: Request, res: Response) => {
   } else if (method === 'post') {
     if (route === '/api/kits/$run') {
       await runKit(req, res);
+    } else if (route === '/api/kits/$abort') {
+      await abortRun(req, res);
+    } else if (route === '/api/kits/$stash') {
+      await stashRun(req, res);
     } else {
       res.status(404).send('Not found');
     }
