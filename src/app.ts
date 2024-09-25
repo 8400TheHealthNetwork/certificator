@@ -15,7 +15,8 @@ import {
   getSelectedTests,
   getTestActions,
   runTestListExpr,
-  runActionListExpr
+  runActionListExpr,
+  validateTree
 } from './helpers/expressions';
 import { fork } from 'node:child_process';
 import path from 'path';
@@ -222,6 +223,7 @@ const ensureCleanStart = async () => {
   checkMaps();
   ensureRunsDir();
   abortRun();
+  await validateTree.evaluate(kits);
 };
 
 const init = async () => {
@@ -241,14 +243,16 @@ const init = async () => {
 
     // register callback function for spawn event
     engine.on('spawn', () => {
-      console.log(chalk.yellow('Engine warming up...'));
+      console.log(chalk.yellow('\u{23F3} Engine warming up...'));
     });
 
     engine.on('message', (message) => {
       if (message === 'ready') startExpress();
     });
   } catch (err) {
-    console.error(chalk.red('Error initializing: ', err));
+    // eslint-disable-next-line @typescript-eslint/dot-notation
+    const message = err instanceof Error || (typeof err === 'object' && err['message']) ? err['message'] : JSON.stringify(err, null, 2);
+    console.error(chalk.red('Error initializing: ', message));
   }
 };
 

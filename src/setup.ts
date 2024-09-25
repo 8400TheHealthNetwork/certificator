@@ -129,7 +129,7 @@ export const printReadyBox = (port: string) => {
   console.log(
     chalk`
     {green  ╔════════════════════════════════════════════════════════════════════════════════╗}
-    {green  ║                            Certificator is ready!                              ║}
+    {green  ║                          \u{1F389} Certificator is ready! \u{1F389}                            ║}
     {green  ║                                                                                ║}
     {green  ║}     Access the UI by opening this URL in a browser: {yellow http://localhost:${port}/}     {green ║}
     {green  ╚════════════════════════════════════════════════════════════════════════════════╝}

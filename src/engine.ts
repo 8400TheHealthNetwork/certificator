@@ -42,9 +42,9 @@ async function init () {
     const fumeServer = new FumeServer<IConfig>();
     // register alternative logger and middleware
     fumeServer.registerLogger(logger);
-    console.log('Registered logger');
+    console.log(chalk.grey('Registered logger'));
     fumeServer.registerAppMiddleware(reRouter);
-    console.log('Registered HTTP server middleware');
+    console.log(chalk.grey('Registered HTTP server middleware'));
     // register custom function binding
     for (const key in extraBindings) {
       fumeServer.registerBinding(key, extraBindings[key]);
@@ -56,7 +56,7 @@ async function init () {
     await fumeServer.warmUp(newConfig);
     // load and register maps
     loadMapFiles();
-    console.log(`Engine ready and listening on port ${port}`);
+    console.log(chalk.grey(`\u{2714} Engine ready and listening on port ${port}`));
     process.send('ready');
   } catch (err) {
     const message = err instanceof Error ? err.message : err;
