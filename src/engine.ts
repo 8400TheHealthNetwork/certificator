@@ -49,14 +49,16 @@ async function init () {
     for (const key in extraBindings) {
       fumeServer.registerBinding(key, extraBindings[key]);
       console.log(chalk`Registered {green $${key}()} function binding`);
-    }
+    };
+    // register FHIR server URL parameter
+    fumeServer.registerBinding('fhirServer', newConfig.FHIR_SERVER_BASE);
     // set as the global server object
     setFumeServer(fumeServer);
     // start warmup
     await fumeServer.warmUp(newConfig);
     // load and register maps
     loadMapFiles();
-    console.log(chalk.grey(`\u{2714} Engine ready and listening on port ${port}`));
+    console.log(chalk.grey(`\u{2714}  Engine ready and listening on port ${port}`));
     process.send('ready');
   } catch (err) {
     const message = err instanceof Error ? err.message : err;
