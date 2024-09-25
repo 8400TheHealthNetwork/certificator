@@ -1,17 +1,25 @@
 import config from './serverConfig';
 import fs from 'fs-extra';
-import { ensureEnv, checkPackages, checkValidator, checkMaps, ensureRunsDir, printReadyBox } from './setup';
-import { getKitTransformer, getKitsTransformer, runWorkflowTransformer } from './helpers/transformers';
+import {
+  ensureEnv,
+  checkPackages,
+  checkValidator,
+  checkMaps,
+  ensureRunsDir,
+  printReadyBox
+} from './setup';
+import {
+  getKitTransformer,
+  getKitsTransformer,
+  runWorkflowTransformer
+} from './helpers/transformers';
 import { fork } from 'node:child_process';
 import path from 'path';
 import cors from 'cors';
 import express from 'express';
 import axios from 'axios';
 import kits from '../kits.json';
-import { isFiletypeChunked } from './helpers/chunkedFileTypes';
-import { getContent } from './helpers/getUiFileFromDisk';
-
-import contentTypeMap from './helpers/contentTypeMap.json';
+import { getUiRoute } from './helpers/getUiFileFromDisk';
 
 import type { Express, Request, Response } from 'express';
 
@@ -38,6 +46,21 @@ const getKitStatus = (kitId: string) => {
   return 'ready';
 };
 
+const getActionStatus = (mappingId: string) => {
+  const actionStatusFilePath = path.join(ioDir, `actionStatus_${mappingId}.json`);
+  if (fs.existsSync(actionStatusFilePath)) {
+    const actionStatusFileContent = JSON.parse(fs.readFileSync(actionStatusFilePath).toString());
+    return {
+      statusCode: actionStatusFileContent?.statusCode,
+      statusText: actionStatusFileContent?.statusText
+    };
+  };
+  return {
+    statusCode: 'ready',
+    statusText: 'Ready'
+  };
+};
+
 const getKits = async (res: Response) => {
   const transformed = await getKitsTransformer.evaluate(kits, { getKitStatus });
   res.status(200).json(transformed);
@@ -45,7 +68,7 @@ const getKits = async (res: Response) => {
 
 const getKit = async (req: Request, res: Response) => {
   const kitId: string = req.originalUrl.substring(10);
-  const transformed = await getKitTransformer.evaluate(kits, { kitId });
+  const transformed = await getKitTransformer.evaluate(kits, { kitId, getActionStatus });
   res.status(200).json(transformed);
 };
 
@@ -102,26 +125,7 @@ const handler = async (req: Request, res: Response) => {
       }
     } else {
       // handle all else (assuming it's a ui file)
-      const content = getContent(route);
-      if (content) {
-        const filename = content?.filename;
-        const file = content?.file;
-        const extension = path.extname(filename);
-        const contentType = contentTypeMap[extension];
-        if (contentType) {
-          res.set('Content-Type', contentType);
-        };
-        res.set('Content-Disposition', `inline; filename="${filename}"`);
-        if (isFiletypeChunked[extension]) {
-          res.set('Accept-Ranges', 'bytes');
-          res.status(200).write(file);
-          res.end();
-        } else {
-          res.status(200).send(file);
-        }
-      } else {
-        res.status(404).send('Not found');
-      }
+      getUiRoute(route, res);
     }
   } else if (method === 'post') {
     if (route === '/api/kits/$run') {
@@ -136,14 +140,28 @@ const handler = async (req: Request, res: Response) => {
   };
 };
 
+const startExpress = () => {
+  // setup and start express app after engine is ready
+  app.use(cors());
+  app.use(express.json({ limit: '50mb', type: ['application/json'] }));
+  app.get('*', handler);
+  app.post('*', handler);
+  // start listening
+  app.listen(port, () => printReadyBox(port.toString()));
+};
+
+const ensureCleanStart = async () => {
+  await ensureEnv(config);
+  checkPackages();
+  checkValidator();
+  checkMaps();
+  ensureRunsDir();
+  abortRun();
+};
+
 const init = async () => {
   try {
-    await ensureEnv(config);
-    checkPackages();
-    checkValidator();
-    checkMaps();
-    ensureRunsDir();
-    abortRun();
+    await ensureCleanStart();
 
     // TODO: This will not work in SEA mode
     // will need to have engine.js as asset and export to file.
@@ -161,15 +179,7 @@ const init = async () => {
     });
 
     engine.on('message', (message) => {
-      if (message === 'ready') {
-        // setup and start express app after engine is ready
-        app.use(cors());
-        app.use(express.json({ limit: '50mb', type: ['application/json'] }));
-        app.get('*', handler);
-        app.post('*', handler);
-        // start listening
-        app.listen(port, () => printReadyBox(port.toString()));
-      }
+      if (message === 'ready') startExpress();
     });
   } catch (err) {
     console.error('Error initializing: ', err);
