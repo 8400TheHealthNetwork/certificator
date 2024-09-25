@@ -1,5 +1,5 @@
-# certificator
-FHIR certificator for MoH
+# Certificator
+FHIR® Certificator for Ministry of Health, Israel
 
 # Entities
 
