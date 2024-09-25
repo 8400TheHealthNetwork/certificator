@@ -27,7 +27,4 @@
       'statusCode':'completed'
       ,'statusText':'Completed'
     }
-
-  /*Write completed msg*/
-    ;$writeFile($msgCompleted,'actionStatus_doExtractGender.json')
 )
