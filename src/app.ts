@@ -87,8 +87,8 @@ const runKit = async (req: Request, res: Response) => {
   const selectedTests: string[] = req.body.selected;
   const workflow = await runWorkflowTransformer.evaluate(kits, { kitId, selectedTests });
   fs.ensureDirSync(currentRunDir);
-  fs.writeFileSync(path.join(currentRunDir, 'workflow.json'), JSON.stringify(workflow));
-  fs.writeFileSync(path.join(currentRunDir, 'kitStatus.json'), JSON.stringify({ kitId, status: 'in-progress' }));
+  fs.writeFileSync(path.join(currentRunDir, 'workflow.json'), JSON.stringify(workflow, null, 2));
+  fs.writeFileSync(path.join(currentRunDir, 'kitStatus.json'), JSON.stringify({ kitId, status: 'in-progress' }, null, 2));
 };
 
 const abortRun = (res?: Response) => {
@@ -98,7 +98,7 @@ const abortRun = (res?: Response) => {
     const kitStatusFileContent = JSON.parse(fs.readFileSync(kitStatusFilePath).toString());
     const kitId: string = kitStatusFileContent.kitId;
     const currentStatus: string = kitStatusFileContent.status;
-    if (currentStatus === 'in-progress') fs.writeFileSync(path.join(currentRunDir, 'kitStatus.json'), JSON.stringify({ kitId, status: 'aborted' }));
+    if (currentStatus === 'in-progress') fs.writeFileSync(path.join(currentRunDir, 'kitStatus.json'), JSON.stringify({ kitId, status: 'aborted' }, null, 2));
   }
 };
 
