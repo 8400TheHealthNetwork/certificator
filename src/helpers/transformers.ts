@@ -53,7 +53,7 @@ export const getKitsTransformer: Expression = jsonata(`
 
 export const runWorkflowTransformer: Expression = jsonata(`
       {
-        'timestamp': $fromMillis($millis(), '[Y0000][M00][D00]_[H00][m00][s00]'),
+        'timestamp': $fromMillis($millis(), '[Y0000]-[M00]-[D00]_[H00][m00][s00]'),
         'kitId': $kitId,
         'tests': kits[id = $kitId].children.children.children.{
           'testId': id,
