@@ -11,8 +11,12 @@ import {
 import {
   getKitTransformer,
   getKitsTransformer,
-  runWorkflowTransformer
-} from './helpers/transformers';
+  runWorkflowTransformer,
+  getSelectedTests,
+  getTestActions,
+  runTestListExpr,
+  runActionListExpr
+} from './helpers/expressions';
 import { fork } from 'node:child_process';
 import path from 'path';
 import cors from 'cors';
@@ -47,7 +51,7 @@ const getKitStatus = (kitId: string) => {
 };
 
 const getTestStatus = async (testId: string) => {
-  const testStatusFilePath = path.join(ioDir, `testStatus_${testId}.json`);
+  const testStatusFilePath: string = path.join(currentRunDir, `testStatus_${testId}.json`);
   if (await fs.exists(testStatusFilePath)) {
     const testStatusFileContent = JSON.parse((await fs.readFile(testStatusFilePath)).toString());
     return testStatusFileContent?.status;
@@ -81,14 +85,66 @@ const getKit = async (req: Request, res: Response) => {
   res.status(200).json(transformed);
 };
 
+const runTest = async (testId: string) => {
+  const testStatusFilePath: string = path.join(currentRunDir, `testStatus_${testId}.json`);
+  const testStatusJson = {
+    status: 'init'
+  };
+  const actionsToRun: string[] = await getTestActions.evaluate({}, { kits, testId });
+  fs.writeFileSync(testStatusFilePath, JSON.stringify(testStatusJson, null, 2));
+  try {
+    await runActionList(actionsToRun);
+    const lastActionStatus: string = (await getActionStatus(actionsToRun[actionsToRun.length - 1])).statusCode;
+    fs.writeFileSync(testStatusFilePath, JSON.stringify({ status: lastActionStatus }, null, 2));
+  } catch (e) {
+    const details: string = (e instanceof Error) ? `${e.name}: ${e.message}` : undefined;
+    fs.writeFileSync(testStatusFilePath, JSON.stringify({ status: 'error', details }, null, 2));
+  }
+};
+
+const runAction = async (mappingId: string) => {
+  // only run action if it did not run already
+  const statusJson = await getActionStatus(mappingId);
+  if (statusJson.statusCode === 'ready') {
+    const actionStatusFilePath = path.join(ioDir, `actionStatus_${mappingId}.json`);
+    fs.writeFileSync(actionStatusFilePath, JSON.stringify({ statusCode: 'init', statusText: 'Initiated' }, null, 2));
+    try {
+      await engineApi.post(`/Mapping/${mappingId}`, {});
+      if (!fs.existsSync(actionStatusFilePath)) {
+        fs.writeFileSync(actionStatusFilePath, JSON.stringify({ statusCode: 'completed', statusText: 'Completed' }, null, 2));
+      }
+    } catch (e) {
+      const details: string = (e instanceof Error) ? `${e.name}: ${e.message}` : undefined;
+      fs.writeFileSync(actionStatusFilePath, JSON.stringify({ statusCode: 'error', statusText: 'Error', details }, null, 2));
+    }
+  }
+};
+
+const runTestList = async (testList: string[]) => {
+  await runTestListExpr.evaluate({}, { testList, runTest });
+};
+
+const runActionList = async (actionList: string[]) => {
+  await runActionListExpr.evaluate({}, { actionList, runAction });
+};
+
 const runKit = async (req: Request, res: Response) => {
   res.status(202).send('Accepted');
   const kitId: string = req.body.kitId;
   const selectedTests: string[] = req.body.selected;
   const workflow = await runWorkflowTransformer.evaluate(kits, { kitId, selectedTests });
+  const kitStatusJsonPath: string = path.join(currentRunDir, 'kitStatus.json');
   fs.ensureDirSync(currentRunDir);
-  fs.writeFileSync(path.join(currentRunDir, 'workflow.json'), JSON.stringify(workflow));
-  fs.writeFileSync(path.join(currentRunDir, 'kitStatus.json'), JSON.stringify({ kitId, status: 'in-progress' }));
+  fs.writeFileSync(path.join(currentRunDir, 'workflow.json'), JSON.stringify(workflow, null, 2));
+  const testsToRun: string[] = await getSelectedTests.evaluate(workflow);
+  fs.writeFileSync(kitStatusJsonPath, JSON.stringify({ kitId, status: 'in-progress' }, null, 2));
+  try {
+    await runTestList(testsToRun);
+    fs.writeFileSync(kitStatusJsonPath, JSON.stringify({ kitId, status: 'completed' }, null, 2));
+  } catch (e) {
+    const details: string = (e instanceof Error) ? `${e.name}: ${e.message}` : undefined;
+    fs.writeFileSync(kitStatusJsonPath, JSON.stringify({ kitId, status: 'error', details }, null, 2));
+  }
 };
 
 const abortRun = (res?: Response) => {
@@ -98,7 +154,7 @@ const abortRun = (res?: Response) => {
     const kitStatusFileContent = JSON.parse(fs.readFileSync(kitStatusFilePath).toString());
     const kitId: string = kitStatusFileContent.kitId;
     const currentStatus: string = kitStatusFileContent.status;
-    if (currentStatus === 'in-progress') fs.writeFileSync(path.join(currentRunDir, 'kitStatus.json'), JSON.stringify({ kitId, status: 'aborted' }));
+    if (currentStatus === 'in-progress') fs.writeFileSync(path.join(currentRunDir, 'kitStatus.json'), JSON.stringify({ kitId, status: 'aborted' }, null, 2));
   }
 };
 

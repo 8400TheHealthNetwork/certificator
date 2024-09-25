@@ -6,6 +6,7 @@ import { setFumeServer } from './config';
 import { loadMapFiles } from './helpers/loadMaps';
 import { version as CERTIFICATOR_VERSION } from '../package.json';
 import type { Request, Response, NextFunction } from 'express';
+import chalk from 'chalk';
 
 let configObject: IConfig;
 const port: number = 8401;
@@ -58,7 +59,8 @@ async function init () {
     console.log(`Engine ready and listening on port ${port}`);
     process.send('ready');
   } catch (err) {
-    console.error('Error in engine warmup: ', err);
+    console.error(chalk.red('Error in engine warmup: ', err));
+    process.abort();
   }
 }
 
