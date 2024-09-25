@@ -20,13 +20,4 @@
         }
 
       ;$writeFile($identifiers,'DQAidentifiers.json')
-
-  /*Prep completed msg*/
-    ;$msgCompleted :={
-      'statusCode':'completed'
-      ,'statusText':'completed'
-    }
-
-  /*Write completed msg*/
-    ;$writeFile($msgCompleted,'actionStatus_doExtractidentifiers.json')
 )
