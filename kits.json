@@ -62,6 +62,7 @@
                   "description": "IF CapabilityStatement was returned, check Content-Type validity",
                   "details": "The response headers from /metadata must include Content-Type: application/fhir+json",
                   "actions": [
+                    "get-metadata",
                     "metadata-content-type"
                   ]
                 },
