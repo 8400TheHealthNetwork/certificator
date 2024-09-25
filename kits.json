@@ -71,7 +71,6 @@
                   "description": "IF there is a CapabilityStatement - validate it against the base resource",
                   "details": "https://hl7.org/fhir/R4/capabilitystatement.html",
                   "actions": [
-                    "capstat-validate",
                     "capstat-validation-success"
                   ]
                 }
