@@ -79,3 +79,16 @@ export const getTestActions: Expression = jsonata(`
 export const runTestListExpr: Expression = jsonata('$testList.$runTest($)');
 
 export const runActionListExpr: Expression = jsonata('$actionList.$runAction($)');
+
+export const validateTree: Expression = jsonata(`
+    (
+      $missingActions := kits.children.children.children.actions@$actId.{
+        'actionId': $actId,
+        'testId': %.id,
+        'actionExists': $exists(%.%.%.%.%.actions[id=$actId])
+      }[actionExists=false].{'test': testId, 'action': actionId};
+
+      $count($missingActions) > 0 ? $error('Some tests reference actions that are not defined!\n' & $string($missingActions))
+    )
+  `
+);
