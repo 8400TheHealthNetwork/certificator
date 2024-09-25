@@ -6,24 +6,22 @@
       ,'statusText':'Map in-progress'
     } ~> $writeFile('actionStatus_doGetMetadata.json')
   
+  /*Fetch base url*/
+    ;$baseUrl := $search('Patient').link[relation='self'].url~>$substringBefore('Patient?')
+
   /*Get metadata and write it to file*/
-    $getCapabilityStatement := function($baseUrl){(
-      $readResponse := $http({
-            'method':'get',
-            'baseUrl': $baseUrl,
-            'headers' : {'content-type': 'application/fhir+json'},
-            'url': 'metadata'
-            });
+    ;$readResponse := $http({
+          'method':'get',
+          'baseUrl': $baseUrl,
+          'headers' : {'content-type': 'application/fhir+json'},
+          'url': 'metadata'
+          })
         
-        $writeFile($readResponse,'getCapabilityStatement.json')
+    ;$writeFile($readResponse,'getCapabilityStatement.json')
   
   /*Prep completed msg*/
     ;$msgCompleted :={
-      'statusCode':'MapCompleted'
-      ,'statusText':'Map Completed'
+      'statusCode':'completed'
+      ,'statusText':'completed'
     }
-
-  /*Write completed msg*/
-    ;$writeFile($msgCompleted,'actionStatus_doGetMetadata.json')
-  )}
 )
