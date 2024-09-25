@@ -9,7 +9,7 @@ import express from 'express';
 import axios from 'axios';
 import kits from '../kits.json';
 import { isFiletypeChunked } from './helpers/chunkedFileTypes';
-import { getUiFileFromDisk } from './helpers/getUiFileFromDisk';
+import { getContent } from './helpers/getUiFileFromDisk';
 
 import contentTypeMap from './helpers/contentTypeMap.json';
 
@@ -19,16 +19,13 @@ const port: number = 8400;
 const enginePort: number = 8401;
 
 const app: Express = express();
-const workingDir = path.resolve('.');
-const currentRunDir = path.join(workingDir, 'runs', 'current');
-const ioDir = path.join(workingDir, 'io');
+const workingDir: string = path.resolve('.');
+const currentRunDir: string = path.join(workingDir, 'runs', 'current');
+const ioDir: string = path.join(workingDir, 'io');
 
 const engineApi = axios.create({
   baseURL: `http://localhost:${enginePort.toString()}`
 });
-
-// cache for ui files
-const cachedFiles = {};
 
 const getKitStatus = (kitId: string) => {
   const kitStatusFilePath = path.join(currentRunDir, 'kitStatus.json');
@@ -87,22 +84,6 @@ const stashRun = (res: Response) => {
     ensureRunsDir();
   }
   res.status(200).send('Stashed');
-};
-
-const getContent = (route: string) => {
-  const cached = cachedFiles[route];
-  if (cached) {
-    return cached;
-  } else {
-    const getter = getUiFileFromDisk;
-    const rawContent = getter(route);
-    if (rawContent) {
-      cachedFiles[route] = { filename: rawContent.filename, file: rawContent.file };
-      return cachedFiles[route];
-    } else {
-      return undefined;
-    }
-  }
 };
 
 const handler = async (req: Request, res: Response) => {

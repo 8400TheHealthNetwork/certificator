@@ -1,7 +1,3 @@
-// check that .env file exists
-// check validator_cli.jar exists
-// check packages exist
-
 import fs from 'fs-extra';
 import os from 'os';
 import path from 'path';
