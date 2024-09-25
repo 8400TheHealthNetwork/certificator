@@ -2,8 +2,8 @@
 (
   /*Write initial map status for UI to status file*/
     {
-      'statusCode':'MapStarted'
-      ,'statusText':'Map started'
+      'statusCode':'in-progress'
+      ,'statusText':'Map in-progress'
     } ~> $writeFile('actionStatus_isSearchModiferOk.json')
 
   /*Fetch base url*/
