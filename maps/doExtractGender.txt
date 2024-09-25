@@ -24,8 +24,8 @@
 
   /*Prep completed msg*/
     ;$msgCompleted :={
-      'statusCode':'MapCompleted'
-      ,'statusText':'Map Completed'
+      'statusCode':'completed'
+      ,'statusText':'Completed'
     }
 
   /*Write completed msg*/
