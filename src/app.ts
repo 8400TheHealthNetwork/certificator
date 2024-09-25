@@ -46,6 +46,15 @@ const getKitStatus = (kitId: string) => {
   return 'ready';
 };
 
+const getTestStatus = async (testId: string) => {
+  const testStatusFilePath = path.join(ioDir, `testStatus_${testId}.json`);
+  if (await fs.exists(testStatusFilePath)) {
+    const testStatusFileContent = JSON.parse((await fs.readFile(testStatusFilePath)).toString());
+    return testStatusFileContent?.status;
+  };
+  return 'ready';
+};
+
 const getActionStatus = async (mappingId: string) => {
   const actionStatusFilePath = path.join(ioDir, `actionStatus_${mappingId}.json`);
   if (await fs.exists(actionStatusFilePath)) {
@@ -68,7 +77,7 @@ const getKits = async (res: Response) => {
 
 const getKit = async (req: Request, res: Response) => {
   const kitId: string = req.originalUrl.substring(10);
-  const transformed = await getKitTransformer.evaluate(kits, { kitId, getActionStatus });
+  const transformed = await getKitTransformer.evaluate(kits, { kitId, getActionStatus, getTestStatus });
   res.status(200).json(transformed);
 };
 

@@ -27,7 +27,7 @@ export const getKitTransformer: Expression = jsonata(`
               'metadata': {
                 'Test Name': name,
                 'Description': description,
-                'Status': 'ready',
+                'Status': $getTestStatus(id),
                 'Details': details,
                 'Actions': '\n' & (actions#$i.(
                   $string($i + 1) & '. ' & $lookup($actionsMap, $).description & ' (' & $getActionStatus($lookup($actionsMap, $).mapping).statusText & ')'
