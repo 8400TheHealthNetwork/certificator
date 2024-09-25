@@ -62,3 +62,20 @@ export const runWorkflowTransformer: Expression = jsonata(`
       }
     `
 );
+
+export const getSelectedTests: Expression = jsonata(`
+    tests[skipped=false].testId[]
+  `
+);
+
+export const getTestActions: Expression = jsonata(`
+    $kits.kits.children.children.children[id=$testId].actions.(
+      $actionId := $;
+      $kits.actions[id=$actionId].mapping[]
+    )
+  `
+);
+
+export const runTestListExpr: Expression = jsonata('$testList.$runTest($)');
+
+export const runActionListExpr: Expression = jsonata('$actionList.$runAction($)');
