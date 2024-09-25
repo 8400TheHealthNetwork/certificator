@@ -24,7 +24,7 @@ import express from 'express';
 import axios from 'axios';
 import kits from '../kits.json';
 import { getUiRoute } from './helpers/getUiFileFromDisk';
-
+import chalk from 'chalk';
 import type { Express, Request, Response } from 'express';
 
 const port: number = 8400;
@@ -235,19 +235,20 @@ const init = async () => {
 
     // register callback function for close event
     engine.on('close', (code) => {
-      console.log(`Engine exited with code ${code}`);
+      console.error(chalk.red(`Engine exited with code ${code}`));
+      console.log(chalk.bold.red('Certificator startup failed :('));
     });
 
     // register callback function for spawn event
     engine.on('spawn', () => {
-      console.log('Engine warming up...');
+      console.log(chalk.yellow('Engine warming up...'));
     });
 
     engine.on('message', (message) => {
       if (message === 'ready') startExpress();
     });
   } catch (err) {
-    console.error('Error initializing: ', err);
+    console.error(chalk.red('Error initializing: ', err));
   }
 };
 
