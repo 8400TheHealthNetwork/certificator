@@ -6,8 +6,13 @@
       ,'statusText':'Map in-progress'
     } ~> $writeFile('actionStatus_isCapstatValidationSuccess.json')
 
+  /*Extract the CapStat from the HTTP response and write to a new file*/
+    ;$CapabilityStatement := $readFile('getCapabilityStatement.json').data
+    
+    ;$writeFile($CapabilityStatement,'CapabilityStatement.json')
+  
   /*Get and Validate Capstat*/
-    ;$ValidationResultsCapabilityStatement := $validate($capabilities())
+    ;$ValidationResultsCapabilityStatement := $validate('CapabilityStatement.json')
 
   /*Perform test*/
     ;$testResult := (
