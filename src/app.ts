@@ -236,7 +236,7 @@ const init = async () => {
     // register callback function for close event
     engine.on('close', (code) => {
       console.error(chalk.red(`Engine exited with code ${code}`));
-      console.log(chalk.bold.red('Certificator startup failed :('));
+      console.log(chalk.bold.red('Certificator startup failed \u{1F61E}'));
     });
 
     // register callback function for spawn event

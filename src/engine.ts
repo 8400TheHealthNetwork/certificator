@@ -48,7 +48,7 @@ async function init () {
     // register custom function binding
     for (const key in extraBindings) {
       fumeServer.registerBinding(key, extraBindings[key]);
-      console.log(`Registered $${key}() function binding`);
+      console.log(chalk`Registered {green $${key}()} function binding`);
     }
     // set as the global server object
     setFumeServer(fumeServer);
@@ -59,7 +59,8 @@ async function init () {
     console.log(`Engine ready and listening on port ${port}`);
     process.send('ready');
   } catch (err) {
-    console.error(chalk.red('Error in engine warmup: ', err));
+    const message = err instanceof Error ? err.message : err;
+    console.error(chalk.red('Error in engine warmup: ', message));
     process.abort();
   }
 }
