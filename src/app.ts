@@ -226,6 +226,10 @@ const ensureCleanStart = async () => {
   await validateTree.evaluate(kits);
 };
 
+const printFailedStartup = () => {
+  console.log(chalk.bold.red('Certificator startup failed \u{1F61E}'));
+};
+
 const init = async () => {
   try {
     await ensureCleanStart();
@@ -238,7 +242,7 @@ const init = async () => {
     // register callback function for close event
     engine.on('close', (code) => {
       console.error(chalk.red(`Engine exited with code ${code}`));
-      console.log(chalk.bold.red('Certificator startup failed \u{1F61E}'));
+      printFailedStartup();
     });
 
     // register callback function for spawn event
@@ -252,7 +256,8 @@ const init = async () => {
   } catch (err) {
     // eslint-disable-next-line @typescript-eslint/dot-notation
     const message = err instanceof Error || (typeof err === 'object' && err['message']) ? err['message'] : JSON.stringify(err, null, 2);
-    console.error(chalk.red('Error initializing: ', message));
+    console.error(chalk.red('\u{1F61E} Error initializing: ', message));
+    printFailedStartup();
   }
 };
 

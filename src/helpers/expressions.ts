@@ -88,7 +88,7 @@ export const validateTree: Expression = jsonata(`
         'actionExists': $exists(%.%.%.%.%.actions[id=$actId])
       }[actionExists=false].{'test': testId, 'action': actionId};
 
-      $count($missingActions) > 0 ? $error('Some tests reference actions that are not defined!\n' & $string($missingActions))
+      $count($missingActions) > 0 ? $error('Some tests reference actions that are not defined!\n' & $string($missingActions, true))
     )
   `
 );
