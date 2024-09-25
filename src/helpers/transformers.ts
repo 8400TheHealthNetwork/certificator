@@ -25,6 +25,7 @@ export const getKitTransformer: Expression = jsonata(`
               'id': id,
               'name': name,
               'metadata': {
+                'Test Name': name,
                 'Description': description,
                 'Status': 'ready',
                 'Details': details,
