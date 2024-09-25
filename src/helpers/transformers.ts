@@ -4,7 +4,7 @@ import type { Expression } from 'jsonata';
 export const getKitTransformer: Expression = jsonata(`
     (
       $actionsMap := actions{
-        id: description
+        id: {'description': description, 'mapping': mapping}
       };
   
       kits[id=$kitId].{
@@ -29,7 +29,7 @@ export const getKitTransformer: Expression = jsonata(`
                 'Status': 'ready',
                 'Details': details,
                 'Actions': '\n' & (actions#$i.(
-                  $string($i + 1) & '. ' & $lookup($actionsMap, $) & ' (ready)'
+                  $string($i + 1) & '. ' & $lookup($actionsMap, $).description & ' (' & $getActionStatus($lookup($actionsMap, $).mapping).statusText & ')'
                 ) ~> $join( '\n'))
               }
             }[]

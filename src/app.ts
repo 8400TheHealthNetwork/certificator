@@ -46,10 +46,10 @@ const getKitStatus = (kitId: string) => {
   return 'ready';
 };
 
-const getActionStatus = (mappingId: string) => {
+const getActionStatus = async (mappingId: string) => {
   const actionStatusFilePath = path.join(ioDir, `actionStatus_${mappingId}.json`);
-  if (fs.existsSync(actionStatusFilePath)) {
-    const actionStatusFileContent = JSON.parse(fs.readFileSync(actionStatusFilePath).toString());
+  if (await fs.exists(actionStatusFilePath)) {
+    const actionStatusFileContent = JSON.parse((await fs.readFile(actionStatusFilePath)).toString());
     return {
       statusCode: actionStatusFileContent?.statusCode,
       statusText: actionStatusFileContent?.statusText
