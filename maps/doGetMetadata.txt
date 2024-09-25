@@ -18,10 +18,4 @@
           })
         
     ;$writeFile($readResponse,'getCapabilityStatement.json')
-  
-  /*Prep completed msg*/
-    ;$msgCompleted :={
-      'statusCode':'completed'
-      ,'statusText':'completed'
-    }
 )
