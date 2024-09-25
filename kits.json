@@ -3,7 +3,7 @@
     {
       "id": "get-metadata",
       "description": "GET /metadata",
-      "mapping": "getMetadata"
+      "mapping": "doGetMetadata"
     },
     {
       "id": "metadata-http-200",
@@ -16,19 +16,9 @@
       "mapping": "isMetadataContentTypeOk"
     },
     {
-      "id": "capstat-validate",
-      "description": "Pass input to validation map for CapabilityStatement",
-      "mapping": "capstatValidate"
-    },
-    {
       "id": "capstat-validation-success",
-      "description": "Assert validation succeeded",
+      "description": "Get Validate and Assert CapabilityStatement validation passed succesfuly",
       "mapping": "isCapstatValidationSuccess"
-    },
-    {
-      "id": "validate-resourceType",
-      "description": "Run validator on desired resourceType with additional input params",
-      "mapping": "validateResourceType"
     },
     {
       "id": "extract-identifiers",
