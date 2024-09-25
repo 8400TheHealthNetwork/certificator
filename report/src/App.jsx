@@ -14,7 +14,7 @@ function App() {
         <img src={logo} className="logo" alt="Ministry of Health logo" />
         <div className="header-title">
           <div className="title title-text">Ministry of Health</div>
-          <div className="title subtitle-text">FHIR Certificator - Report</div>
+          <div className="title subtitle-text">FHIR<sup className="subtitle-r">®</sup> Certificator - Report</div>
         </div>
         <img src={fhir} className="logo" alt="FHIR logo" />
         <img src={israel} className="israel-logo" alt="Israel flag" />

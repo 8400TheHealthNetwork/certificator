@@ -1,5 +1,5 @@
-# certificator
-FHIR certificator for MoH
+# Certificator
+FHIR® Certificator for Ministry of Health, Israel
 
 # Entities
 
@@ -36,8 +36,10 @@ e.g actionStatus_[mapping].json => actionStatus_isMetadataResourceTypeOk.json
 **TBD**
 
 **Processing** status codes
-1. completed
-2. error
+1. init - A request to start the action has been sent to the engine
+2. in-progress - The engine has started execution of the map
+3. completed - The map completed execution, but the outcome cannot be determined (subjective)
+4. error - The map's execution failed due to some error
 
 **Logical conditions** outcome codes:
 1. passed
