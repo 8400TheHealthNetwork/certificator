@@ -18,7 +18,7 @@ export const writeFile = (content: any[], fileName: string) => {
     data = JSON.stringify(content);
   }
   fs.writeFileSync(filePath, data);
-  console.log(`File ${filePath} created successfully.`);
+  // console.log(`File ${filePath} created successfully.`);
 };
 
 export const readFile = (fileName: string) => {
@@ -43,10 +43,11 @@ export const makeDir = (relativePath: string) => {
   const absPath: string = path.join(ioFolderPath, relativePath);
   if (!fs.existsSync(absPath)) {
     fs.mkdirSync(absPath, { recursive: true });
-    console.log(`Directory '${absPath}' created successfully.`);
-  } else {
-    console.log(`Directory '${absPath}' already exists.`);
+    // console.log(`Directory '${absPath}' created successfully.`);
   }
+  // else {
+  //   console.log(`Directory '${absPath}' already exists.`);
+  // }
 };
 
 export const readPackageIndex = (packageId: string, version: string) => {
