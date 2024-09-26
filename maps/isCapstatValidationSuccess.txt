@@ -12,12 +12,13 @@
     ;$writeFile($CapabilityStatement,'CapabilityStatement.json')
   
   /*Get and Validate Capstat*/
-    ;$ValidationResultsCapabilityStatement := $validate('CapabilityStatement.json', {'output': 'ValidationResults-CapabilityStatement.json'})
+    ;$validate('CapabilityStatement.json', {'output': 'ValidationResults-CapabilityStatement.json'})
+    ;$ValidationResultsCapabilityStatement := $readFile('ValidationResults-CapabilityStatement.json')
 
   /*Perform test*/
     ;$testResult := (
       /*Check we are evluating a file that looks like the validation results of CapStat*/
-        ($readFile('ValidationResults-CapabilityStatement.json').extension[url='http://hl7.org/fhir/StructureDefinition/operationoutcome-file'].valueString~>$contains('[CapabilityStatement]_['))
+        ($ValidationResultsCapabilityStatement.extension[url='http://hl7.org/fhir/StructureDefinition/operationoutcome-file'].valueString~>$contains('[CapabilityStatement]_['))
       and
       /*check there are no errors*/
         $not('error' in $ValidationResultsCapabilityStatement.issue.severity)
