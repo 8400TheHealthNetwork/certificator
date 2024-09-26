@@ -8,7 +8,7 @@
     {
       "id": "metadata-http-200",
       "description": "Assert HTTP status=200",
-      "mapping": "isMetaDataHttp200" 
+      "mapping": "isMetaDataHttp200"
     },
     {
       "id": "metadata-content-type",
@@ -17,13 +17,18 @@
     },
     {
       "id": "capstat-validation-success",
-      "description": "Get Validate and Assert CapabilityStatement validation passed succesfuly",
+      "description": "Get Validate and Assert CapabilityStatement validation passed successfully",
       "mapping": "isCapstatValidationSuccess"
     },
     {
       "id": "extract-identifiers",
       "description": "Extract resource identifiers from all sampled instances",
       "mapping": "doExtractIdentifiers"
+    },
+    {
+      "id": "extract-gender",
+      "description": "Extract Patient.gender value sampled instances",
+      "mapping": "doExtractGender"
     }
   ],
   "kits": [
@@ -73,6 +78,36 @@
                   "details": "https://hl7.org/fhir/R4/capabilitystatement.html",
                   "actions": [
                     "capstat-validation-success"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "dqa",
+          "name": "Data quality assurance",
+          "children": [
+            {
+              "id": "patient-dist",
+              "name": "Patient elements distributions",
+              "children": [
+                {
+                  "id": "test57",
+                  "name": "Patient Identifier system distribution",
+                  "description": "Patient Identifier system distribution",
+                  "details": "Check if the distribution of Patient.identifier.system makes sense.",
+                  "actions": [
+                    "extract-identifiers"
+                  ]
+                },
+                {
+                  "id": "test70",
+                  "name": "Patient gender distribution",
+                  "description": "Patient gender value distribution",
+                  "details": "Check if the distribution of Patient.identifier.system makes sense.",
+                  "actions": [
+                    "extract-gender"
                   ]
                 }
               ]
