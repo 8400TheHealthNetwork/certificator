@@ -1,4 +1,4 @@
-/*doExtractIdentifiersdentifiers - extract resource identifiers from all sampled instances*/
+/*doExtractIdentifiers - extract resource identifiers from all sampled instances*/
 (
   /*Write initial map status for UI to status file*/
     {
