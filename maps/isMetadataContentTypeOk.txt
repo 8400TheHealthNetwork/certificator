@@ -3,7 +3,7 @@
     /*Write initial map status for UI to status file*/
     {
       'statusCode':'in-progress'
-      ,'statusText':'Map in-progress'
+      ,'statusText':'in-progress'
     } ~> $writeFile('actionStatus_isMetadataResourceTypeOk.json')
 
   /*Perform test*/

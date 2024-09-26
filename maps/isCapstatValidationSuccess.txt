@@ -3,7 +3,7 @@
   /*Write initial map status for UI to status file*/
     {
       'statusCode':'in-progress'
-      ,'statusText':'Map in-progress'
+      ,'statusText':'in-progress'
     } ~> $writeFile('actionStatus_isCapstatValidationSuccess.json')
 
   /*Extract the CapStat from the HTTP response and write to a new file*/
