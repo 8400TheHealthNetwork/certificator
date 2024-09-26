@@ -3,27 +3,19 @@
   /*Write initial map status for UI to status file*/
     {
       'statusCode':'in-progress'
-      ,'statusText':'Map in-progress'
+      ,'statusText':'in-progress'
     } ~> $writeFile('actionStatus_doGetMetadata.json')
   
-  /*Get metadata and write it to file*/
-    $getCapabilityStatement := function($baseUrl){(
-      $readResponse := $http({
-            'method':'get',
-            'baseUrl': $baseUrl,
-            'headers' : {'content-type': 'application/fhir+json'},
-            'url': 'metadata'
-            });
-        
-        $writeFile($readResponse,'getCapabilityStatement.json')
-  
-  /*Prep completed msg*/
-    ;$msgCompleted :={
-      'statusCode':'MapCompleted'
-      ,'statusText':'Map Completed'
-    }
+  /*Fetch base url*/
+    ;$baseUrl := $fhirServer
 
-  /*Write completed msg*/
-    ;$writeFile($msgCompleted,'actionStatus_doGetMetadata.json')
-  )}
+  /*Get metadata and write it to file*/
+    ;$readResponse := $http({
+          'method':'get',
+          'baseUrl': $baseUrl,
+          'headers' : {'accept': 'application/fhir+json'},
+          'url': 'metadata'
+          })
+        
+    ;$writeFile($readResponse,'getCapabilityStatement.json')
 )

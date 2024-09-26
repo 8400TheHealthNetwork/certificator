@@ -3,16 +3,22 @@
   /*Write initial map status for UI to status file*/
     {
       'statusCode':'in-progress'
-      ,'statusText':'Map in-progress'
+      ,'statusText':'in-progress'
     } ~> $writeFile('actionStatus_isCapstatValidationSuccess.json')
 
+  /*Extract the CapStat from the HTTP response and write to a new file*/
+    ;$CapabilityStatement := $readFile('getCapabilityStatement.json').data
+    
+    ;$writeFile($CapabilityStatement,'CapabilityStatement.json')
+  
   /*Get and Validate Capstat*/
-    ;$ValidationResultsCapabilityStatement := $validate($capabilities())
+    ;$validate('CapabilityStatement.json', {'output': 'ValidationResults-CapabilityStatement.json'})
+    ;$ValidationResultsCapabilityStatement := $readFile('ValidationResults-CapabilityStatement.json')
 
   /*Perform test*/
     ;$testResult := (
       /*Check we are evluating a file that looks like the validation results of CapStat*/
-        ($readFile('ValidationResults-CapabilityStatement.json').extension[url='http://hl7.org/fhir/StructureDefinition/operationoutcome-file'].valueString~>$contains('[CapabilityStatement]_['))
+        ($ValidationResultsCapabilityStatement.extension[url='http://hl7.org/fhir/StructureDefinition/operationoutcome-file'].valueString~>$contains('[CapabilityStatement]_['))
       and
       /*check there are no errors*/
         $not('error' in $ValidationResultsCapabilityStatement.issue.severity)
@@ -20,13 +26,13 @@
   
   /*Prep pass & fail msg*/
     ;$msgPassed :={
-      'statusCode':'MapPassed'
-      ,'statusText':'Map Passed'
+      'statusCode':'passed'
+      ,'statusText':'Passed'
     }
   
     ;$msgFailed := {
-      'statusCode':'MapFailed'
-      ,'statusText':'Map Failed'
+      'statusCode':'failed'
+      ,'statusText':'Failed'
     }
 
   /*Write pass/fail msg based on test results*/

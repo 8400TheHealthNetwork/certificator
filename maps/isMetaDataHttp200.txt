@@ -3,7 +3,7 @@
   /*Write initial map status for UI to status file*/
     {
       'statusCode':'in-progress'
-      ,'statusText':'Map in-progress'
+      ,'statusText':'in-progress'
     } ~> $writeFile('actionStatus_isMetaDataHttp200.json')
 
   /*Perform test*/
@@ -11,13 +11,13 @@
 
   /*Prep pass & fail msg*/
     ;$msgPassed :={
-      'statusCode':'MapPassed'
-      ,'statusText':'Map Passed'
+      'statusCode':'passed'
+      ,'statusText':'Passed'
     }
   
     ;$msgFailed := {
-      'statusCode':'MapFailed'
-      ,'statusText':'Map Failed'
+      'statusCode':'failed'
+      ,'statusText':'Failed'
     }
 
   /*Write pass/fail msg based on test results*/

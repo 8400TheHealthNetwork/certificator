@@ -51,12 +51,18 @@ async function init () {
       console.log(chalk`Registered {green $${key}()} function binding`);
     };
     // register FHIR server URL parameter
-    fumeServer.registerBinding('fhirServer', newConfig.FHIR_SERVER_BASE);
+    const fhirServer: string = newConfig.FHIR_SERVER_BASE;
+    fumeServer.registerBinding('fhirServer', fhirServer);
+    console.log(chalk`Registered {yellow $fhirServer} parameter binding`);
     // set as the global server object
     setFumeServer(fumeServer);
+    console.log(chalk.grey('Registered FUME server'));
     // start warmup
+    console.log(chalk.grey('\u{23F3} FUME server warming up...'));
     await fumeServer.warmUp(newConfig);
+    console.log(chalk.grey('FUME server warmed up'));
     // load and register maps
+    console.log(chalk.grey('Loading maps...'));
     loadMapFiles();
     console.log(chalk.grey(`\u{2714}  Engine ready and listening on port ${port}`));
     process.send('ready');

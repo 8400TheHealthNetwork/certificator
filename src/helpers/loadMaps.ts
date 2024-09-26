@@ -3,6 +3,7 @@ import fs from 'fs-extra';
 import path from 'path';
 import { getFumeServer } from '../config';
 import kits from '../../kits.json';
+import chalk from 'chalk';
 
 const folderPath: string = path.join(path.resolve('.'), 'maps');
 
@@ -25,15 +26,17 @@ const cacheMapping = (mappingId: string, mappingExpr: string) => {
 };
 
 const clearMappingCache = () => {
+  console.log(chalk.grey('Clearing mapping cache...'));
   const mappingCache = getFumeServer().getCache().compiledMappings;
   const mappingIds = mappingCache.keys();
   mappingIds.forEach((key: string) => {
     mappingCache.remove(key);
   });
-  console.log('Cleared mapping cache');
+  console.log(chalk.grey('Mapping cache cleared'));
 };
 
 const checkAllActionsExist = (list: string[]) => {
+  console.log(chalk.grey('Ensuring all action maps exist...'));
   const actions = kits.actions;
   actions.forEach((action) => {
     const mappingId: string = action.mapping;
