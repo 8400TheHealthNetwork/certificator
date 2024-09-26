@@ -12,7 +12,7 @@
     ;$writeFile($CapabilityStatement,'CapabilityStatement.json')
   
   /*Get and Validate Capstat*/
-    ;$ValidationResultsCapabilityStatement := $validate('CapabilityStatement.json')
+    ;$ValidationResultsCapabilityStatement := $validate('CapabilityStatement.json', {'output': 'ValidationResults-CapabilityStatement.json'})
 
   /*Perform test*/
     ;$testResult := (
