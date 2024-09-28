@@ -90,11 +90,11 @@ class Certificator extends React.Component {
       } else {
         this.setState({
           treeData: flatTree,
+          selectedTest: this.state.selectedTest ? flatTree.find(node => node.id === this.state.selectedTest.id) : undefined,
           checkedTests: checkedTests ? checkedTests : this.state.checkedTests,
           treeMode: treeMode
         })
       }
-
     });
   }
 
@@ -247,8 +247,8 @@ class Certificator extends React.Component {
                         />
                         <div className="name" style={{ fontWeight: element.name === this.state.selectedTest?.name ? 600 : 400 }}>{element.name}</div>
                         {element.metadata?.status === 'in-progress' && <div className="loader"></div>}
-                        {(element.metadata?.status === 'passed' || element.metadata?.status === 'completed') && <MdCheck color="green"></MdCheck>}
-                        {(element.metadata?.status === 'failed' || element.metadata?.status === 'error') && <MdClose color="red"></MdClose>}
+                        {(element.metadata?.status === 'passed' || element.metadata?.status === 'completed') && <MdCheck className="icon" color="#248232"></MdCheck>}
+                        {(element.metadata?.status === 'failed' || element.metadata?.status === 'error') && <MdClose className="icon" color="#DB2B39"></MdClose>}
                       </div>
                     </div>
                   );

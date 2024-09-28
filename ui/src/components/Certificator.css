@@ -80,6 +80,7 @@
   .item {
     display: flex;
     width: 100%;
+    align-items: center;
   }
   
   .checkbox button {
@@ -104,22 +105,23 @@
     text-overflow: ellipsis;
     flex-shrink: 100;
   }
-
-  .passed {
-    color: green;
+  .icon {
+    height: 20px;
+    width: 20px;
   }
 
-  .failed {
-    color: red;
+  .abort {
+    background-color: #DB2B39;
   }
-
-  /* .abort {
-    background-color: red;
+  .abort:hover {
+    background-color: #DB2B39cc;
   }
-
-  .run {
-    background-color: green;
-  } */
+  .new {
+    background-color: #248232;
+  } 
+  .new:hover {
+    background-color: #248232cc;
+  } 
 
 .loader {
   width: 1em;
