@@ -237,8 +237,8 @@ class Certificator extends React.Component {
                         />
                         <div className="name" style={{ fontWeight: element.name === this.state.selectedTest?.name ? 600 : 400 }}>{element.name}</div>
                         {element.metadata?.status === 'in-progress' && <div className="loader"></div>}
-                        {element.metadata?.status === 'passed' && <MdCheck color="green"></MdCheck>}
-                        {element.metadata?.status === 'failed' && <MdClose color="red"></MdClose>}
+                        {(element.metadata?.status === 'passed' || element.metadata?.status === 'completed') && <MdCheck color="green"></MdCheck>}
+                        {(element.metadata?.status === 'failed' || element.metadata?.status === 'error') && <MdClose color="red"></MdClose>}
                       </div>
                     </div>
                   );
@@ -249,7 +249,7 @@ class Certificator extends React.Component {
             (<div className="properties">
               {Object.keys(this.state.selectedTest.metadata).map(key =>
                 <div key={key} className="property">
-                  <span className="property-key">{key}: </span>
+                  <span className="property-key">{key === 'status' ? 'Status' : key}: </span>
                   <span className="property-value">
                     <Anchorme target="_blank">{this.state.selectedTest.metadata[key]}</Anchorme>
                   </span>
