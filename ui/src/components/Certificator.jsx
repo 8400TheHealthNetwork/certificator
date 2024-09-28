@@ -73,13 +73,7 @@ class Certificator extends React.Component {
       const treeMode = (selectedKitStatus === 'completed' || selectedKitStatus === 'in-progress' || selectedKitStatus === 'aborted') ? 'disabled' : 'edit'
       let checkedTests;
       if (treeMode === 'disabled') {
-        checkedTests = 
-          flatTree.reduce((acc, node) => {
-            if (node.metadata?.status !== 'skipped' && node.parent && !node.isBranch) {
-              acc.push(node.id)
-            }
-            return acc;
-          }, [])
+        checkedTests = this.calculateInitialCheckedTests(tree)
       } else if (this.state.loadingTree || this.state.treeMode === 'disabled') {
         checkedTests = flatTree.map(node => node.id)
       }
@@ -104,6 +98,37 @@ class Certificator extends React.Component {
     });
   }
 
+  calculateInitialCheckedTests(tree) {
+    const checkedIds = [];
+    for (const child of tree.children) {
+      this.recFillChecked(child, checkedIds);
+    }
+    return checkedIds;
+  }
+
+  recFillChecked(node, checkedIds) {
+    if (node.metadata.status === 'skipped') {
+      return false
+    }
+
+    if (!node.children || node.children.length === 0) {
+      checkedIds.push(node.id)
+      return true
+    }
+
+    let allChildrenChecked = true;
+    for (const child of node.children) {
+      const childChecked = this.recFillChecked(child, checkedIds);
+      if (!childChecked) {
+        allChildrenChecked = false;
+      }
+    }
+
+    if (allChildrenChecked) {
+      checkedIds.push(node.id)
+    }
+  }
+
   onKitSelected(option) {
     const selectedKit = this.state.kits.find(kit => kit.id === option.value);
     this.setState({
@@ -113,7 +138,6 @@ class Certificator extends React.Component {
   }
 
   async onRunClicked() {
-    console.log(this.getCheckedIds())
     await axios.post(`${getKitsUrl}/$run`,
       {
         kitId: this.state.selectedKit.id,
@@ -135,7 +159,6 @@ class Certificator extends React.Component {
   getCheckedIds() {
     if (this.state.userTreeState) {
       const checkedIds = []
-      console.log(this.state.userTreeState)
       for (const selectedId of this.state.userTreeState.selectedIds) {
         const node = this.state.treeData.find(node => node.id === selectedId);
         if (node.children.length === 0) {
