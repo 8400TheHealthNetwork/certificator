@@ -127,6 +127,8 @@ class Certificator extends React.Component {
     if (allChildrenChecked) {
       checkedIds.push(node.id)
     }
+
+    return allChildrenChecked;
   }
 
   onKitSelected(option) {
