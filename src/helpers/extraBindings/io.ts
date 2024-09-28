@@ -17,6 +17,7 @@ export const writeFile = (content: any[], fileName: string) => {
   } else {
     data = JSON.stringify(content);
   }
+  // console.log(`Writing to ${filePath}, content type is ${typeof data}`);
   fs.writeFileSync(filePath, data);
   // console.log(`File ${filePath} created successfully.`);
 };

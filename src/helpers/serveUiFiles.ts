@@ -51,7 +51,7 @@ const getFileContent = (route: string) => {
   }
 };
 
-export const getUiRoute = (route: string, res: Response) => {
+export const serveUiRoute = (route: string, res: Response) => {
   const content = getFileContent(route);
   if (content) {
     const filename = content?.filename;

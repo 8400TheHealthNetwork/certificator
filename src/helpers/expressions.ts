@@ -6,14 +6,26 @@ export const getKitTransformer: Expression = jsonata(`
       $actionsMap := actions{
         id: {'description': description, 'mapping': mapping}
       };
+
+      $kitStatus := $getKitStatus($kitId);
+
+      $calcStatus := function($children){(
+        $count($children[metadata.status = 'in-progress']) > 0 ? 'in-progress' : (
+          $count($children[metadata.status = 'skipped']) = $count($children) ? 'skipped' : (
+            $count($children[metadata.status in ['skipped','completed','passed','failed','error']]) = $count($children) ? 'completed' : (
+              $count($children[metadata.status in ['skipped','ready']]) = $count($children) ? 'ready' : 'unknown'
+            )
+          )
+        )
+      )};
   
-      kits[id=$kitId].{
+      $kitTree := kits[id=$kitId].{
         'children': children.{
           'id': id,
           'name': name,
-          'metadata': description ? {
+          'metadata': {
             'description': description,
-            'status': 'ready'
+            'status': $kitStatus
           },
           'children': children.{
             'id': id,
@@ -27,7 +39,7 @@ export const getKitTransformer: Expression = jsonata(`
               'metadata': {
                 'Test Name': name,
                 'Description': description,
-                'Status': $getTestStatus(id),
+                'status': $getTestStatus(id),
                 'Details': details,
                 'Actions': '\n' & (actions#$i.(
                   $string($i + 1) & '. ' & $lookup($actionsMap, $).description & ' (' & $getActionStatus($lookup($actionsMap, $).mapping).statusText & ')'
@@ -36,7 +48,9 @@ export const getKitTransformer: Expression = jsonata(`
             }[]
           }[]
         }[]
-      }
+      };
+      $kitTree := $kitTree ~> |children.children|{'metadata': {'status': $calcStatus(children)}}|;
+      $kitTree := $kitTree ~> |children|{'metadata': {'status': $calcStatus(children)}}|;
     )
   `);
 
@@ -68,11 +82,16 @@ export const getSelectedTests: Expression = jsonata(`
   `
 );
 
+export const getSkippedTests: Expression = jsonata(`
+  tests[skipped=true].testId[]
+`
+);
+
 export const getTestActions: Expression = jsonata(`
     $kits.kits.children.children.children[id=$testId].actions.(
       $actionId := $;
-      $kits.actions[id=$actionId].mapping[]
-    )
+      $kits.actions[id=$actionId].mapping
+    )[]
   `
 );
 

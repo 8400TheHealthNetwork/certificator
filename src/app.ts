@@ -13,6 +13,7 @@ import {
   getKitsTransformer,
   runWorkflowTransformer,
   getSelectedTests,
+  getSkippedTests,
   getTestActions,
   runTestListExpr,
   runActionListExpr,
@@ -24,7 +25,7 @@ import cors from 'cors';
 import express from 'express';
 import axios from 'axios';
 import kits from '../kits.json';
-import { getUiRoute } from './helpers/getUiFileFromDisk';
+import { serveUiRoute } from './helpers/serveUiFiles';
 import chalk from 'chalk';
 import type { Express, Request, Response } from 'express';
 
@@ -40,10 +41,23 @@ const engineApi = axios.create({
   baseURL: `http://localhost:${enginePort.toString()}`
 });
 
-const getKitStatus = (kitId: string) => {
-  const kitStatusFilePath = path.join(currentRunDir, 'kitStatus.json');
-  if (fs.existsSync(kitStatusFilePath)) {
-    const kitStatusFileContent = JSON.parse(fs.readFileSync(kitStatusFilePath).toString());
+const kitStatusFilePath = path.join(currentRunDir, 'kitStatus.json');
+const workflowFilePath = path.join(currentRunDir, 'workflow.json');
+const testStatusFilePath: Function = (testId: string) => path.join(currentRunDir, `testStatus_${testId}.json`);
+const actionStatusFilePath: Function = (mappingId: string): string => path.join(ioDir, `actionStatus_${mappingId}.json`);
+
+const readJsonFile = async (filePath: string) => {
+  const content: string = (await fs.readFile(filePath)).toString();
+  return content === '' ? {} : JSON.parse(content);
+};
+const writeJsonFile = async (filePath: string, content: any) => await fs.writeFile(filePath, JSON.stringify(content, null, 2));
+
+const getKitStatus = async (kitId: string) => {
+  // if there's a kit status file then read it and see if it's referring to the requested kit id
+  // if no kit status file found OR it is not referring to the kit then the status is 'ready'
+  // otherwise - the status in the file is the kit status
+  if (await fs.exists(kitStatusFilePath)) {
+    const kitStatusFileContent = await readJsonFile(kitStatusFilePath);
     if (kitStatusFileContent?.kitId === kitId) {
       return kitStatusFileContent?.status;
     };
@@ -51,23 +65,22 @@ const getKitStatus = (kitId: string) => {
   return 'ready';
 };
 
+const setKitStatus = async (kitId: string, status: string, details?: string) => {
+  await writeJsonFile(kitStatusFilePath, { kitId, status, details });
+};
+
 const getTestStatus = async (testId: string) => {
-  const testStatusFilePath: string = path.join(currentRunDir, `testStatus_${testId}.json`);
-  if (await fs.exists(testStatusFilePath)) {
-    const testStatusFileContent = JSON.parse((await fs.readFile(testStatusFilePath)).toString());
+  if (await fs.exists(testStatusFilePath(testId))) {
+    const testStatusFileContent = await readJsonFile(testStatusFilePath(testId));
     return testStatusFileContent?.status;
   };
   return 'ready';
 };
 
 const getActionStatus = async (mappingId: string) => {
-  const actionStatusFilePath = path.join(ioDir, `actionStatus_${mappingId}.json`);
-  if (await fs.exists(actionStatusFilePath)) {
-    const actionStatusFileContent = JSON.parse((await fs.readFile(actionStatusFilePath)).toString());
-    return {
-      statusCode: actionStatusFileContent?.statusCode,
-      statusText: actionStatusFileContent?.statusText
-    };
+  if (await fs.exists(actionStatusFilePath(mappingId))) {
+    const actionStatusFileContent = await readJsonFile(actionStatusFilePath(mappingId));
+    return actionStatusFileContent;
   };
   return {
     statusCode: 'ready',
@@ -82,41 +95,57 @@ const getKits = async (res: Response) => {
 
 const getKit = async (req: Request, res: Response) => {
   const kitId: string = req.originalUrl.substring(10);
-  const transformed = await getKitTransformer.evaluate(kits, { kitId, getActionStatus, getTestStatus });
+  const transformed = await getKitTransformer.evaluate(kits, { kitId, getKitStatus, getActionStatus, getTestStatus });
   res.status(200).json(transformed);
 };
 
 const runTest = async (testId: string) => {
-  const testStatusFilePath: string = path.join(currentRunDir, `testStatus_${testId}.json`);
-  const testStatusJson = {
-    status: 'init'
-  };
+  console.log(`Starting execution of test ${testId}`);
   const actionsToRun: string[] = await getTestActions.evaluate({}, { kits, testId });
-  fs.writeFileSync(testStatusFilePath, JSON.stringify(testStatusJson, null, 2));
+  let errorDetails: string;
+  await setTestStatus(testId, 'in-progress');
   try {
     await runActionList(actionsToRun);
-    const lastActionStatus: string = (await getActionStatus(actionsToRun[actionsToRun.length - 1])).statusCode;
-    fs.writeFileSync(testStatusFilePath, JSON.stringify({ status: lastActionStatus }, null, 2));
   } catch (e) {
-    const details: string = (e instanceof Error) ? `${e.name}: ${e.message}` : undefined;
-    fs.writeFileSync(testStatusFilePath, JSON.stringify({ status: 'error', details }, null, 2));
-  }
+    errorDetails = (e instanceof Error) ? `${e.name}: ${e.message}` : JSON.stringify(e);
+    console.log(`Error executing test ${testId}. Details: ${errorDetails}`);
+  };
+  const lastMappingId: string = actionsToRun[actionsToRun.length - 1];
+  const lastActionStatusJson = await getActionStatus(lastMappingId);
+  errorDetails = errorDetails ?? lastActionStatusJson?.details;
+  const testStatus: string = errorDetails ? 'error' : lastActionStatusJson.statusCode;
+  await setTestStatus(testId, testStatus, errorDetails);
+};
+
+const setActionStatus = async (mappingId: string, statusCode: string, statusText: string, details?: string) => {
+  await writeJsonFile(actionStatusFilePath(mappingId), { statusCode, statusText, details });
+};
+
+const setTestStatus = async (testId: string, status: string, details?: string) => {
+  await writeJsonFile(testStatusFilePath(testId), { status, details });
+};
+
+const setSkippedTests = async (skippedTests: string[]) => {
+  skippedTests.forEach(async (testId: string) => await setTestStatus(testId, 'skipped'));
 };
 
 const runAction = async (mappingId: string) => {
   // only run action if it did not run already
-  const statusJson = await getActionStatus(mappingId);
-  if (statusJson.statusCode === 'ready') {
-    const actionStatusFilePath = path.join(ioDir, `actionStatus_${mappingId}.json`);
-    fs.writeFileSync(actionStatusFilePath, JSON.stringify({ statusCode: 'init', statusText: 'Initiated' }, null, 2));
+  const initialStatusJson = await getActionStatus(mappingId);
+  if (initialStatusJson.statusCode === 'ready') {
+    await setActionStatus(mappingId, 'init', 'Initialized');
     try {
+      console.log(`Executing mapping ${mappingId}`);
       await engineApi.post(`/Mapping/${mappingId}`, {});
-      if (!fs.existsSync(actionStatusFilePath)) {
-        fs.writeFileSync(actionStatusFilePath, JSON.stringify({ statusCode: 'completed', statusText: 'Completed' }, null, 2));
-      }
+      const currentActionStatus = await getActionStatus(mappingId);
+      if (currentActionStatus?.statusCode === 'in-progress') {
+        await setActionStatus(mappingId, 'completed', 'Completed');
+      };
+      console.log(`Mapping ${mappingId} execution finished`);
     } catch (e) {
-      const details: string = (e instanceof Error) ? `${e.name}: ${e.message}` : undefined;
-      fs.writeFileSync(actionStatusFilePath, JSON.stringify({ statusCode: 'error', statusText: 'Error', details }, null, 2));
+      const details: string = (e instanceof Error) ? `${e.name}: ${e.message}` : JSON.stringify(e);
+      console.log(`Error executing mapping ${mappingId}. Details: ${details}`);
+      await setActionStatus(mappingId, 'error', 'Error', details);
     }
   }
 };
@@ -130,46 +159,72 @@ const runActionList = async (actionList: string[]) => {
 };
 
 const runKit = async (req: Request, res: Response) => {
-  res.status(202).send('Accepted');
-  const kitId: string = req.body.kitId;
-  const selectedTests: string[] = req.body.selected;
-  const workflow = await runWorkflowTransformer.evaluate(kits, { kitId, selectedTests });
-  const kitStatusJsonPath: string = path.join(currentRunDir, 'kitStatus.json');
-  fs.ensureDirSync(currentRunDir);
-  fs.writeFileSync(path.join(currentRunDir, 'workflow.json'), JSON.stringify(workflow, null, 2));
-  const testsToRun: string[] = await getSelectedTests.evaluate(workflow);
-  fs.writeFileSync(kitStatusJsonPath, JSON.stringify({ kitId, status: 'in-progress' }, null, 2));
+  const kitId: string = req.body?.kitId;
+  let testsToRun: string[];
+  let skippedTests: string[];
+  if (typeof kitId === 'string' && kitId.length > 0) {
+    const currentKitStatus: string = await getKitStatus(kitId);
+    if (currentKitStatus === 'ready') {
+      try {
+        const selectedTests: string[] = req.body.selected;
+        if (Array.isArray(selectedTests) && selectedTests.length > 0) {
+          const workflow = await runWorkflowTransformer.evaluate(kits, { kitId, selectedTests });
+          [testsToRun, skippedTests] = await Promise.all([getSelectedTests.evaluate(workflow), getSkippedTests.evaluate(workflow), fs.ensureDir(currentRunDir)]);
+          await Promise.all([writeJsonFile(workflowFilePath, workflow), setKitStatus(kitId, 'in-progress'), setSkippedTests(skippedTests)]);
+        } else {
+          res.status(400).send(`No tests were selected: 'selected' must be an array of strings, recieved ${selectedTests}`);
+          return;
+        }
+      } catch (e) {
+        const details: string = (e instanceof Error) ? `${e.name}: ${e.message}` : undefined;
+        res.status(500).send(details ?? JSON.stringify(e));
+        return;
+      };
+    } else {
+      res.status(403).send(`Cannot run Kit '${kitId}' because it's status is '${currentKitStatus}'`);
+      return;
+    }
+  } else {
+    res.status(400).send('Invalid or missing Kit ID');
+    return;
+  };
   try {
+    res.status(202).send('Accepted');
     await runTestList(testsToRun);
-    fs.writeFileSync(kitStatusJsonPath, JSON.stringify({ kitId, status: 'completed' }, null, 2));
+    await setKitStatus(kitId, 'completed');
   } catch (e) {
     const details: string = (e instanceof Error) ? `${e.name}: ${e.message}` : undefined;
-    fs.writeFileSync(kitStatusJsonPath, JSON.stringify({ kitId, status: 'error', details }, null, 2));
+    await setKitStatus(kitId, 'error', details ?? JSON.stringify(e));
   }
 };
 
-const abortRun = (res?: Response) => {
-  if (res) res.status(202).send('Accepted');
-  const kitStatusFilePath: string = path.join(currentRunDir, 'kitStatus.json');
-  if (fs.existsSync(kitStatusFilePath)) {
-    const kitStatusFileContent = JSON.parse(fs.readFileSync(kitStatusFilePath).toString());
-    const kitId: string = kitStatusFileContent.kitId;
-    const currentStatus: string = kitStatusFileContent.status;
-    if (currentStatus === 'in-progress') fs.writeFileSync(path.join(currentRunDir, 'kitStatus.json'), JSON.stringify({ kitId, status: 'aborted' }, null, 2));
+const abortRun = async (res?: Response) => {
+  const kitFileExists = await fs.exists(kitStatusFilePath);
+  const kitStatusFileContent = kitFileExists ? await readJsonFile(kitStatusFilePath) : undefined;
+  let kitId: string;
+  let currentStatus: string;
+  if (kitStatusFileContent) {
+    kitId = kitStatusFileContent?.kitId;
+    currentStatus = kitStatusFileContent?.status;
+  };
+  if (typeof kitId === 'string' && currentStatus === 'in-progress') {
+    await setKitStatus(kitId, 'aborted');
+    if (res) res.status(202).send('Accepted');
+  } else {
+    if (res) res.status(403).send('Cannot abort, no Kit is currently running.');
   }
 };
 
-const stashRun = (res: Response) => {
+const stashRun = async (res: Response) => {
   // move current run dir into stash and clear it
-  const workflowFilePath = path.join(currentRunDir, 'workflow.json');
-  if (fs.existsSync(workflowFilePath)) {
-    const workflowFileContent = JSON.parse(fs.readFileSync(workflowFilePath).toString());
+  if (await fs.exists(workflowFilePath)) {
+    const workflowFileContent = await readJsonFile(workflowFilePath);
     const runTimestamp = workflowFileContent?.timestamp;
     const stashDir: string = path.join(workingDir, 'runs', runTimestamp);
-    fs.renameSync(currentRunDir, stashDir);
-    fs.copySync(ioDir, path.join(stashDir, 'io'));
-    fs.removeSync(ioDir);
-    fs.ensureDirSync(ioDir);
+    await fs.rename(currentRunDir, stashDir);
+    await fs.copy(ioDir, path.join(stashDir, 'io'));
+    await fs.remove(ioDir);
+    await fs.ensureDir(ioDir);
     ensureRunsDir();
   }
   res.status(200).send('Stashed');
@@ -191,22 +246,22 @@ const handler = async (req: Request, res: Response) => {
       }
     } else {
       // handle all else (assuming it's a ui file)
-      getUiRoute(route, res);
+      serveUiRoute(route, res);
     }
   } else if (method === 'post') {
     if (route === '/api/kits/$run') {
       await runKit(req, res);
     } else if (route === '/api/kits/$abort') {
-      abortRun(res);
+      await abortRun(res);
     } else if (route === '/api/kits/$stash') {
-      stashRun(res);
+      await stashRun(res);
     } else {
       res.status(404).send('Not found');
     }
   };
 };
 
-const startExpress = () => {
+const ServeUi = () => {
   // setup and start express app after engine is ready
   app.use(cors());
   app.use(express.json({ limit: '50mb', type: ['application/json'] }));
@@ -222,13 +277,12 @@ const ensureCleanStart = async () => {
   checkValidator();
   checkMaps();
   ensureRunsDir();
-  abortRun();
+  await abortRun();
+  console.log(chalk.grey('Ensuring referential integrity in kits.json...'));
   await validateTree.evaluate(kits);
 };
 
-const printFailedStartup = () => {
-  console.log(chalk.bold.red('Certificator startup failed \u{1F61E}'));
-};
+const printFailedStartup = () => console.log(chalk.bold.red('Certificator startup failed \u{1F61E}'));
 
 const init = async () => {
   try {
@@ -251,7 +305,7 @@ const init = async () => {
     });
 
     engine.on('message', (message) => {
-      if (message === 'ready') startExpress();
+      if (message === 'ready') ServeUi();
     });
   } catch (err) {
     // eslint-disable-next-line @typescript-eslint/dot-notation
