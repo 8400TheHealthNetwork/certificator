@@ -34,11 +34,11 @@ class Certificator extends React.Component {
   }
 
   componentDidMount() {
-    this.initialLoadKits()
+    this.updateKits()
     setInterval(() => this.updateKits(), 1000);
   }
 
-  async initialLoadKits() {
+  async updateKits() {
     await axios.get(getKitsUrl).then((res) => {
       const kits = res.data.kits;
       const runningKit = kits.find(kit => kit.status === 'in-progress');
@@ -55,52 +55,8 @@ class Certificator extends React.Component {
       }
       this.setState({
         loadingKits: false,
-        loadingTree: true,
         kits: kits,
         selectedKit: selectedKit,
-        runningKit: runningKit,
-      }, () => this.initialLoadTree())
-    });
-  }
-
-  async initialLoadTree() {
-    if (!this.state.selectedKit) return;
-    const kitId = this.state.selectedKit.id;
-    await axios.get(`${getKitsUrl}/${kitId}`).then((res) => {
-      if (!this.state.selectedKit || kitId !== this.state.selectedKit.id) return
-      const tree = res.data;
-      const flatTree = flattenTree(tree);
-      const selectedKitStatus = this.state.selectedKit.status;
-      const treeMode = (selectedKitStatus === 'completed' || selectedKitStatus === 'aborted') ? 'disabled' : 'edit'
-      let checkedTests;
-      if (treeMode === 'disabled') {
-        checkedTests = /*this.state.checkedTests.length > 0 ? this.state.checkedTests :*/
-          flatTree.reduce((acc, node) => {
-            if (node.metadata?.status !== 'skipped' && node.parent && !node.isBranch) {
-              acc.push(node.id)
-            }
-            return acc;
-          }, [])
-      } else {
-        checkedTests = flatTree.map(node => node.id)
-      }
-      this.setState({
-        loadingTree: false,
-        treeData: flatTree,
-        checkedTests: checkedTests,
-        selectedTest: undefined,
-        treeMode: treeMode,
-        userTreeState: undefined,
-      })
-    });
-  }
-
-  async updateKits() {
-    await axios.get(getKitsUrl).then((res) => {
-      const kits = res.data.kits;
-      const runningKit = kits.find(kit => kit.status === 'in-progress');
-      this.setState({
-        kits: kits,
         runningKit: runningKit,
       }, () => this.updateTree())
     });
@@ -113,9 +69,38 @@ class Certificator extends React.Component {
       if (!this.state.selectedKit || kitId !== this.state.selectedKit.id) return
       const tree = res.data;
       const flatTree = flattenTree(tree);
-      this.setState({
-        treeData: flatTree,
-      })
+      const selectedKitStatus = this.state.selectedKit.status;
+      const treeMode = (selectedKitStatus === 'completed' || selectedKitStatus === 'in-progress' || selectedKitStatus === 'aborted') ? 'disabled' : 'edit'
+      let checkedTests;
+      if (treeMode === 'disabled') {
+        checkedTests = 
+          flatTree.reduce((acc, node) => {
+            if (node.metadata?.status !== 'skipped' && node.parent && !node.isBranch) {
+              acc.push(node.id)
+            }
+            return acc;
+          }, [])
+      } else if (this.state.loadingTree || this.state.treeMode === 'disabled') {
+        checkedTests = flatTree.map(node => node.id)
+      }
+
+      if (this.state.loadingTree) {
+        this.setState({
+          loadingTree: false,
+          treeData: flatTree,
+          checkedTests: checkedTests,
+          selectedTest: undefined,
+          treeMode: treeMode,
+          userTreeState: undefined,
+        })
+      } else {
+        this.setState({
+          treeData: flatTree,
+          checkedTests: checkedTests ? checkedTests : this.state.checkedTests,
+          treeMode: treeMode
+        })
+      }
+
     });
   }
 
@@ -124,7 +109,7 @@ class Certificator extends React.Component {
     this.setState({
       selectedKit: selectedKit,
       loadingTree: true,
-    }, () => this.initialLoadTree())
+    }, () => this.updateTree())
   }
 
   async onRunClicked() {
