@@ -1,6 +1,8 @@
 import jsonata from 'jsonata';
 import type { Expression } from 'jsonata';
 
+const tzOffset = (new Date().getTimezoneOffset()) * 60 * 1000 * (-1);
+
 export const getKitTransformer: Expression = jsonata(`
     (
       $actionsMap := actions{
@@ -67,7 +69,7 @@ export const getKitsTransformer: Expression = jsonata(`
 
 export const runWorkflowTransformer: Expression = jsonata(`
       {
-        'timestamp': $fromMillis($millis(), '[Y0000]-[M00]-[D00]_[H00][m00][s00]'),
+        'timestamp': $fromMillis($millis()+${tzOffset}, '[Y0000]-[M00]-[D00]_[H00][m00][s00]'),
         'kitId': $kitId,
         'tests': kits[id = $kitId].children.children.children.{
           'testId': id,
@@ -241,3 +243,141 @@ export const addMockKit: Expression = jsonata(`(
     'kits': $allKits
   }
 )`);
+
+export const reportRunSettings: Expression = jsonata(`
+  (
+    $kitName := $kits.kits[id=$kitId].name;
+
+    $flatKit := kit.children.children.children.{
+      'testId': id,
+      'testName': name,
+      'subGroupId': %.id,
+      'subGroupName': %.name,
+      'groupId': %.%.id,
+      'groupName': %.%.name
+    };
+
+    $getTestMetadata := function($testId){(
+      $flatKit[testId = $testId]
+    )};
+
+    $runSettings := {
+        "id": "run-settings",
+        "title": 'Kit: ' & $kitName & ' | Run Settings',
+        "type": "table",
+        "columns": [
+          {
+            "property": "group",
+            "label": "Group"
+          },
+          {
+            "property": "subGroup",
+            "label": "Sub Group"
+          },
+          {
+            "property": "test",
+            "label": "Test Name"
+          },
+          {
+            "property": "checked",
+            "label": "Checked / Unchecked"
+          }
+        ],
+        "data": [workflow.tests.(
+          $testId := testId;
+          $skipped := skipped;
+          $testMeta := $getTestMetadata($testId);
+          $testMeta.{
+            'group': groupName,
+            'subGroup': subGroupName,
+            'test': testName,
+            'checked': $skipped ? 'unchecked' : 'checked'
+          }
+        )]
+      };
+
+      $runSummary := {
+        "id": "run-summary",
+        "title": 'Run Summary | Executed: ' & $substringBefore(workflow.timestamp, '_') & ' at ' & $substring(workflow.timestamp, 11,2) & ':' & $substring(workflow.timestamp, 13,2) & ':' & $substring(workflow.timestamp, 15,2),
+        "type": "table",
+        "columns": [
+          {
+            "property": "group",
+            "label": "Group"
+          },
+          {
+            "property": "subGroup",
+            "label": "Sub Group"
+          },
+          {
+            "property": "test",
+            "label": "Test Name"
+          },
+          {
+            "property": "status",
+            "label": "Status"
+          },
+          {
+            "property": "error",
+            "label": "Error Message"
+          }
+        ],
+        "data": [workflow.tests[skipped=false].(
+          $testId := testId;
+          $status := $getTestStatus($testId);
+          $testMeta := $getTestMetadata($testId);
+          $testMeta.{
+            'group': groupName,
+            'subGroup': subGroupName,
+            'test': testName,
+            'status': $status,
+            'error': $status = 'error' ? $getTestErrorDetails($testId)
+          }
+        )]
+      };
+
+      $runAttributes := {
+        'id': 'run-attributes',
+        'title': 'Run Attributes',
+        'type': 'table',
+        'columns': [
+          {
+            'property': 'key',
+            'label': 'Attribute'
+          },
+          {
+            'property': 'value',
+            'label': 'Value'
+          }
+        ],
+        'data': [
+          {
+            'key': 'Kit Name',
+            'value': $kitName
+          },
+          {
+            'key': 'Execution Date',
+            'value': $substringBefore(workflow.timestamp, '_')
+          },
+          {
+            'key': 'Execution Time',
+            'value':  $substring(workflow.timestamp, 11,2) & ':' & $substring(workflow.timestamp, 13,2) & ':' & $substring(workflow.timestamp, 15,2)
+          },
+          {
+            'key': 'User Profile',
+            'value':  $userProfile
+          },
+          {
+            'key': 'User Home Dir',
+            'value':  $userHomeDir
+          }
+        ]
+      };
+
+
+      {
+        'charts': [$runAttributes, $runSettings, $runSummary]
+      }
+
+    )
+  `);

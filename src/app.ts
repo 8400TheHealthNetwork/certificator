@@ -33,7 +33,7 @@ import type { Express, Request, Response } from 'express';
 
 dotenv.config();
 
-let kits = kitsFile;
+export let kits = kitsFile;
 const port: number = 8400;
 const enginePort: number = 8401;
 
@@ -54,17 +54,17 @@ let engine = newEngine();
 
 const kitStatusFilePath = path.join(currentRunDir, 'kitStatus.json');
 const workflowFilePath = path.join(currentRunDir, 'workflow.json');
-const testStatusFilePath: Function = (testId: string) => path.join(currentRunDir, `testStatus_${testId}.json`);
+export const testStatusFilePath: Function = (testId: string) => path.join(currentRunDir, `testStatus_${testId}.json`);
 const actionStatusFilePath: Function = (mappingId: string): string => path.join(ioDir, `actionStatus_${mappingId}.json`);
 
-const readJsonFile = async (filePath: string) => {
+export const readJsonFile = async (filePath: string) => {
   const content: string = (await fs.readFile(filePath)).toString();
   return content === '' ? {} : JSON.parse(content);
 };
 
 const writeJsonFile = async (filePath: string, content: any) => await fs.writeFile(filePath, JSON.stringify(content, null, 2));
 
-const getKitStatus = async (kitId: string) => {
+export const getKitStatus = async (kitId: string) => {
   // if there's a kit status file then read it and see if it's referring to the requested kit id
   // if no kit status file found OR it is not referring to the kit then the status is 'ready'
   // otherwise - the status in the file is the kit status
@@ -81,7 +81,7 @@ const setKitStatus = async (kitId: string, status: string, details?: string) => 
   await writeJsonFile(kitStatusFilePath, { kitId, status, details });
 };
 
-const getTestStatus = async (testId: string) => {
+export const getTestStatus = async (testId: string) => {
   if (await fs.exists(testStatusFilePath(testId))) {
     const testStatusFileContent = await readJsonFile(testStatusFilePath(testId));
     return testStatusFileContent?.status;
@@ -89,7 +89,7 @@ const getTestStatus = async (testId: string) => {
   return 'ready';
 };
 
-const getActionStatus = async (mappingId: string) => {
+export const getActionStatus = async (mappingId: string) => {
   if (await fs.exists(actionStatusFilePath(mappingId))) {
     const actionStatusFileContent = await readJsonFile(actionStatusFilePath(mappingId));
     return actionStatusFileContent;
@@ -277,7 +277,7 @@ const handler = async (req: Request, res: Response) => {
       }
     } else {
       // handle all else (assuming it's a ui file)
-      serveUiRoute(route, res);
+      await serveUiRoute(route, res);
     }
   } else if (method === 'post') {
     if (route === '/api/kits/$run') {
