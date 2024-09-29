@@ -1,0 +1,13 @@
+// doSamplingInput - Create input for sampling
+(
+  $samplingInput := $readFile('$ILInformationBins.json').resourceTypes.{
+    'resourceType' : resourceType
+    ,"amountToCollect" : $sampleSize
+    ,"minDate" : $fromMillis($toMillis($now())-historicalDepthYears*365*24*60*60*1000) /*Sample historical data as defined*/
+    ,"maxDate" : $fromMillis($toMillis($now())-30*24*60*60*1000) /*Sample 1 month into the future*/
+    ,"searchParam" : searchParam
+    ,"elementName" : elementName
+  }
+
+  ;$writeFile($samplingInput,'samplingInput.json')
+)

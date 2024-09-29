@@ -1,11 +1,12 @@
+// ?
 /*Sample resources based on params & write each to file*/
 
 (
-  $info({'=========> Map start <=========' : $now()});
+  $warning({'=========> Map start <=========' : $now()});
   
   /* get the base url of the fhir server by making a dummy search */
   $baseUrl := $search('Patient', {'name': 'test'}).link[relation='self'].url.$split('/Patient')[0];
-  /* set the maximum number of failed search attempts */
+  /* set the m  ximum number of failed search attempts */
   $maxFailedAttempts := 5;
   /* set delay seed size that is equivalent to approx. one second */
   $seedPerSecond := 600000;
@@ -119,6 +120,7 @@
     $attempt();
   )};
 
+
   /* date generator function */
   $newRandomDate := function($min, $max){(
     $minMs := $toMillis($min);
@@ -139,6 +141,7 @@
       $geBundle := $search($resourceType & '?' & $searchParam & '=ge' & $date & '&' & $searchParam & '=le' & $fromMillis($toMillis($date)+172800000) & '&_sort=' & $searchParam & '&_count=' & $pageSize);
 	  /*$search($resourceType, {$searchParam: ['ge' & $date, 'le' & $fromMillis($toMillis($date)+6000000)], '_sort': $searchParam, '_count': $pageSize})*/
       $info({'$geBundle count': $count($geBundle.entry)});
+
       $leBundle := $search($resourceType & '?' & $searchParam & '=le' & $date & '&' & $searchParam & '=ge' & $fromMillis($toMillis($date)-172800000) & '&_sort=' & $searchParam & '&_count=' & $pageSize);
 	  /*$search($resourceType, {$searchParam: ['le' & $date, 'ge' & $fromMillis($toMillis($date)-6000000)], '_sort': '-' & $searchParam, '_count': $pageSize})*/
       $info({'$leBundle count': $count($leBundle.entry)});
@@ -190,14 +193,14 @@
 
   /* wrapper function that does the collection of the list of resources */
   $collectResources := function($resourceType, $amountToCollect, $minDate, $maxDate, $searchParam, $elementName){(
-    $info('$collectResources called');
-    $info({'$resourceType, $amountToCollect, $minDate, $maxDate, $searchParam, $elementName': [$resourceType, $amountToCollect, $minDate, $maxDate, $searchParam, $elementName]});
+    $warning('$collectResources called');
+    $warning({'$resourceType, $amountToCollect, $minDate, $maxDate, $searchParam, $elementName': [$resourceType, $amountToCollect, $minDate, $maxDate, $searchParam, $elementName]});
     /* iteration function that adds resources recursively, as long as: */
     /* 1. the previous step succeeded in finding a new resource */
     /* 2. the requested amount hasn't been collected yet */
     $iterator := function($currentList, $previousList){(
-      $info('$iterator called with following params');
-      $info({'$currentList count = ' : $count($currentList), '$previousList count = ': $count($previousList)});
+      $warning('$iterator called with following params');
+      $warning({'$currentList count = ' : $count($currentList), '$previousList count = ': $count($previousList)});
       $count($currentList)>0 and ($count($currentList) = $count($previousList) or $count($currentList) >= $amountToCollect) ? (
         /* the stop condition is met - return list and stop iterating */
         $currentList
@@ -218,18 +221,18 @@
 
   /*call the wrapper function with relevant keys, values will come from inputcall the wrapper function with relevant keys, values will come from input*/
    $instancesList := $collectResources(resourceType, amountToCollect, minDate, maxDate, searchParam, elementName);
+   
+   $warning('$instancesList => '&$instancesList);
 
 /*Write sampled resources to IO folder*/
   /*resolve the list of resource ids to get the full resources*/
    $instancesListResources := $instancesList.$resolve($);
 
   /*for each resource, create file by naming convention*/
-   $instancesListResources.$writeFile($,'['& $.resourceType &']_['& $.id &'].json')
+   $instancesListResources.$writeFile($,'['& $.resourceType &']_['& $.id &'].json');
 
-/*testing the function:*/ 
-  /*$minDate := '1950-01-01';*/
-  /*$maxDate := $now();*/
-  /*$collectResources('Patient', 7, $minDate, $maxDate, 'birthdate', 'birthDate');*/
+/*testing the function with array input*/
+  $.$collectResources(resourceType,amountToCollect,minDate,maxDate,searchParam,elementName)
 
 /*Example input (derived from the above example)*/
     /*{*/
