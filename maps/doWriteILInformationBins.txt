@@ -1,0 +1,365 @@
+// Create $ILInformationBins.json
+(
+  $ILInformationBins := [
+    {
+      "code": "PatientDemographics",
+      "display": "דמוגרפיה",
+      "resourceTypes": [
+        {
+          "resourceType": "Patient",
+          "amountToCollect": 1000,
+          "historicalDepthYears": 200,
+          "searchParam": "birthdate",
+          "elementName": "birthDate"
+        }
+      ]
+    },
+    {
+      "code": "ParticipationInResearch",
+      "display": "שיוך למחקר",
+      "resourceTypes": [
+        {
+          "resourceType": "ResearchSubject",
+          "amountToCollect": 1000,
+          "historicalDepthYears": 5,
+          "searchParam": "date",
+          "elementName": "period"
+        }
+      ]
+    },
+    {
+      "code": "Diagnoses",
+      "display": "אבחנות",
+      "resourceTypes": [
+        {
+          "resourceType": "?",
+          "amountToCollect": 1000,
+          "historicalDepthYears": 200,
+          "searchParam": "?",
+          "elementName": "?"
+        }
+      ]
+    },
+    {
+      "code": "AllergiesAndIntolerances",
+      "display": "רגישויות",
+      "resourceTypes": [
+        {
+          "resourceType": "?",
+          "amountToCollect": 1000,
+          "historicalDepthYears": 200,
+          "searchParam": "?",
+          "elementName": "?"
+        }
+      ]
+    },
+    {
+      "code": "EncounterInformation",
+      "display": "ביקורים",
+      "resourceTypes": [
+        {
+          "resourceType": "Encounter",
+          "amountToCollect": 1000,
+          "historicalDepthYears": 5,
+          "searchParam": "date",
+          "elementName": "period"
+        }
+      ]
+    },
+    {
+      "code": "ClinicalNotes",
+      "display": "סיכומים",
+      "resourceTypes": [
+        {
+          "resourceType": "DocumentReference",
+          "amountToCollect": 1000,
+          "historicalDepthYears": 5,
+          "searchParam": "date",
+          "elementName": "date"
+        }
+      ]
+    },
+    {
+      "code": "ServiceReferrals",
+      "display": "הפניות",
+      "resourceTypes": [
+        {
+          "resourceType": "ServiceRequest",
+          "amountToCollect": 1000,
+          "historicalDepthYears": 1,
+          "searchParam": "authored",
+          "elementName": "authoredOn"
+        }
+      ]
+    },
+    {
+      "code": "CarePlans",
+      "display": "המלצות",
+      "resourceTypes": [
+        {
+          "resourceType": "ServiceRequest",
+          "amountToCollect": 1000,
+          "historicalDepthYears": 1,
+          "searchParam": "authored",
+          "elementName": "authoredOn"
+        }
+      ,{
+          "resourceType": "MedicationRequest",
+          "amountToCollect": 1000,
+          "historicalDepthYears": 1,
+          "searchParam": "authoredOn",
+          "elementName": "authoredOn"
+        }
+      ,{
+          "resourceType": "CarePlan",
+          "amountToCollect": 1000,
+          "historicalDepthYears": 1,
+          "searchParam": "date",
+          "elementName": "period"
+        }
+      ,{
+          "resourceType": "Goal",
+          "amountToCollect": 1000,
+          "historicalDepthYears": 1,
+          "searchParam": "start-date",
+          "elementName": "startDate"
+        }
+      ]
+    },
+    {
+      "code": "Procedures",
+      "display": "פרוצדורות",
+      "resourceTypes": [
+        {
+          "resourceType": "Procedure",
+          "amountToCollect": 1000,
+          "historicalDepthYears": 5,
+          "searchParam": "date",
+          "elementName": "performed"
+        }
+      ,{
+          "resourceType": "Device",
+          "amountToCollect": 1000,
+          "historicalDepthYears": 1,
+          "searchParam": "?",
+          "elementName": "?"
+        }
+      ,{
+          "resourceType": "Observation",
+          "amountToCollect": 1000,
+          "historicalDepthYears": 1,
+          "searchParam": "date",
+          "elementName": "effective"
+        }
+      ,{
+          "resourceType": "DocumentReference",
+          "amountToCollect": 1000,
+          "historicalDepthYears": 1,
+          "searchParam": "date",
+          "elementName": "date"
+        }
+      ]
+    },
+    {
+      "code": "LaboratoryTests",
+      "display": "בדיקות מעבדה",
+      "resourceTypes": [
+        {
+          "resourceType": "ServiceRequest",
+          "amountToCollect": 1000,
+          "historicalDepthYears": 5,
+          "searchParam": "authored",
+          "elementName": "authoredOn"
+        }
+        ,{
+          "resourceType": "DiagnosticReport",
+          "amountToCollect": 1000,
+          "historicalDepthYears": 5,
+          "searchParam": "date",
+          "elementName": "effective"
+        }
+        ,{
+          "resourceType": "ObservationLab",
+          "amountToCollect": 1000,
+          "historicalDepthYears": 5,
+          "searchParam": "date",
+          "elementName": "effective"
+        }
+        ,{
+          "resourceType": "Specimen",
+          "amountToCollect": 1000,
+          "historicalDepthYears": 5,
+          "searchParam": "collected",
+          "elementName": "collected"
+        }
+        ,{
+          "resourceType": "DocumentReference",
+          "amountToCollect": 1000,
+          "historicalDepthYears": 5,
+          "searchParam": "date",
+          "elementName": "date"
+        }
+        ,{
+          "resourceType": "Comnmunication",
+          "amountToCollect": 1000,
+          "historicalDepthYears": 5,
+          "searchParam": "sent",
+          "elementName": "sent"
+        }
+      ]
+    },
+    {
+      "code": "DiagnosticImaging",
+      "display": "בדיקות דימות",
+      "resourceTypes": [
+        {
+          "resourceType": "DiagnosticReport",
+          "amountToCollect": 1000,
+          "historicalDepthYears": 5,
+          "searchParam": "date",
+          "elementName": "effective"
+        }
+        ,{
+          "resourceType": "DocumentReference",
+          "amountToCollect": 1000,
+          "historicalDepthYears": 5,
+          "searchParam": "date",
+          "elementName": "date"
+        }
+        ,{
+          "resourceType": "ImagingStudy",
+          "amountToCollect": 1000,
+          "historicalDepthYears": 5,
+          "searchParam": "started",
+          "elementName": "started"
+        }
+      ]
+    },
+    {
+      "code": "Pathology",
+      "display": "פתולוגיה",
+      "resourceTypes": [
+        {
+          "resourceType": "DiagnosticReport",
+          "amountToCollect": 1000,
+          "historicalDepthYears": 1,
+          "searchParam": "date",
+          "elementName": "effective"
+        }
+        ,{
+          "resourceType": "DocumentReference",
+          "amountToCollect": 1000,
+          "historicalDepthYears": 1,
+          "searchParam": "date",
+          "elementName": "date"
+        }
+        ,{
+          "resourceType": "Specimen",
+          "amountToCollect": 1000,
+          "historicalDepthYears": 1,
+          "searchParam": "collected",
+          "elementName": "collected"
+        }
+      ]
+    },
+    {
+      "code": "Genetics",
+      "display": "גנטיקה"
+    },
+    {
+      "code": "Immunizations",
+      "display": "חיסונים"
+    },
+    {
+      "code": "Measurements",
+      "display": "מדדים",
+      "resourceTypes": [
+        {
+          "resourceType": "Observation",
+          "amountToCollect": 1000,
+          "historicalDepthYears": 1,
+          "searchParam": "date",
+          "elementName": "effective"
+        }
+        ,{
+          "resourceType": "DocumentReference",
+          "amountToCollect": 1000,
+          "historicalDepthYears": 1,
+          "searchParam": "date",
+          "elementName": "date"
+        }
+        ,{
+          "resourceType": "DiagnosticReport",
+          "amountToCollect": 1000,
+          "historicalDepthYears": 1,
+          "searchParam": "date",
+          "elementName": "effective"
+        }
+      ]
+    },
+    {
+      "code": "Assessments",
+      "display": "אומדנים",
+      "resourceTypes": [
+        {
+          "resourceType": "Observation",
+          "amountToCollect": 1000,
+          "historicalDepthYears": 1,
+          "searchParam": "date",
+          "elementName": "effective"
+        }
+        ,{
+          "resourceType": "QuestionaireResponse",
+          "amountToCollect": 1000,
+          "historicalDepthYears": 1,
+          "searchParam": "authored",
+          "elementName": "authored"
+        }
+        ,{
+          "resourceType": "Condition",
+          "amountToCollect": 1000,
+          "historicalDepthYears": 1,
+          "searchParam": "recorded-date",
+          "elementName": "recordedDate"
+        }
+      ]
+    },
+    {
+      "code": "Medications",
+      "display": "תרופות",
+      "resourceTypes": [
+        {
+          "resourceType": "MedicationRequest",
+          "amountToCollect": 1000,
+          "historicalDepthYears": 5,
+          "searchParam": "authoredon",
+          "elementName": "authoredOn"
+        }
+        ,{
+          "resourceType": "MedicationAdministration",
+          "amountToCollect": 1000,
+          "historicalDepthYears": 5,
+          "searchParam": "effective-time",
+          "elementName": "effective[x]"
+        }
+        ,{
+          "resourceType": "MedicationDispense",
+          "amountToCollect": 1000,
+          "historicalDepthYears": 5,
+          "searchParam": "whenhandedover",
+          "elementName": "whenHandedOver"
+        }
+      ]
+    },
+    {
+      "code": "Practitioner",
+      "display": "מטפל"
+    },
+    {
+      "code": "Facility",
+      "display": "יחידה ארגונית"
+    }
+  ]
+
+  ;$writeFile($ILInformationBins,'$ILInformationBins.json')
+)

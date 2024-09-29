@@ -1,16 +1,17 @@
+// ?
 /*Sample resources based on params & write each to file*/
 
 (
-  $info({'=========> Map start <=========' : $now()});
+  $warning({'=========> Map start <=========' : $now()});
   
   /* get the base url of the fhir server by making a dummy search */
-  $baseUrl := $search('Patient', {'name': 'test'}).link[relation='self'].url.$split('/Patient')[0];
-  /* set the maximum number of failed search attempts */
+  $baseUrl := $fhirServer;
+  /* set the m  ximum number of failed search attempts */
   $maxFailedAttempts := 5;
   /* set delay seed size that is equivalent to approx. one second */
   $seedPerSecond := 600000;
   /* set a base interval (in seconds) for the delay - this will be doubled in each retry */
-  $baseDelayInterval := 1;
+  $baseDelayInterval := 10;
 
   /* global parameters */
   $pageSize := 100;
@@ -18,29 +19,13 @@
   /*****************/
   
   /* create a delay function */
-  $delay := function($seconds) {(
-    /* if no seconds provided, set to one second */
-    $seconds := $exists($seconds) ? $seconds : 1;
-    /* write starter file to mark the beginning */
-    $writeFile('start', '__temp__delay_start.tmp');
-    /* define a function for one second delay */
-    $oneSec := function(){(
-      $arr := [1..$seedPerSecond].$uuid();
-      $writeFile($arr, '__temp__delay_second.tmp')
-    )};
-    /* loop through the requested amount of seconds */
-    [1..$seconds].$oneSec();
-    /* write an ending file to mark the end point */
-    $writeFile('end', '__temp__delay_end.tmp')
-    /* to calibrate the seedPerSecond param, check the diff between modification times */
-    /* of the files '__temp__delay_start.tmp' vs '__temp__delay_end.tmp' */
-  )};
+  $delay := function($ms) {( $wait($ms)  )};
 
   /*Override $resolve() to use $http and address "Request failed with status code 503"*/
   $resolve := function($literal){(
-    $info({'$resolve called with the following params: literal = ': $literal,'$attemptNumber = ' : $attemptNumber, '$maxFailedAttempts = ' : $maxFailedAttempts});
+    $warning({'$resolve called with the following params: literal = ': $literal,'$attemptNumber = ' : $attemptNumber, '$maxFailedAttempts = ' : $maxFailedAttempts});
 	$attempt := function($attemptNumber){(
-      $info({'$attempt called with following params: $attemptNumber = ' : $attemptNumber});
+      $warning({'$attempt called with following params: $attemptNumber = ' : $attemptNumber});
 	  /* reset counter if undefined */
       $attemptNumber := $exists($attemptNumber) ? $attemptNumber : 1;
       $attemptNumber > $maxFailedAttempts ? (
@@ -62,14 +47,14 @@
         });
         $floor($httpResponse.status / 100) = 2 ? (
           /* successful attempt */
-		  $info('=========> resolve() => Successful http call <=========');
+		  $warning('=========> resolve() => Successful http call <=========');
           $httpResponse.data
         ) : (
           /* failed attempt */
-		  $info('=========> resolve() => Failed http call <=========');
-		  $info({'$literal := ' : $literal});
-		  $info({'$httpResponse := ' : $httpResponse});
-          $delay($baseDelayInterval * $power(2, $attemptNumber - 1));
+		  $warning('=========> resolve() => Failed http call <=========');
+		  $warning({'$literal := ' : $literal});
+		  $warning({'$httpResponse := ' : $httpResponse});
+          $delay($baseDelayInterval * 2 * $attemptNumber);
           $attempt($attemptNumber + 1)
         )
       )
@@ -102,22 +87,23 @@
         });
         $floor($httpResponse.status / 100) = 2 ? (
           /* successful attempt */
-		  $info('=========> $search() => Successful http call <=========');
+		  $warning('=========> $search() => Successful http call <=========');
           $httpResponse.data
         ) : (
           /* failed attempt */
-		  $info('=========> $search() => Failed http call <=========');
-		  $info('Request:');
-		  $info({'$resourceType := ' : $resourceType});
-		  $info({'$params := ' : $params});
-		  $info({'$httpResponse := ' : $httpResponse});
-          $delay($baseDelayInterval * $power(2, $attemptNumber - 1));
+		  $warning('=========> $search() => Failed http call <=========');
+		  $warning('Request:');
+		  $warning({'$resourceType := ' : $resourceType});
+		  $warning({'$params := ' : $params});
+		  $warning({'$httpResponse := ' : $httpResponse});
+          $delay($baseDelayInterval * 2 * $attemptNumber);
           $attempt($attemptNumber + 1)
         )
       )
     )};
     $attempt();
   )};
+
 
   /* date generator function */
   $newRandomDate := function($min, $max){(
@@ -133,15 +119,16 @@
 
   /* function that fetches resources above and below a requested date and returns them sorted by proximity */
   $getClosestResources := function($resourceType, $date, $searchParam, $elementName) {(
-    $info('$getClosestResources called');
-    $info({'$resourceType, $date, $searchParam, $elementName': [$resourceType, $date, $searchParam, $elementName]});
+    $warning('$getClosestResources called');
+    $warning({'$resourceType, $date, $searchParam, $elementName': [$resourceType, $date, $searchParam, $elementName]});
     /* get pages from above and below the date */
       $geBundle := $search($resourceType & '?' & $searchParam & '=ge' & $date & '&' & $searchParam & '=le' & $fromMillis($toMillis($date)+172800000) & '&_sort=' & $searchParam & '&_count=' & $pageSize);
 	  /*$search($resourceType, {$searchParam: ['ge' & $date, 'le' & $fromMillis($toMillis($date)+6000000)], '_sort': $searchParam, '_count': $pageSize})*/
-      $info({'$geBundle count': $count($geBundle.entry)});
+      $warning({'$geBundle count': $count($geBundle.entry)});
+
       $leBundle := $search($resourceType & '?' & $searchParam & '=le' & $date & '&' & $searchParam & '=ge' & $fromMillis($toMillis($date)-172800000) & '&_sort=' & $searchParam & '&_count=' & $pageSize);
 	  /*$search($resourceType, {$searchParam: ['le' & $date, 'ge' & $fromMillis($toMillis($date)-6000000)], '_sort': '-' & $searchParam, '_count': $pageSize})*/
-      $info({'$leBundle count': $count($leBundle.entry)});
+      $warning({'$leBundle count': $count($leBundle.entry)});
       /* sort the results by absolute diff from the selected date */
       [$geBundle.entry.resource, $leBundle.entry.resource]/*^($dateDiffMillis($date, $lookup($, $elementName)))*/;
   )};
@@ -152,8 +139,8 @@
   /*     this is called "tail recursion" and it helps prevent stack overflow. */
   /*     see: https://docs.jsonata.org/programming#tail-call-optimization-tail-recursion */
   $addResource := function($resourceType, $searchParam, $elementName, $minDate, $maxDate, $accumulating, $iterationCounter){(
-    $info('$addResource called with the following params:');
-    $info({'$resourceType' : $resourceType, '$searchParam' : $searchParam, '$elementName' : $elementName, '$minDate' : $minDate, '$maxDate' : $maxDate, '$iterationCounter' : $iterationCounter, '$maxRetriesForNewResource' : $maxRetriesForNewResource,'$accumulating count' : $count($accumulating) /*'For values - uncomment this line in map' $accumulating*/});
+    $warning('$addResource called with the following params:');
+    $warning({'$resourceType' : $resourceType, '$searchParam' : $searchParam, '$elementName' : $elementName, '$minDate' : $minDate, '$maxDate' : $maxDate, '$iterationCounter' : $iterationCounter, '$maxRetriesForNewResource' : $maxRetriesForNewResource,'$accumulating count' : $count($accumulating) /*'For values - uncomment this line in map' $accumulating*/});
     /* reset counter to 1 if not stated otherwise */
     $iterationCounter := $exists($iterationCounter) ? $iterationCounter : 1;
     /* initialize an empty list if accumulator not passed */
@@ -162,12 +149,12 @@
     $randomDate := $newRandomDate($minDate, $maxDate);
     /* get list of closest instances (patients) to the random date by chosen element (birthday etc), sorted by proximity */
     $searchResults := $getClosestResources($resourceType, $randomDate, $searchParam, $elementName);
-    $info({'$searchResults count': $count($searchResults)});
+    $warning({'$searchResults count': $count($searchResults)});
     /* get the closest one not collected yet */
-    $filterred := $searchResults[$not(id in $accumulating)];
+    $filterred := $searchResults[$not(id in $accumulating) and resourceType = $resourceType];
     $selection := $filterred[$count(filterred)*$random()];
-    $info({'$selection count': $count($selection)});
-	$info({'$selection :=': $selection});
+    $warning({'$selection count': $count($selection)});
+	$warning({'$selection :=': $selection});
     /* check the results */
     $exists($selection) ? (
       /* found a new patient - add its id to the list and return the updated list */
@@ -177,11 +164,11 @@
       /* if we have reached max iterations - stop looking */
       $iterationCounter >= $maxRetriesForNewResource ? (
         /* return accumulated list as-is */
-		$info({'$iterationCounter' : $iterationCounter, '>= $maxRetriesForNewResource' : $maxRetriesForNewResource,'exit loop $addResource & set $iterationCounter=0 & return current $accumulating with id count of' : $count($accumulating)});
+		$warning({'$iterationCounter' : $iterationCounter, '>= $maxRetriesForNewResource' : $maxRetriesForNewResource,'exit loop $addResource & set $iterationCounter=0 & return current $accumulating with id count of' : $count($accumulating)});
         $accumulating
       ) : (
         /* not reached max iterations - try again with a new random date */
-		$info('$addResource loop did not reached max iterations - call $addResource again with a new random date + advance $iterationCounter + 1');
+		$warning('$addResource loop did not reached max iterations - call $addResource again with a new random date + advance $iterationCounter + 1');
         $addResource($resourceType, $searchParam, $elementName, $minDate, $maxDate, $accumulating, $iterationCounter + 1)
         /* ^ this is the "tail call" */
       )
@@ -190,21 +177,21 @@
 
   /* wrapper function that does the collection of the list of resources */
   $collectResources := function($resourceType, $amountToCollect, $minDate, $maxDate, $searchParam, $elementName){(
-    $info('$collectResources called');
-    $info({'$resourceType, $amountToCollect, $minDate, $maxDate, $searchParam, $elementName': [$resourceType, $amountToCollect, $minDate, $maxDate, $searchParam, $elementName]});
+    $warning('$collectResources called');
+    $warning({'$resourceType, $amountToCollect, $minDate, $maxDate, $searchParam, $elementName': [$resourceType, $amountToCollect, $minDate, $maxDate, $searchParam, $elementName]});
     /* iteration function that adds resources recursively, as long as: */
     /* 1. the previous step succeeded in finding a new resource */
     /* 2. the requested amount hasn't been collected yet */
     $iterator := function($currentList, $previousList){(
-      $info('$iterator called with following params');
-      $info({'$currentList count = ' : $count($currentList), '$previousList count = ': $count($previousList)});
+      $warning('$iterator called with following params');
+      $warning({'$currentList count = ' : $count($currentList), '$previousList count = ': $count($previousList)});
       $count($currentList)>0 and ($count($currentList) = $count($previousList) or $count($currentList) >= $amountToCollect) ? (
         /* the stop condition is met - return list and stop iterating */
         $currentList
       ) : (
         /* try to add one patient and continue */
         $updatedList := $addResource($resourceType, $searchParam, $elementName, $minDate, $maxDate, $currentList);
-        $info({'$updatedList count': $count($updatedList)});
+        $warning({'$updatedList count': $count($updatedList)});
         /* tail call */
         $iterator($updatedList, $currentList)
       )
@@ -218,18 +205,15 @@
 
   /*call the wrapper function with relevant keys, values will come from inputcall the wrapper function with relevant keys, values will come from input*/
    $instancesList := $collectResources(resourceType, amountToCollect, minDate, maxDate, searchParam, elementName);
+   
+   $warning('$instancesList => '&$instancesList);
 
 /*Write sampled resources to IO folder*/
   /*resolve the list of resource ids to get the full resources*/
    $instancesListResources := $instancesList.$resolve($);
 
   /*for each resource, create file by naming convention*/
-   $instancesListResources.$writeFile($,'['& $.resourceType &']_['& $.id &'].json')
-
-/*testing the function:*/ 
-  /*$minDate := '1950-01-01';*/
-  /*$maxDate := $now();*/
-  /*$collectResources('Patient', 7, $minDate, $maxDate, 'birthdate', 'birthDate');*/
+   $instancesListResources.$writeFile($,'['& $.resourceType &']_['& $.id &'].json');
 
 /*Example input (derived from the above example)*/
     /*{*/
