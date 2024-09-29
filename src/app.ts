@@ -17,18 +17,23 @@ import {
   getTestActions,
   runTestListExpr,
   runActionListExpr,
-  validateTree
+  validateTree,
+  addMockKit
 } from './helpers/expressions';
 import { fork } from 'node:child_process';
 import path from 'path';
 import cors from 'cors';
 import express from 'express';
 import axios from 'axios';
-import kits from '../kits.json';
+import kitsFile from '../kits.json';
 import { serveUiRoute } from './helpers/serveUiFiles';
 import chalk from 'chalk';
+import * as dotenv from 'dotenv';
 import type { Express, Request, Response } from 'express';
 
+dotenv.config();
+
+let kits = kitsFile;
 const port: number = 8400;
 const enginePort: number = 8401;
 
@@ -41,6 +46,12 @@ const engineApi = axios.create({
   baseURL: `http://localhost:${enginePort.toString()}`
 });
 
+// TODO: This will not work in SEA mode
+// will need to have engine.js as asset and export to file.
+// + possibly another node.exe will be needed
+const newEngine = () => fork(path.join(__dirname, 'engine.js'));
+let engine = newEngine();
+
 const kitStatusFilePath = path.join(currentRunDir, 'kitStatus.json');
 const workflowFilePath = path.join(currentRunDir, 'workflow.json');
 const testStatusFilePath: Function = (testId: string) => path.join(currentRunDir, `testStatus_${testId}.json`);
@@ -50,6 +61,7 @@ const readJsonFile = async (filePath: string) => {
   const content: string = (await fs.readFile(filePath)).toString();
   return content === '' ? {} : JSON.parse(content);
 };
+
 const writeJsonFile = async (filePath: string, content: any) => await fs.writeFile(filePath, JSON.stringify(content, null, 2));
 
 const getKitStatus = async (kitId: string) => {
@@ -160,17 +172,17 @@ const runActionList = async (actionList: string[]) => {
 
 const runKit = async (req: Request, res: Response) => {
   const kitId: string = req.body?.kitId;
-  let testsToRun: string[];
-  let skippedTests: string[];
+  let testsToRun: string[], skippedTests: string[];
   if (typeof kitId === 'string' && kitId.length > 0) {
     const currentKitStatus: string = await getKitStatus(kitId);
     if (currentKitStatus === 'ready') {
       try {
+        await stashRun();
         const selectedTests: string[] = req.body.selected;
         if (Array.isArray(selectedTests) && selectedTests.length > 0) {
           const workflow = await runWorkflowTransformer.evaluate(kits, { kitId, selectedTests });
           [testsToRun, skippedTests] = await Promise.all([getSelectedTests.evaluate(workflow), getSkippedTests.evaluate(workflow), fs.ensureDir(currentRunDir)]);
-          await Promise.all([writeJsonFile(workflowFilePath, workflow), setKitStatus(kitId, 'in-progress'), setSkippedTests(skippedTests)]);
+          await Promise.all([writeJsonFile(workflowFilePath, workflow), setKitStatus(kitId, 'in-progress'), setSkippedTests(skippedTests ?? [])]);
         } else {
           res.status(400).send(`No tests were selected: 'selected' must be an array of strings, recieved ${selectedTests}`);
           return;
@@ -208,14 +220,33 @@ const abortRun = async (res?: Response) => {
     currentStatus = kitStatusFileContent?.status;
   };
   if (typeof kitId === 'string' && currentStatus === 'in-progress') {
-    await setKitStatus(kitId, 'aborted');
-    if (res) res.status(202).send('Accepted');
+    if (res) {
+      await setKitStatus(kitId, 'aborting');
+      res.status(202).send('Accepted');
+      engine.kill();
+      engine = newEngine();
+      // register callback function for close event
+      engine.on('close', (code) => {
+        console.error(chalk.red(`Engine exited with code ${code}`));
+      });
+
+      // register callback function for spawn event
+      engine.on('spawn', () => {
+        console.log(chalk.yellow('\u{23F3} Engine warming up...'));
+      });
+
+      engine.on('message', (message) => {
+        if (message === 'ready') {
+          void setKitStatus(kitId, 'aborted');
+        };
+      });
+    } else await setKitStatus(kitId, 'aborted');
   } else {
     if (res) res.status(403).send('Cannot abort, no Kit is currently running.');
   }
 };
 
-const stashRun = async (res: Response) => {
+const stashRun = async (res?: Response) => {
   // move current run dir into stash and clear it
   if (await fs.exists(workflowFilePath)) {
     const workflowFileContent = await readJsonFile(workflowFilePath);
@@ -227,7 +258,7 @@ const stashRun = async (res: Response) => {
     await fs.ensureDir(ioDir);
     ensureRunsDir();
   }
-  res.status(200).send('Stashed');
+  if (res) res.status(200).send('Stashed');
 };
 
 const handler = async (req: Request, res: Response) => {
@@ -261,7 +292,7 @@ const handler = async (req: Request, res: Response) => {
   };
 };
 
-const ServeUi = () => {
+const serveUi = () => {
   // setup and start express app after engine is ready
   app.use(cors());
   app.use(express.json({ limit: '50mb', type: ['application/json'] }));
@@ -286,12 +317,11 @@ const printFailedStartup = () => console.log(chalk.bold.red('Certificator startu
 
 const init = async () => {
   try {
-    await ensureCleanStart();
+    if (process.env?.MOCKING_KIT === 'true') {
+      kits = await addMockKit.evaluate({}, { kits });
+    };
 
-    // TODO: This will not work in SEA mode
-    // will need to have engine.js as asset and export to file.
-    // + possibly another node.exe will be needed
-    const engine = fork(path.join(__dirname, 'engine.js'));
+    await ensureCleanStart();
 
     // register callback function for close event
     engine.on('close', (code) => {
@@ -305,7 +335,12 @@ const init = async () => {
     });
 
     engine.on('message', (message) => {
-      if (message === 'ready') ServeUi();
+      if (message === 'ready') {
+        serveUi();
+        engine.on('close', (code) => {
+          console.error(chalk.red(`Engine exited with code ${code}`));
+        });
+      };
     });
   } catch (err) {
     // eslint-disable-next-line @typescript-eslint/dot-notation

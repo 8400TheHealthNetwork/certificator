@@ -7,9 +7,12 @@ import { loadMapFiles } from './helpers/loadMaps';
 import { version as CERTIFICATOR_VERSION } from '../package.json';
 import type { Request, Response, NextFunction } from 'express';
 import chalk from 'chalk';
+import * as dotenv from 'dotenv';
 
+dotenv.config();
 let configObject: IConfig;
 const port: number = 8401;
+const sampleSize = process.env?.RESOURCE_SAMPLE_SIZE ? parseInt(process.env?.RESOURCE_SAMPLE_SIZE) : 1000;
 
 // middleware function for handling healthcheck api routes
 const reRouter = async (req: Request, res: Response, next: NextFunction) => {
@@ -53,7 +56,9 @@ async function init () {
     // register FHIR server URL parameter
     const fhirServer: string = newConfig.FHIR_SERVER_BASE;
     fumeServer.registerBinding('fhirServer', fhirServer);
-    console.log(chalk`Registered {yellow $fhirServer} parameter binding`);
+    console.log(chalk`Registered {yellow $fhirServer} parameter binding. Value: {blue ${fhirServer}}`);
+    fumeServer.registerBinding('sampleSize', sampleSize);
+    console.log(chalk`Registered {yellow $sampleSize} parameter binding. Value: {blue ${sampleSize}}`);
     // set as the global server object
     setFumeServer(fumeServer);
     console.log(chalk.grey('Registered FUME server'));

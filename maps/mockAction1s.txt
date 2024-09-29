@@ -1,0 +1,11 @@
+(
+    {
+      'statusCode':'in-progress'
+      ,'statusText':'in-progress'
+    } ~> $writeFile('actionStatus_mockAction1s.json');
+    $wait(1000);
+    {
+      'statusCode':'passed'
+      ,'statusText':'Passed'
+    } ~> $writeFile('actionStatus_mockAction1s.json');
+)
