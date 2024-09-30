@@ -1,6 +1,8 @@
 import jsonata from 'jsonata';
 import type { Expression } from 'jsonata';
 
+const tzOffset = (new Date().getTimezoneOffset()) * 60 * 1000 * (-1);
+
 export const getKitTransformer: Expression = jsonata(`
     (
       $actionsMap := actions{
@@ -67,7 +69,7 @@ export const getKitsTransformer: Expression = jsonata(`
 
 export const runWorkflowTransformer: Expression = jsonata(`
       {
-        'timestamp': $fromMillis($millis(), '[Y0000]-[M00]-[D00]_[H00][m00][s00]'),
+        'timestamp': $fromMillis($millis()+${tzOffset}, '[Y0000]-[M00]-[D00]_[H00][m00][s00]'),
         'kitId': $kitId,
         'tests': kits[id = $kitId].children.children.children.{
           'testId': id,
@@ -241,3 +243,191 @@ export const addMockKit: Expression = jsonata(`(
     'kits': $allKits
   }
 )`);
+
+export const reportRunSettings: Expression = jsonata(`
+  (
+    $kitName := $kits.kits[id=$kitId].name;
+
+    $flatKit := kit.children.children.children.{
+      'testId': id,
+      'testName': name,
+      'subGroupId': %.id,
+      'subGroupName': %.name,
+      'groupId': %.%.id,
+      'groupName': %.%.name
+    };
+
+    $getTestMetadata := function($testId){(
+      $flatKit[testId = $testId]
+    )};
+
+    $skippedTests := {
+      "id": "skipped-tests",
+      "title": 'Skipped Tests',
+      "type": "table",
+      "columns": [
+        {
+          "property": "group",
+          "label": "Group"
+        },
+        {
+          "property": "subGroup",
+          "label": "Sub Group"
+        },
+        {
+          "property": "test",
+          "label": "Test Name"
+        }
+      ],
+      "data": [workflow.tests[skipped = true].(
+        $testId := testId;
+        $testMeta := $getTestMetadata($testId);
+        $testMeta.{
+          'group': groupName,
+          'subGroup': subGroupName,
+          'test': testName
+        }
+      )]
+    };
+
+    $runSummary := {
+      "id": "run-summary",
+      "title": 'Run Summary',
+      "type": "table",
+      "columns": [
+        {
+          "property": "group",
+          "label": "Group"
+        },
+        {
+          "property": "subGroup",
+          "label": "Sub Group"
+        },
+        {
+          "property": "test",
+          "label": "Test Name"
+        },
+        {
+          "property": "status",
+          "label": "Status"
+        },
+        {
+          "property": "error",
+          "label": "Error Message"
+        }
+      ],
+      "data": [workflow.tests[skipped=false].(
+        $testId := testId;
+        $status := $getTestStatusText($testId);
+        $testMeta := $getTestMetadata($testId);
+        $testMeta.{
+          'group': groupName,
+          'subGroup': subGroupName,
+          'test': testName,
+          'status': $status,
+          'error': $status = 'Error' ? $getTestErrorDetails($testId)
+        }
+      )]
+    };
+
+    $testStatusPie := {
+      'id': 'test-pie',
+      'title': 'Test Status Summary',
+      'type': 'pie',
+      "data": [($runSummary.data{status: $count($)} ~> $spread()).{
+        'label': $keys($),
+        'value': *
+      }]
+    };
+
+    $runAttributes := {
+      'id': 'run-attributes',
+      'title': 'Run Attributes',
+      'type': 'table',
+      'columns': [
+        {
+          'property': 'key',
+          'label': 'Attribute'
+        },
+        {
+          'property': 'value',
+          'label': 'Value'
+        }
+      ],
+      'data': [
+        {
+          'key': 'Kit Name',
+          'value': $kitName
+        },
+        {
+          'key': 'Skipped Tests',
+          'value': $string($count($skippedTests.data))
+        },
+        {
+          'key': 'Execution Date',
+          'value': $substringBefore(workflow.timestamp, '_')
+        },
+        {
+          'key': 'Execution Time',
+          'value':  $substring(workflow.timestamp, 11,2) & ':' & $substring(workflow.timestamp, 13,2) & ':' & $substring(workflow.timestamp, 15,2)
+        },
+        {
+          'key': 'Certificator Version',
+          'value':  $certificatorVersion
+        },
+        {
+          'key': 'Resource Sample Size',
+          'value':  $sampleSize
+        },
+        {
+          'key': 'User Name',
+          'value':  $username
+        },
+        {
+          'key': 'User Domain',
+          'value':  $userDomain
+        },
+        {
+          'key': 'FHIR Server',
+          'value':  $fhirServer
+        },
+        {
+          'key': 'Client Host Name',
+          'value':  $hostName
+        }
+      ]
+    };
+
+    $dqaGenderDist := $readIoFile('distributionGender.json');
+    $dqaIdDist := $readIoFile('DQAidentifiers.json');
+    
+    $genderChart := $exists($dqaGenderDist) ? {
+      'id': 'gender-chart',
+      'title': 'Patient.gender Distribution',
+      'type': 'pie',
+      'data': [($dqaGenderDist{pathValue: $count($)} ~> $spread()).{'label': $keys($), 'value': *}]
+    };
+
+    $identifierChart := $exists($dqaIdDist) ? {
+      'id': 'identifier-chart',
+      'title': 'Identifier.system Distribution',
+      'type': 'table',
+      'columns': [
+        {
+          'property': 'uri',
+          'label': 'URI'
+        },
+        {
+          'property': 'count',
+          'label': 'Count'
+        }
+      ],
+      'data': [(($dqaIdDist{system: $count($)} ~> $spread()).{'uri': $keys($), 'count': $string(*)})^(>count)]
+    };
+    
+    {
+      'charts': [$runAttributes, $count($skippedTests.data) > 0 ? $skippedTests, $runSummary, $genderChart, $identifierChart]
+    }
+
+  )
+  `);

@@ -103,6 +103,9 @@
                   "description": "Patient Identifier system distribution",
                   "details": "Check if the distribution of Patient.identifier.system makes sense.",
                   "actions": [
+                    "get-metadata",
+                    "metadata-http-200",
+                    "metadata-content-type",
                     "sample-wrapper",
                     "extract-identifiers"
                   ]
@@ -113,6 +116,9 @@
                   "description": "Patient gender value distribution",
                   "details": "Check if the distribution of Patient.identifier.system makes sense.",
                   "actions": [
+                    "get-metadata",
+                    "metadata-http-200",
+                    "metadata-content-type",
                     "sample-wrapper",
                     "extract-gender"
                   ]
