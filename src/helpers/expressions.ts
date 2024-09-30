@@ -410,7 +410,7 @@ export const reportRunSettings: Expression = jsonata(`
 
     $identifierChart := $exists($dqaIdDist) ? {
       'id': 'identifier-chart',
-      'title': 'Identifier.system Distribution',
+      'title': 'Patient.identifier.system Distribution',
       'type': 'table',
       'columns': [
         {
@@ -422,7 +422,7 @@ export const reportRunSettings: Expression = jsonata(`
           'label': 'Count'
         }
       ],
-      'data': [(($dqaIdDist{system: $count($)} ~> $spread()).{'uri': $keys($), 'count': $string(*)})^(>count)]
+      'data': [(($dqaIdDist[resourceType="Patient"]{system: $count($)} ~> $spread()).{'uri': $keys($), 'count': $string(*)})^(>count)]
     };
     
     {
