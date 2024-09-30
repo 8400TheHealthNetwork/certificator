@@ -1,12 +1,11 @@
-// ?
-/*Sample resources based on params & write each to file*/
+/*doSampleWrapper - Sample resources based on params & write each to file*/
 
 (
   $warning({'=========> Map start <=========' : $now()});
   
   /* get the base url of the fhir server by making a dummy search */
   $baseUrl := $fhirServer;
-  /* set the m  ximum number of failed search attempts */
+  /* set the maximum number of failed search attempts */
   $maxFailedAttempts := 5;
   /* set delay seed size that is equivalent to approx. one second */
   $seedPerSecond := 600000;
@@ -216,84 +215,12 @@
    $instancesListResources.$writeFile($,'['& $.resourceType &']_['& $.id &'].json');
 
 /*Example input (derived from the above example)*/
-    /*{*/
-/*      "resourceType": "Patient",*/
-      /*"amountToCollect": 1000,*/
-      /*"minDate": "1900-01-01",*/
-      /*"maxDate": "2020-01-01",*/
-      /*"searchParam": "birthdate",*/
-      /*"elementName": "birthDate"*/
-    /*}*/
-
-    /*{*/
-/*      "resourceType": "Encounter",*/
-      /*"amountToCollect": 500,*/
-      /*"minDate": "2024-01-01",*/
-      /*"maxDate": "2024-03-01",*/
-      /*"searchParam": "date",*/
-      /*"elementName": "period"*/
-    /*}*/
-
-/*    {*/
-/*      "resourceType": "Practitioner",*/
-      /*"amountToCollect": 1000,*/
-      /*"minDate": "1900-01-01",*/
-      /*"maxDate": "2020-01-01",*/
-      /*"searchParam": "_lastUpdated",*/
-      /*"elementName": "lastUpdated"*/
-    /*}*/
-
-/*    {*/
-/*      "resourceType": "PractitionerRole",*/
-      /*"amountToCollect": 1000,*/
-      /*"minDate": "1900-01-01",*/
-      /*"maxDate": "2020-01-01",*/
-      /*"searchParam": "_lastUpdated",*/
-      /*"elementName": "lastUpdated"*/
-    /*}*/
-
-/*    {*/
-      /*"resourceType": "Observation",*/
-      /*"amountToCollect": 5000,*/
-      /*"minDate": "2024-01-01",*/
-      /*"maxDate": "2024-03-01",*/
-      /*"searchParam": "date",*/
-      /*"elementName": "effectiveDateTime"*/
-    /*}*/
-
-/*    {*/
-      /*"resourceType": "Organization",*/
-      /*"amountToCollect": 5000,*/
-      /*"minDate": "2024-01-01",*/
-      /*"maxDate": "2024-03-01",*/
-      /*"searchParam": "?",*/
-      /*"elementName": "?"*/
-    /*}*/
-
-/*    {*/
-      /*"resourceType": "Location",*/
-      /*"amountToCollect": 5000,*/
-      /*"minDate": "2024-01-01",*/
-      /*"maxDate": "2024-03-01",*/
-      /*"searchParam": "?",*/
-      /*"elementName": "?"*/
-    /*}*/
-
-/*    {*/
-      /*"resourceType": "Organization",*/
-      /*"amountToCollect": 5000,*/
-      /*"minDate": "2024-01-01",*/
-      /*"maxDate": "2024-03-01",*/
-      /*"searchParam": "?",*/
-      /*"elementName": "?"*/
-    /*}*/
-
-/*    {*/
-      /*"resourceType": "Organization",*/
-      /*"amountToCollect": 5000,*/
-      /*"minDate": "2024-01-01",*/
-      /*"maxDate": "2024-03-01",*/
-      /*"searchParam": "?",*/
-      /*"elementName": "?"*/
-    /*}*/
+/*{*/
+  /*"resourceType": "Patient",*/
+  /*"amountToCollect": 1000,*/
+  /*"minDate": "1900-01-01",*/
+  /*"maxDate": "2020-01-01",*/
+  /*"searchParam": "birthdate",*/
+  /*"elementName": "birthDate"*/
+/*}*/
 )
