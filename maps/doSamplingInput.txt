@@ -1,6 +1,10 @@
-// doSamplingInput - Create input for sampling
+// doSamplingInput - Create input for sampling, one object for each resourceType (done on infoBinsDistinct.json), with the maximal historical depth
 (
-  $samplingInput := $readFile('$ILInformationBins.json').resourceTypes.{
+  // Create a distinct list of resourceTypes to be sampled
+  $doInfoBinsDistinct()
+  
+  // Create sampling map input
+  ;$samplingInput := $readFile('infoBinsDistinct.json').{
     'resourceType' : resourceType
     ,"amountToCollect" : $sampleSize
     ,"minDate" : $fromMillis($toMillis($now())-historicalDepthYears*365*24*60*60*1000) /*Sample historical data as defined*/

@@ -1,0 +1,8 @@
+// doSampleWrapper - execute building an input file & smpling
+(
+  // Create a flattened sampeling input file
+  $doSamplingInput()
+
+  // For each input, perform a sample
+  ;$readFile('samplingInput.json').$doSampleResources($)
+)

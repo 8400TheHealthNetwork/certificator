@@ -1,0 +1,155 @@
+// doInfoBinsDistinct - Create 1 obejct per resourceType to be sampled with the Max(historicalDepthYears) Max(amountToCollect) and arbitrary searchParam & elementName (assuming a resourceType is always sampled based on the saem combinaiton of the both)
+
+// See below unfinished code
+(
+  $infoBinsDistinct := [
+    {
+      "resourceType": "CarePlan",
+      "amountToCollect": 1000,
+      "historicalDepthYears": 1,
+      "searchParam": "date",
+      "elementName": "period"
+    },
+    {
+      "resourceType": "Comnmunication",
+      "amountToCollect": 1000,
+      "historicalDepthYears": 5,
+      "searchParam": "sent",
+      "elementName": "sent"
+    },
+    {
+      "resourceType": "Condition",
+      "amountToCollect": 1000,
+      "historicalDepthYears": 1,
+      "searchParam": "recorded-date",
+      "elementName": "recordedDate"
+    },
+    {
+      "resourceType": "DiagnosticReport",
+      "amountToCollect": 1000,
+      "historicalDepthYears": 5,
+      "searchParam": "date",
+      "elementName": "effective"
+    },
+    {
+      "resourceType": "DocumentReference",
+      "amountToCollect": 1000,
+      "historicalDepthYears": 5,
+      "searchParam": "date",
+      "elementName": "date"
+    },
+    {
+      "resourceType": "Encounter",
+      "amountToCollect": 1000,
+      "historicalDepthYears": 5,
+      "searchParam": "date",
+      "elementName": "period"
+    },
+    {
+      "resourceType": "Goal",
+      "amountToCollect": 1000,
+      "historicalDepthYears": 1,
+      "searchParam": "start-date",
+      "elementName": "startDate"
+    },
+    {
+      "resourceType": "ImagingStudy",
+      "amountToCollect": 1000,
+      "historicalDepthYears": 5,
+      "searchParam": "started",
+      "elementName": "started"
+    },
+    {
+      "resourceType": "MedicationAdministration",
+      "amountToCollect": 1000,
+      "historicalDepthYears": 5,
+      "searchParam": "effective-time",
+      "elementName": "effective[x]"
+    },
+    {
+      "resourceType": "MedicationDispense",
+      "amountToCollect": 1000,
+      "historicalDepthYears": 5,
+      "searchParam": "whenhandedover",
+      "elementName": "whenHandedOver"
+    },
+    {
+      "resourceType": "MedicationRequest",
+      "amountToCollect": 1000,
+      "historicalDepthYears": 5,
+      "searchParam": "authoredon",
+      "elementName": "authoredOn"
+    },
+    {
+      "resourceType": "Observation",
+      "amountToCollect": 1000,
+      "historicalDepthYears": 1,
+      "searchParam": "date",
+      "elementName": "effective"
+    },
+    {
+      "resourceType": "ObservationLab",
+      "amountToCollect": 1000,
+      "historicalDepthYears": 5,
+      "searchParam": "date",
+      "elementName": "effective"
+    },
+    {
+      "resourceType": "Patient",
+      "amountToCollect": 1000,
+      "historicalDepthYears": 200,
+      "searchParam": "birthdate",
+      "elementName": "birthDate"
+    },
+    {
+      "resourceType": "Procedure",
+      "amountToCollect": 1000,
+      "historicalDepthYears": 5,
+      "searchParam": "date",
+      "elementName": "performed"
+    },
+    {
+      "resourceType": "QuestionaireResponse",
+      "amountToCollect": 1000,
+      "historicalDepthYears": 1,
+      "searchParam": "authored",
+      "elementName": "authored"
+    },
+    {
+      "resourceType": "ResearchSubject",
+      "amountToCollect": 1000,
+      "historicalDepthYears": 5,
+      "searchParam": "date",
+      "elementName": "period"
+    },
+    {
+      "resourceType": "ServiceRequest",
+      "amountToCollect": 1000,
+      "historicalDepthYears": 5,
+      "searchParam": "authored",
+      "elementName": "authoredOn"
+    },
+    {
+      "resourceType": "Specimen",
+      "amountToCollect": 1000,
+      "historicalDepthYears": 5,
+      "searchParam": "collected",
+      "elementName": "collected"
+    }
+  ]
+
+  ;$writeFile($infoBinsDistinct,'infoBinsDistinct.json')
+
+// This is unfinished code replaced by mnualy created file above
+  // $ILInformationBins := $readFile('$ILInformationBins.json')
+
+  // ;$distinctResourceTypes := $ILInformationBins.resourceTypes.resourceType~>$distinct()
+
+  // ;$distinctResourceTypes@$drt.{
+  //   'resourceType':$drt
+  //   ,'amountToCollect' : $ILInformationBins.resourceTypes[resourceType=$drt].amountToCollect~>$max()
+  //   ,"historicalDepthYears": $ILInformationBins.resourceTypes[resourceType=$drt].historicalDepthYears~>$max()
+  //   ,"searchParam": $ILInformationBins.resourceTypes[resourceType=$drt].searchParam[0]
+  //   ,"elementName": $ILInformationBins.resourceTypes[resourceType=$drt].elementName[0]
+  //    }
+)

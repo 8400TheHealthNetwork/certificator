@@ -29,6 +29,11 @@
       "id": "extract-gender",
       "description": "Extract Patient.gender value sampled instances",
       "mapping": "doExtractGender"
+    },
+    {
+      "id": "sample-wrapper",
+      "description": "Initiate the sampling process",
+      "mapping": "doSampleWrapper"
     }
   ],
   "kits": [
@@ -98,6 +103,7 @@
                   "description": "Patient Identifier system distribution",
                   "details": "Check if the distribution of Patient.identifier.system makes sense.",
                   "actions": [
+                    "sample-wrapper",
                     "extract-identifiers"
                   ]
                 },
@@ -107,6 +113,7 @@
                   "description": "Patient gender value distribution",
                   "details": "Check if the distribution of Patient.identifier.system makes sense.",
                   "actions": [
+                    "sample-wrapper",
                     "extract-gender"
                   ]
                 }
