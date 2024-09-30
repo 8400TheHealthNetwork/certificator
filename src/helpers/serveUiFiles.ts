@@ -1,10 +1,12 @@
 import path from 'path';
-import os from 'os';
 import fs from 'fs-extra';
+import os from 'os';
 import { isFiletypeChunked } from './chunkedFileTypes';
 import contentTypeMap from './contentTypeMap.json';
 import { getKitTransformer, reportRunSettings } from './expressions';
-import { kits, getKitStatus, getActionStatus, getTestStatus, readJsonFile, testStatusFilePath } from '../app';
+import { sampleSize } from './getSampleSize';
+import { kits, getKitStatus, getActionStatus, getTestStatus, readJsonFile, testStatusFilePath, certificatorVersion } from '../app';
+import { readFile as readIoFile } from './extraBindings/io';
 import type { Response } from 'express';
 
 const workingDir = path.resolve('.');
@@ -14,6 +16,14 @@ const workflowFilePath = path.join(currentRunDir, 'workflow.json');
 
 // cache for ui files
 const cachedFiles = {};
+
+const readIoFileSafe = (filepath: string) => {
+  try {
+    return readIoFile(filepath);
+  } catch {
+    return undefined;
+  }
+};
 
 const getUiFileFromDisk = (route: string) => {
   if (route === '/report' || route === '/report/') {
@@ -65,6 +75,11 @@ const getTestErrorDetails = async (testId: string) => {
   return testStatusFileContent?.details;
 };
 
+const getTestStatusText = async (testId: string) => {
+  const testStatusFileContent = await readJsonFile(testStatusFilePath(testId));
+  return testStatusFileContent?.statusText;
+};
+
 const getReport = async (res: Response) => {
   const workflow = await readJsonFile(workflowFilePath);
   const kitId: string = workflow?.kitId;
@@ -72,7 +87,7 @@ const getReport = async (res: Response) => {
     kit: await getKitJson(kitId),
     workflow
   };
-  const resJson = await reportRunSettings.evaluate(source, { kitId, kits, getTestErrorDetails, getTestStatus, userHomeDir: path.basename(os.homedir()), userProfile: path.basename(process.env.USERPROFILE) });
+  const resJson = await reportRunSettings.evaluate(source, { kitId, kits, getTestErrorDetails, getTestStatusText, username: process.env.USERNAME, userDomain: process.env.USERDOMAIN, fhirServer: process.env.FHIR_SERVER_BASE, hostName: os.hostname(), certificatorVersion, sampleSize, readIoFile: readIoFileSafe });
   res.set('Content-Type', 'application/json');
   res.set('Content-Disposition', 'inline; filename="data.json"');
   res.status(200).send(resJson);

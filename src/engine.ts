@@ -5,6 +5,7 @@ import { extraBindings } from './helpers';
 import { setFumeServer } from './config';
 import { loadMapFiles } from './helpers/loadMaps';
 import { version as CERTIFICATOR_VERSION } from '../package.json';
+import { sampleSize } from './helpers/getSampleSize';
 import type { Request, Response, NextFunction } from 'express';
 import chalk from 'chalk';
 import * as dotenv from 'dotenv';
@@ -12,7 +13,6 @@ import * as dotenv from 'dotenv';
 dotenv.config();
 let configObject: IConfig;
 const port: number = 8401;
-const sampleSize = process.env?.RESOURCE_SAMPLE_SIZE ? parseInt(process.env?.RESOURCE_SAMPLE_SIZE) : 1000;
 
 // middleware function for handling healthcheck api routes
 const reRouter = async (req: Request, res: Response, next: NextFunction) => {

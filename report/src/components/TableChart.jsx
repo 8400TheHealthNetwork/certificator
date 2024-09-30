@@ -18,7 +18,7 @@ class TableChart extends React.Component {
       }),
       theme: useTheme({
         Table: `
-            --data-table-library_grid-template-columns: repeat(${props.chart.columns.length}, minmax(auto, 300px));
+            --data-table-library_grid-template-columns: repeat(${props.chart.columns.length}, minmax(auto, auto));
           `,
         HeaderRow: `
           .th {

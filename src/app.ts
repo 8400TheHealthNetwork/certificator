@@ -24,16 +24,18 @@ import { fork } from 'node:child_process';
 import path from 'path';
 import cors from 'cors';
 import express from 'express';
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 import kitsFile from '../kits.json';
 import { serveUiRoute } from './helpers/serveUiFiles';
 import chalk from 'chalk';
 import * as dotenv from 'dotenv';
+import { version as CERTIFICATOR_VERSION } from '../package.json';
 import type { Express, Request, Response } from 'express';
 
 dotenv.config();
 
 export let kits = kitsFile;
+export const certificatorVersion = CERTIFICATOR_VERSION;
 const port: number = 8400;
 const enginePort: number = 8401;
 
@@ -43,7 +45,10 @@ const currentRunDir: string = path.join(workingDir, 'runs', 'current');
 const ioDir: string = path.join(workingDir, 'io');
 
 const engineApi = axios.create({
-  baseURL: `http://localhost:${enginePort.toString()}`
+  baseURL: `http://localhost:${enginePort.toString()}`,
+  validateStatus: function (status) {
+    return true;
+  }
 });
 
 // TODO: This will not work in SEA mode
@@ -58,8 +63,10 @@ export const testStatusFilePath: Function = (testId: string) => path.join(curren
 const actionStatusFilePath: Function = (mappingId: string): string => path.join(ioDir, `actionStatus_${mappingId}.json`);
 
 export const readJsonFile = async (filePath: string) => {
-  const content: string = (await fs.readFile(filePath)).toString();
-  return content === '' ? {} : JSON.parse(content);
+  if (await fs.exists(filePath)) {
+    const content: string = (await fs.readFile(filePath)).toString();
+    return content === '' ? {} : JSON.parse(content);
+  } else return undefined;
 };
 
 const writeJsonFile = async (filePath: string, content: any) => await fs.writeFile(filePath, JSON.stringify(content, null, 2));
@@ -115,7 +122,7 @@ const runTest = async (testId: string) => {
   console.log(`Starting execution of test ${testId}`);
   const actionsToRun: string[] = await getTestActions.evaluate({}, { kits, testId });
   let errorDetails: string;
-  await setTestStatus(testId, 'in-progress');
+  await setTestStatus(testId, 'in-progress', 'in-progress');
   try {
     await runActionList(actionsToRun);
   } catch (e) {
@@ -126,32 +133,42 @@ const runTest = async (testId: string) => {
   const lastActionStatusJson = await getActionStatus(lastMappingId);
   errorDetails = errorDetails ?? lastActionStatusJson?.details;
   const testStatus: string = errorDetails ? 'error' : lastActionStatusJson.statusCode;
-  await setTestStatus(testId, testStatus, errorDetails);
+  const testStatusText: string = errorDetails ? 'Error' : lastActionStatusJson.statusText;
+  await setTestStatus(testId, testStatus, testStatusText, errorDetails);
 };
 
 const setActionStatus = async (mappingId: string, statusCode: string, statusText: string, details?: string) => {
   await writeJsonFile(actionStatusFilePath(mappingId), { statusCode, statusText, details });
 };
 
-const setTestStatus = async (testId: string, status: string, details?: string) => {
-  await writeJsonFile(testStatusFilePath(testId), { status, details });
+const setTestStatus = async (testId: string, status: string, statusText: string, details?: string) => {
+  await writeJsonFile(testStatusFilePath(testId), { status, statusText, details });
 };
 
 const setSkippedTests = async (skippedTests: string[]) => {
-  skippedTests.forEach(async (testId: string) => await setTestStatus(testId, 'skipped'));
+  skippedTests.forEach(async (testId: string) => await setTestStatus(testId, 'skipped', 'Skipped'));
 };
 
 const runAction = async (mappingId: string) => {
   // only run action if it did not run already
   const initialStatusJson = await getActionStatus(mappingId);
+  let engineResponse: AxiosResponse;
   if (initialStatusJson.statusCode === 'ready') {
     await setActionStatus(mappingId, 'init', 'Initialized');
     try {
       console.log(`Executing mapping ${mappingId}`);
-      await engineApi.post(`/Mapping/${mappingId}`, {});
+      engineResponse = await engineApi.post(`/Mapping/${mappingId}`, {});
       const currentActionStatus = await getActionStatus(mappingId);
-      if (currentActionStatus?.statusCode === 'in-progress') {
-        await setActionStatus(mappingId, 'completed', 'Completed');
+      if (currentActionStatus?.statusCode === 'in-progress' || currentActionStatus?.statusCode === 'init') {
+        if (engineResponse.status === 200) {
+          await setActionStatus(mappingId, 'completed', 'Completed');
+        } else {
+          const details: string = engineResponse.data.message.message ?? (
+            typeof engineResponse.data.message === 'string' ? engineResponse.data.message : JSON.stringify(engineResponse.data.message ?? engineResponse.data)
+          );
+          console.log(`Error executing mapping ${mappingId}. Details: ${details}`);
+          await setActionStatus(mappingId, 'error', 'Error', details);
+        }
       };
       console.log(`Mapping ${mappingId} execution finished`);
     } catch (e) {
