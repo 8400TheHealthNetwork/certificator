@@ -51,7 +51,7 @@
               "name": "Existence",
               "children": [
                 {
-                  "id": "test1",
+                  "id": "test11",
                   "name": "Check there is a CapabilityStatement",
                   "description": "Check there is a CapabilityStatement",
                   "details": "Check GET metadata returns a CapabilityStatement.\n Applications SHALL return a resource that describes the functionality of the server end-point.\n https://hl7.org/fhir/R4/http.html#capabilities \n RESTful servers are required to provide this resource on demand. Servers SHALL specify what resource types and operations are supported \n https://hl7.org/fhir/R4/capabilitystatement.html#notes",
@@ -67,7 +67,7 @@
               "name": "Validity",
               "children": [
                 {
-                  "id": "capstat-content-type",
+                  "id": "test173",
                   "name": "CapabilityStatement Content-Type",
                   "description": "IF CapabilityStatement was returned, check Content-Type validity",
                   "details": "The response headers from /metadata must include Content-Type: application/fhir+json",
@@ -77,7 +77,7 @@
                   ]
                 },
                 {
-                  "id": "capstat-base-valid",
+                  "id": "test10",
                   "name": "Base Validation",
                   "description": "IF there is a CapabilityStatement - validate it against the base resource",
                   "details": "https://hl7.org/fhir/R4/capabilitystatement.html",
