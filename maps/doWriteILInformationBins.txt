@@ -361,5 +361,5 @@
     }
   ]
 
-  ;$writeFile($ILInformationBins,'$ILInformationBins.json')
+  ;$writeFile($ILInformationBins,'ILInformationBins.json')
 )

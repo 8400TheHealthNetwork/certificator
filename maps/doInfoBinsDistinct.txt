@@ -140,8 +140,8 @@
 
   ;$writeFile($infoBinsDistinct,'infoBinsDistinct.json')
 
-// This is unfinished code replaced by mnualy created file above
-  // $ILInformationBins := $readFile('$ILInformationBins.json')
+// This is unfinished code replaced by mnualy created file above, need to complite extracting the max "amountToCollect" and max "historicalDepthYears" from ILInformationBins.json
+  // $ILInformationBins := $readFile('ILInformationBins.json')
 
   // ;$distinctResourceTypes := $ILInformationBins.resourceTypes.resourceType~>$distinct()
 
