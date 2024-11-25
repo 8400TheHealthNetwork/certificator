@@ -1,0 +1,11 @@
+// doFailSearch - Write to file the HTTP response of Search deliberately meant to fail. This will be used to check FHIR requirements with regards to search failure
+(
+    $failedSearchResponse := $http({
+        'method':'get'
+        ,'baseUrl': $capabilities().implementation.url
+        ,'headers' : {'content-type': 'application/fhir+json'}
+        ,'url': 'Patient?birthdate=xxx' /*intentionally fail search using invalid value*/
+    })
+
+    ;$writeFile($failedSearchResponse,'failedSearchResponse.json')
+)
