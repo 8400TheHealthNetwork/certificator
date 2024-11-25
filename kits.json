@@ -34,6 +34,16 @@
       "id": "sample-wrapper",
       "description": "Initiate the sampling process",
       "mapping": "doSampleWrapper"
+    },
+    {
+      "id": "doFailSearch",
+      "description": "Send an invalid search request and write results to file",
+      "mapping": "doFailSearch"
+    },
+    {
+      "id": "isFailedSearchOK",
+      "description": "Assert server responds to invalid search request according to spec",
+      "mapping": "isFailedSearchOK"
     }
   ],
   "kits": [
