@@ -1,0 +1,24 @@
+// isFailedSearchOK - Assert server returned a valid HTTP response to a failed search request => If the search fails (cannot be executed, not that there are no matches), the return value return value SHALL be a status code 4xx or 5xx with an OperationOutcome 
+
+( 
+  /*Perform test*/
+    $testResult := (
+      ($readFile('failedSearchResponse.json').status.$string() ~> $substring(0,1) in ['4','5']) // Assert HTTP response code indicates error as required
+      and
+      ('OperationOutcome' in $readFile('failedSearchResponse.json').data.resourceType) // Assert response includes OperationOutcome as required
+      )
+
+  /*Prep pass & fail msg*/
+    ;$msgPassed :={
+      'statusCode':'passed'
+      ,'statusText':'Passed'
+    }
+
+  ;$msgFailed := {
+      'statusCode':'failed'
+      ,'statusText':'Failed'
+    }
+
+  /*Write pass/fail msg based on test results*/
+    ;$writeFile(($testResult ? $msgPassed : $msgFailed),'actionStatus_isFailedSearchOK.json')
+)

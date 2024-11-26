@@ -1,4 +1,5 @@
-// doInfoBinsDistinct - Create 1 obejct per resourceType to be sampled with the Max(historicalDepthYears) Max(amountToCollect) and arbitrary searchParam & elementName (assuming a resourceType is always sampled based on the saem combinaiton of the both)
+// doInfoBinsDistinct - Create 1 obejct per resourceType to be sampled with the Max(historicalDepthYears) Max(amountToCollect), the mandatory searchParams defined by the regulation and derived elementName
+// TBD - Master data resource types are curently not taken care of (they have no relevant date searchParam)
 
 // See below unfinished code
 (
