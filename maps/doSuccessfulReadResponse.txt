@@ -11,6 +11,14 @@
   // Extract the endpoit/resourceType from the file name
     ;$instanceId := $substringAfter($substringBefore($sampleResource, '].json'),']_[')
 
+  // Write resource type and id to disk for use in varius successful read tests
+    ;$successfulReadResponsePrms := {
+      "resourceType" : $resourceType
+      ,"instanceId" : $instanceId
+     }
+    
+    ;$writeFile($successfulReadResponsePrms,'successfulReadResponsePrms.json')
+  
   // Capture the HTTP search response for a search based on the sampled resourceType and write it to file
     ;$successfulReadResponse := $http({
           'method':'get'

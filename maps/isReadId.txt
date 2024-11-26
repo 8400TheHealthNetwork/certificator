@@ -1,0 +1,30 @@
+// isReadId (Test 87) - check if on simple read (GET) the returned resource type and id match the requested ones
+(
+  /*Write initial map status for UI to status file*/
+    {
+      'statusCode':'in-progress'
+      ,'statusText':'in-progress'
+    } ~> $writeFile('actionStatus_isReadId.json')
+
+  /*Perform test*/
+    ;$testResult :=
+    (
+      ($readFile('successfulReadResponse.json').data.id = $readFile('successfulReadResponsePrms.json').instanceId)
+      and
+      ($readFile('successfulReadResponse.json').data.resourceType = $readFile('successfulReadResponsePrms.json').resourceType)
+    )
+
+  /*Prep pass & fail msg*/
+    ;$msgPassed :={
+      'statusCode':'passed'
+      ,'statusText':'Passed'
+    }
+  
+    ;$msgFailed := {
+      'statusCode':'failed'
+      ,'statusText':'Failed'
+    }
+
+  /*Write pass/fail msg based on test results*/
+    ;$writeFile(($testResult ? $msgPassed : $msgFailed),'actionStatus_isReadId.json')
+)
