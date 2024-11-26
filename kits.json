@@ -44,6 +44,16 @@
       "id": "isFailedSearchOK",
       "description": "Assert server responds to invalid search request according to spec",
       "mapping": "isFailedSearchOK"
+    },
+    {
+      "id": "doSuccessfulReadResponse",
+      "description": "Write to file the HTTP response of a successful read (GET) request for inspection by other maps",
+      "mapping": "doSuccessfulReadResponse"
+    },
+    {
+      "id": "isGetContentTypeOK",
+      "description": "This map Assert Content-Type='application/fhir+json' on a simple read (GET) response",
+      "mapping": "isGetContentTypeOK"
     }
   ],
   "kits": [
@@ -153,6 +163,28 @@
                   "actions": [
                     "doFailSearch",
                     "isFailedSearchOK"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "read",
+          "name": "Read",
+          "children": [
+            {
+              "id": "read-get",
+              "name": "Read by GET",
+              "children": [
+                {
+                  "id": "test186",
+                  "name": "Confirm that the returned HTTP Header Content-Type is present and valid",
+                  "description": "Confirm that the returned HTTP Header Content-Type is present and valid",
+                  "details": "The correct mime type SHALL be used by clients and servers:\n\nXML: application/fhir+xml\nJSON: application/fhir+json\nRDF: application/fhir+turtle (only the Turtle format is supported)\n\n3.1.0.1.9 Content Types and encodings \nhttps://www.hl7.org/fhir/R4/http.html#mime-type",
+                  "actions": [
+                    "doSuccessfulReadResponse",
+                    "isGetContentTypeOK"
                   ]
                 }
               ]
