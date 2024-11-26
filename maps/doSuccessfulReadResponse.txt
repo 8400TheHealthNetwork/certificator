@@ -1,0 +1,23 @@
+// doSuccessfulReadResponse - write to file the HTTP response of a successful read (GET) request for inspection by other maps
+(
+  // In order to complete all tests of successful searches, we must have at least 1 resource returned by the search. We can guarantee a resource would return by searching an endpoint that returned instances in the sampling process that takes place prior to all API tests.
+
+  // Extract 1 file name of a sampled resource
+    $sampleResource := $readDir()[$contains(/\[[A-Za-z]+\]_\[[A-Za-z0-9\-\.]{1,64}\]\.json/)][0]
+
+  // Extract the endpoit/resourceType from the file name
+    ;$resourceType := $substringAfter($substringBefore($sampleResource, ']'),'[')
+  
+  // Extract the endpoit/resourceType from the file name
+    ;$instanceId := $substringAfter($substringBefore($sampleResource, '].json'),']_[')
+
+  // Capture the HTTP search response for a search based on the sampled resourceType and write it to file
+    ;$successfulReadResponse := $http({
+          'method':'get'
+          ,'baseUrl': $capabilities().implementation.url
+          ,'headers' : {'content-type': 'application/fhir+json'}
+          ,'url': $resourceType & '/' & $instanceId
+    })
+
+    ;$writeFile($successfulReadResponse,'successfulReadResponse.json')
+)
