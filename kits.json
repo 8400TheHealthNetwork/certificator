@@ -59,6 +59,11 @@
       "id": "isReadId",
       "description": "Check if on simple read (GET) the returned resource type and id match the requested ones",
       "mapping": "isReadId"
+    },
+    {
+      "id": "doExtractIds",
+      "description": "(Test31) - Check if all sampled instances resource.id comply with FHIR id datatype requirements",
+      "mapping": "doExtractIds"
     }
   ],
   "kits": [
@@ -146,6 +151,22 @@
                     "metadata-content-type",
                     "sample-wrapper",
                     "extract-gender"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "resource-validation",
+              "name": "Resource validation",
+              "children": [
+                {
+                  "id": "test31",
+                  "name": "Response resource ID is ID (matches ID regex)",
+                  "description": "Response resource ID is ID (matches ID regex)",
+                  "details": "id\tAny combination of upper- or lower-case ASCII letters ('A'..'Z', and 'a'..'z', numerals ('0'..'9'), '-' and '.', with a length limit of 64 characters. (This might be an integer, an un-prefixed OID, UUID or any other identifier pattern that meets these constraints.)\txs:string\tJSON string\nRegex: [A-Za-z0-9\\-\\.]{1,64}\n\n2.24.0.1 Primitive Types \nhttps://hl7.org/fhir/R4/datatypes.html#primitive",
+                  "actions": [
+                    "sample-wrapper",
+                    "doExtractIds"
                   ]
                 }
               ]

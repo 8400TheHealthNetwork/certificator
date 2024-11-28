@@ -3,13 +3,13 @@
   // In order to complete all tests of successful searches, we must have at least 1 resource returned by the search. We can guarantee a resource would return by searching an endpoint that returned instances in the sampling process that takes place prior to all API tests.
 
   // Extract 1 file name of a sampled resource
-    $sampleResource := $readDir()[$contains(/\[[A-Za-z]+\]_\[[A-Za-z0-9\-\.]{1,64}\]\.json/)][0]
+    $sampledResource := $readDir()[$contains(/\[[A-Za-z]+\]_\[[A-Za-z0-9\-\.]{1,64}\]\.json/)][0]
 
   // Extract the endpoit/resourceType from the file name
-    ;$resourceType := $substringAfter($substringBefore($sampleResource, ']'),'[')
+    ;$resourceType := $substringAfter($substringBefore($sampledResource, ']'),'[')
   
   // Extract the endpoit/resourceType from the file name
-    ;$instanceId := $substringAfter($substringBefore($sampleResource, '].json'),']_[')
+    ;$instanceId := $substringAfter($substringBefore($sampledResource, '].json'),']_[')
 
   // Write resource type and id to disk for use in varius successful read tests
     ;$successfulReadResponsePrms := {
