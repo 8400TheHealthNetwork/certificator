@@ -430,30 +430,25 @@ export const reportRunSettings: Expression = jsonata(`
     {
       'id': 'id-validity-chart',
       'title': 'Sampled resources id validity by resource type',
-      'type': 'table',
-      'columns': [
+      "type": "line",
+      "data": [
         {
-          'property': 'resourceType',
-          'label': 'Resource type'
+          "label": "my label",
+          "value": 20
         },
         {
-          'property': 'isIdValid',
-          'label': 'Valid'
+          "label": "my label 1",
+          "value": 20
         },
         {
-          'property': 'count',
-          'label': 'Count'
+          "label": "my label 2",
+          "value": 20
+        },
+        {
+          "label": "my label 2",
+          "value": 20
         }
-      ],
-      'data': [$sampledResourcesIds{
-          resourceType & isIdValid : { /*Create an object for each of the agregating elements combination*/
-            "resourceType" : [resourceType][0], /*Populate each object with keys for the agregating elements and populate them with values (use the 1st instance as they are all identical)*/
-            "isIdValid" : $string([isIdValid][0]),
-            "count" : $count($) /*Add a count element which counts over every agregating elements combination*/
-          }
-        } 
-        ~> $each(function($val){$val})^(resourceType,isIdValid) /*Flatten the structure by removing the containing object*/
-        ]
+      ]
     };
     
     {
