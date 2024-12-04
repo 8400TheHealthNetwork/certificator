@@ -467,7 +467,7 @@ export const reportRunSettings: Expression = jsonata(`
                 ,$runSummary
                 ,$genderChart
                 ,$identifierChart
-                ,birthdates-chart
+                ,$birthdatesChart
                 ,$idValidityChart
                 ]
     }
