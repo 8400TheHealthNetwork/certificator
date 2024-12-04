@@ -1,3 +1,4 @@
+// doBirthDateDist (Test 68) - Patient.birthDate disterbution
 (
   /*Write initial map status for UI to status file*/
     {
@@ -11,9 +12,8 @@
   // For each sampled resource create an object with relevant data (file name, resource id etc) including if the id is or is not valid
     ;$birthDates := $sampledResources@$fn.$readFile($fn).{
       "fileName" : $fn
-      ,"id" : $.id
+      ,"id" : id
       ,"birthDate" : birthDate
-      ,'count' : 1
       }
   
     ;$writeFile($birthDates,'birthDates.json')
@@ -26,25 +26,21 @@
     ;$durrationMil := $maxBirthDate-$minBirthDate
     ;$24HMil := (1000*60*60*24)
     ;$days := $durrationMil/$24HMil
-    ;$daysRounded := $days - $days%1
-    ;$datesArrMil := [0 .. $daysRounded].($minBirthDate + $*$24HMil)
+    ;$datesArrMil := [0 .. $days].($minBirthDate + $*$24HMil)
     ;$datesArrDt := $datesArrMil.$fromMillis('[Y0001]-[M01]-[D01]')
-    ;$datesObj := $datesArrDt.{'date':$, 'count':0}
 
-  // experiment - left ojin by tranform
-    //;$datesObj@$do ~> | $do.* | {'count' : 1} |
-    
-  // Left join birthdates to timeline
-    ;$datesObj@$do.($bd := $birthDates[birthDate = $do.date])
+  // Aggregate patient by birthDate
+    ;$birthDatesAgg := $birthDates{birthDate:$count($)}
 
-    ;$exists($bd) ? $bd.{
-      'date': $do.date
-      ,'count' : count
-    } : {
-      'date': $do.date
-      ,'id' : $do.count
-    }
+  // Join timeline and count of patinet by date of birth
+    ;$birthDatesAgg := $datesArrDt.(
+      $aggCnt := $lookup($birthDatesAgg, $)
+      
+      ;{
+        'date' : $
+        ,'count' : $aggCnt ? $aggCnt : 0
+      }
+    )
 
-  // Aggregate to date level
-
+    ;$writeFile($birthDatesAgg,'birthDatesAgg.json')
 )

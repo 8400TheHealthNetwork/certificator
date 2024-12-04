@@ -401,6 +401,7 @@ export const reportRunSettings: Expression = jsonata(`
     $dqaGenderDist := $readIoFile('distributionGender.json');
     $dqaIdDist := $readIoFile('DQAidentifiers.json');
     $sampledResourcesIds := $readIoFile('sampledResourcesIds.json');
+    $birthDatesAgg := $readIoFile('birthDatesAgg.json');
     
     $genderChart := $exists($dqaGenderDist) ? {
       'id': 'gender-chart',
@@ -426,11 +427,19 @@ export const reportRunSettings: Expression = jsonata(`
       'data': [(($dqaIdDist[resourceType="Patient"]{system: $count($)} ~> $spread()).{'uri': $keys($), 'count': $string(*)})^(>count)]
     };
 
+    $birthdatesChart := $exists($birthDatesAgg) ?
+    {
+      'id': 'birthdates-chart',
+      'title': 'Patient birthdates disterbution',
+      "type": "line",
+      "data": [{$birthDatesAgg[[0..5]].{'label':date ,'value':count}]
+    };
+
     $idValidityChart := $exists($sampledResourcesIds) ?
     {
       'id': 'id-validity-chart',
       'title': 'Sampled resources id validity by resource type',
-      "type": "line",
+      "type": "pie",
       "data": [
         {
           "label": "my label",
@@ -452,7 +461,15 @@ export const reportRunSettings: Expression = jsonata(`
     };
     
     {
-      'charts': [$runAttributes, $count($skippedTests.data) > 0 ? $skippedTests, $runSummary, $genderChart, $identifierChart, $idValidityChart]
+      'charts': [
+                $runAttributes
+                ,$count($skippedTests.data) > 0 ? $skippedTests
+                ,$runSummary
+                ,$genderChart
+                ,$identifierChart
+                ,birthdates-chart
+                ,$idValidityChart
+                ]
     }
 
   )
