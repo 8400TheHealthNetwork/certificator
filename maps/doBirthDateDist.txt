@@ -7,13 +7,14 @@
     } ~> $writeFile('actionStatus_doBirthDateDist.json')
 
   // List all sampled Patient instances (only) file names
-    ;$sampledResources := $readDir()[$contains(/\[Patient\]_\[[^\]]*\]\.json/i)]
+    ;$sampledResources := $readDir()[$startsWith($, '[Patient]_[') and $endsWith($,'].json')]
 
   // For each sampled resource create an object with relevant data (file name, resource id etc) including if the id is or is not valid
     ;$birthDates := $sampledResources@$fn.$readFile($fn).{
       "fileName" : $fn
       ,"id" : id
       ,"birthDate" : birthDate
+      ,"birthDateWeek" : $fromMillis($toMillis(birthDate),'[Y0001]-[W]')
       }
   
     ;$writeFile($birthDates,'birthDates.json')
@@ -27,13 +28,13 @@
     ;$24HMil := (1000*60*60*24)
     ;$days := $durrationMil/$24HMil
     ;$datesArrMil := [0 .. $days].($minBirthDate + $*$24HMil)
-    ;$datesArrDt := $datesArrMil.$fromMillis('[Y0001]-[M01]-[D01]')
+    ;$datesArrDt := ($datesArrMil.$fromMillis('[Y0001]-[W]'))~>$distinct()
 
-  // Aggregate patient by birthDate
-    ;$birthDatesAgg := $birthDates{birthDate:$count($)}
+  // // Aggregate patient by birthDate week
+    ;$birthDatesAgg := $birthDates{birthDateWeek:$count($)}
 
   // Join timeline and count of patinet by date of birth
-    ;$birthDatesAgg := $datesArrDt.(
+    ;$birthDatesTimeLineAgg := $datesArrDt.(
       $aggCnt := $lookup($birthDatesAgg, $)
       
       ;{
@@ -42,5 +43,5 @@
       }
     )
 
-    ;$writeFile($birthDatesAgg,'birthDatesAgg.json')
+    ;$writeFile($birthDatesTimeLineAgg,'birthDatesTimeLineAgg.json')
 )
