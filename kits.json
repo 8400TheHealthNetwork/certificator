@@ -57,7 +57,7 @@
     },
     {
       "id": "isReadId",
-      "description": "Check if on simple read (GET) the returned resource type and id match the requested ones",
+      "description": "On simple read (GET), check response resource ID is of correct data-type and matches input ID (Test 87)",
       "mapping": "isReadId"
     },
     {
