@@ -404,7 +404,7 @@ export const reportRunSettings: Expression = jsonata(`
     
     $genderChart := $exists($dqaGenderDist) ? {
       'id': 'gender-chart',
-      'title': 'Patient.gender Distribution',
+      'title': 'Patient.gender distribution (Test 70)',
       'type': 'pie',
       'data': [($dqaGenderDist{pathValue: $count($)} ~> $spread()).{'label': $keys($), 'value': *}]
     };
