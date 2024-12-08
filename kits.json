@@ -209,7 +209,6 @@
                   "description": "Confirm that the returned HTTP Header Content-Type is present and valid",
                   "details": "The correct mime type SHALL be used by clients and servers:\n\nXML: application/fhir+xml\nJSON: application/fhir+json\nRDF: application/fhir+turtle (only the Turtle format is supported)\n\n3.1.0.1.9 Content Types and encodings \nhttps://www.hl7.org/fhir/R4/http.html#mime-type",
                   "actions": [
-                    "sample-wrapper",
                     "doSuccessfulReadResponse",
                     "isGetContentTypeOK"
                   ]
@@ -220,7 +219,6 @@
                   "description": "Response resource ID matches input ID",
                   "details": "The returned resource SHALL have an id element with a value that is the [id]\n\n3.1.0.2 read \nhttps://hl7.org/fhir/R4/http.html#read",
                   "actions": [
-                    "sample-wrapper",
                     "doSuccessfulReadResponse",
                     "isReadId"
                   ]
