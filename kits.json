@@ -64,6 +64,11 @@
       "id": "doExtractIds",
       "description": "(Test31) - Check if all sampled instances resource.id comply with FHIR id datatype requirements",
       "mapping": "doExtractIds"
+    },
+    {
+      "id": "doBirthDateDist",
+      "description": "(Test 68) - Patient.birthDate disterbution",
+      "mapping": "doBirthDateDist"
     }
   ],
   "kits": [
@@ -133,9 +138,6 @@
                   "description": "Patient Identifier system distribution",
                   "details": "Check if the distribution of Patient.identifier.system makes sense.",
                   "actions": [
-                    "get-metadata",
-                    "metadata-http-200",
-                    "metadata-content-type",
                     "sample-wrapper",
                     "extract-identifiers"
                   ]
@@ -146,11 +148,18 @@
                   "description": "Patient gender value distribution",
                   "details": "Check if the distribution of Patient.identifier.system makes sense.",
                   "actions": [
-                    "get-metadata",
-                    "metadata-http-200",
-                    "metadata-content-type",
                     "sample-wrapper",
                     "extract-gender"
+                  ]
+                },
+                {
+                  "id": "test68",
+                  "name": "Patient birthdate distribution",
+                  "description": "Patient birthdate value distribution",
+                  "details": "Check if the distribution of Patient.birthDate makes sense.",
+                  "actions": [
+                    "sample-wrapper",
+                    "doBirthDateDist"
                   ]
                 }
               ]
