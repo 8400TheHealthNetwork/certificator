@@ -401,6 +401,7 @@ export const reportRunSettings: Expression = jsonata(`
     $dqaGenderDist := $readIoFile('distributionGender.json');
     $dqaIdDist := $readIoFile('DQAidentifiers.json');
     $sampledResourcesIds := $readIoFile('sampledResourcesIds.json');
+    $birthDatesTimeLineAgg := $readIoFile('birthDatesTimeLineAgg.json');
     
     $genderChart := $exists($dqaGenderDist) ? {
       'id': 'gender-chart',
@@ -426,38 +427,49 @@ export const reportRunSettings: Expression = jsonata(`
       'data': [(($dqaIdDist[resourceType="Patient"]{system: $count($)} ~> $spread()).{'uri': $keys($), 'count': $string(*)})^(>count)]
     };
 
+    $birthdatesChart := $exists($birthDatesTimeLineAgg) ?
+    {
+      'id': 'birthdates-chart',
+      'title': 'Patient birthdates disterbution',
+      "type": "line",
+      "data": [$birthDatesTimeLineAgg.{'label':date ,'value':count}]
+    };
+
     $idValidityChart := $exists($sampledResourcesIds) ?
     {
       'id': 'id-validity-chart',
       'title': 'Sampled resources id validity by resource type',
-      'type': 'table',
-      'columns': [
+      "type": "pie",
+      "data": [
         {
-          'property': 'resourceType',
-          'label': 'Resource type'
+          "label": "my label",
+          "value": 20
         },
         {
-          'property': 'isIdValid',
-          'label': 'Valid'
+          "label": "my label 1",
+          "value": 20
         },
         {
-          'property': 'count',
-          'label': 'Count'
+          "label": "my label 2",
+          "value": 20
+        },
+        {
+          "label": "my label 2",
+          "value": 20
         }
-      ],
-      'data': [$sampledResourcesIds{
-          resourceType & isIdValid : { /*Create an object for each of the agregating elements combination*/
-            "resourceType" : [resourceType][0], /*Populate each object with keys for the agregating elements and populate them with values (use the 1st instance as they are all identical)*/
-            "isIdValid" : $string([isIdValid][0]),
-            "count" : $count($) /*Add a count element which counts over every agregating elements combination*/
-          }
-        } 
-        ~> $each(function($val){$val})^(resourceType,isIdValid) /*Flatten the structure by removing the containing object*/
-        ]
+      ]
     };
     
     {
-      'charts': [$runAttributes, $count($skippedTests.data) > 0 ? $skippedTests, $runSummary, $genderChart, $identifierChart, $idValidityChart]
+      'charts': [
+                $runAttributes
+                ,$count($skippedTests.data) > 0 ? $skippedTests
+                ,$runSummary
+                ,$genderChart
+                ,$identifierChart
+                ,$birthdatesChart
+                ,$idValidityChart
+                ]
     }
 
   )
