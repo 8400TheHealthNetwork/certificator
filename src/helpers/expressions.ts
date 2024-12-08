@@ -411,7 +411,7 @@ export const reportRunSettings: Expression = jsonata(`
 
     $identifierChart := $exists($dqaIdDist) ? {
       'id': 'identifier-chart',
-      'title': 'Patient.identifier.system Distribution',
+      'title': 'Patient.identifier.system Distribution (Test 57)',
       'type': 'table',
       'columns': [
         {
@@ -429,7 +429,7 @@ export const reportRunSettings: Expression = jsonata(`
     $idValidityChart := $exists($sampledResourcesIds) ?
     {
       'id': 'id-validity-chart',
-      'title': 'Sampled resources id validity by resource type',
+      'title': 'Sampled resources id validity by resource type (Test 31)',
       'type': 'table',
       'columns': [
         {
