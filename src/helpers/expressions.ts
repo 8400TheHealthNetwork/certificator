@@ -405,14 +405,14 @@ export const reportRunSettings: Expression = jsonata(`
     
     $genderChart := $exists($dqaGenderDist) ? {
       'id': 'gender-chart',
-      'title': 'Patient.gender Distribution',
+      'title': 'Patient.gender distribution (Test 70)',
       'type': 'pie',
       'data': [($dqaGenderDist{pathValue: $count($)} ~> $spread()).{'label': $keys($), 'value': *}]
     };
 
     $identifierChart := $exists($dqaIdDist) ? {
       'id': 'identifier-chart',
-      'title': 'Patient.identifier.system Distribution',
+      'title': 'Patient.identifier.system Distribution (Test 57)',
       'type': 'table',
       'columns': [
         {
@@ -438,9 +438,9 @@ export const reportRunSettings: Expression = jsonata(`
     $idValidityChart := $exists($sampledResourcesIds) ?
     {
       'id': 'id-validity-chart',
-      'title': 'Sampled resources id validity by resource type',
-      "type": "pie",
-      "data": [
+      'title': 'Sampled resources id validity by resource type (Test 31)',
+      'type': 'table',
+      'columns': [
         {
           "label": "my label",
           "value": 20

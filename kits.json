@@ -57,13 +57,18 @@
     },
     {
       "id": "isReadId",
-      "description": "Check if on simple read (GET) the returned resource type and id match the requested ones",
+      "description": "On simple read (GET), check response resource ID is of correct data-type and matches input ID (Test 87)",
       "mapping": "isReadId"
     },
     {
       "id": "doExtractIds",
       "description": "(Test31) - Check if all sampled instances resource.id comply with FHIR id datatype requirements",
       "mapping": "doExtractIds"
+    },
+    {
+      "id": "isReadResource",
+      "description": "(Test 84) - On simple read (GET), Check simple read returns a resource and not a bundle",
+      "mapping": "isReadResource"
     },
     {
       "id": "doBirthDateDist",
@@ -232,6 +237,17 @@
                     "sample-wrapper",
                     "doSuccessfulReadResponse",
                     "isReadId"
+                  ]
+                },
+                {
+                  "id": "test84",
+                  "name": "Response returns a resource and not a bundle",
+                  "description": "Response resource ID matches input ID",
+                  "details": "This returns a single instance with the content specified for the resource type \n 3.1.0.2 read \n https://hl7.org/fhir/R4/http.html#read",
+                  "actions": [
+                    "sample-wrapper",
+                    "doSuccessfulReadResponse",
+                    "isReadResource"
                   ]
                 }
               ]

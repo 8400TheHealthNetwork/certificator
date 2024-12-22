@@ -1,4 +1,4 @@
-// isReadId (Test 87) - check if on simple read (GET) the returned resource type and id match the requested ones
+// isReadId (Test 87) - On simple read (GET), check response resource ID is of correct data-type and matches input ID
 (
   /*Write initial map status for UI to status file*/
     {
@@ -9,9 +9,11 @@
   /*Perform test*/
     ;$testResult :=
     (
-      ($readFile('successfulReadResponse.json').data.id = $readFile('successfulReadResponsePrms.json').instanceId)
+      $id := $readFile('successfulReadResponse.json').data.id
+
+      ;$id = $readFile('successfulReadResponsePrms.json').instanceId
       and
-      ($readFile('successfulReadResponse.json').data.resourceType = $readFile('successfulReadResponsePrms.json').resourceType)
+      $contains($id,/[A-Za-z0-9\-\.]{1,64}/)
     )
 
   /*Prep pass & fail msg*/
