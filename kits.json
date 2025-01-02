@@ -74,6 +74,11 @@
       "id": "doBirthDateDist",
       "description": "(Test 68) - Patient.birthDate disterbution",
       "mapping": "doBirthDateDist"
+    },
+    {
+      "id": "isReadHasId",
+      "description": "(Test29) - The returned resource SHALL have an id element",
+      "mapping": "isReadHasId"
     }
   ],
   "kits": [
@@ -248,6 +253,17 @@
                     "sample-wrapper",
                     "doSuccessfulReadResponse",
                     "isReadResource"
+                  ]
+                },
+                {
+                  "id": "test29",
+                  "name": "Cehck ID element exist",
+                  "description": "Check the returned resource SHALL have an id element",
+                  "details": "Check the returned resource SHALL have an id element",
+                  "actions": [
+                    "sample-wrapper",
+                    "doSuccessfulReadResponse",
+                    "isReadHasId"
                   ]
                 }
               ]
