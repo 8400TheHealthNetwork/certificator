@@ -1,0 +1,3 @@
+// idRegexMatch - A function to evluate if a string matches the id regex EXACTLY https://hl7.org/fhir/R4/datatypes.html#id:~:text=id-,Any%20combination,-of%20upper%2D%20or/
+
+$ ~> /^[A-Za-z0-9\-\.]{1,64}$/ ? true : false

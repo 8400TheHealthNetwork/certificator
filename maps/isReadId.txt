@@ -11,9 +11,9 @@
     (
       $id := $readFile('successfulReadResponse.json').data.id
 
-      ;$id = $readFile('successfulReadResponsePrms.json').instanceId
+      ;$id = $readFile('successfulReadResponsePrms.json').instanceId // check if id on request = id on response
       and
-      $contains($id,/[A-Za-z0-9\-\.]{1,64}/)
+      $idRegexMatch($id) // check if id matches HL7 id data type defined rexeg
     )
 
   /*Prep pass & fail msg*/
