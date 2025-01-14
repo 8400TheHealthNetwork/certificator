@@ -1,0 +1,25 @@
+// doCountResources (Test26) - Count of resources supported by the server by resource type
+// doInfoBinsDistinct
+
+(
+  /*Write initial map status for UI to status file*/
+    {
+      'statusCode':'in-progress'
+      ,'statusText':'in-progress'
+    } ~> $writeFile('actionStatus_doCountResources.json')
+  
+  /*Extract data*/
+      ;$baseUrl := $search('Patient').entry[0].fullUrl.$substringBefore($,'Patient')
+
+      ;$resourceCount := $readFile('infoBinsDistinct.json').resourceType@$rt.$http({
+        'baseUrl': $baseUrl,
+        'url': resourceType
+      }).{
+        'resourceType' : $rt
+        ,'status' : status
+        ,'total' : data.total
+      }
+
+  /*Prep pass & fail msg*/
+    ;$writeFile($resourceCount,'doCountResources.json')
+)
