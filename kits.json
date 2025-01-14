@@ -74,6 +74,16 @@
       "id": "doBirthDateDist",
       "description": "(Test 68) - Patient.birthDate disterbution",
       "mapping": "doBirthDateDist"
+    },
+    {
+      "id": "isReadHasId",
+      "description": "(Test29) - The returned resource SHALL have an id element",
+      "mapping": "isReadHasId"
+    },
+    {
+      "id": "doCountResources",
+      "description": "(Test26) - Count of resources supported by the server by resource type",
+      "mapping": "doCountResources"
     }
   ],
   "kits": [
@@ -184,6 +194,22 @@
                   ]
                 }
               ]
+            },
+            {
+              "id": "resource-count",
+              "name": "Resource count",
+              "children": [
+                {
+                  "id": "test26",
+                  "name": "Count of resources by resource type",
+                  "description": "Count of resources supported by the server by resource type",
+                  "details": "Count of resources supported by the server by resource type",
+                  "actions": [
+                    "sample-wrapper",
+                    "doCountResources"
+                  ]
+                }
+              ]
             }
           ]
         },
@@ -248,6 +274,17 @@
                     "sample-wrapper",
                     "doSuccessfulReadResponse",
                     "isReadResource"
+                  ]
+                },
+                {
+                  "id": "test29",
+                  "name": "Cehck ID element exist",
+                  "description": "Check the returned resource SHALL have an id element",
+                  "details": "Check the returned resource SHALL have an id element",
+                  "actions": [
+                    "sample-wrapper",
+                    "doSuccessfulReadResponse",
+                    "isReadHasId"
                   ]
                 }
               ]

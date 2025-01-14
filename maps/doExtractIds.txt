@@ -15,7 +15,7 @@
       ,"resourceType" : $.resourceType
       ,"id" : $.id
       ,"idLength" : $length($.id)
-      ,"idRegex" : $.id ~> /[A-Za-z0-9\-\.]{1,64}/
+      ,"idRegex" : $idRegexMatch($.id) // evluate if id matches HL7 id datatype regex
       }
 
     ;$sampledResourcesIds := $sampledResourcesIds ~> |$|{'isIdValid' : ((idRegex.end = idLength) and (idRegex.start = 0))}|
