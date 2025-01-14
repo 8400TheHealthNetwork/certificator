@@ -402,6 +402,7 @@ export const reportRunSettings: Expression = jsonata(`
     $dqaIdDist := $readIoFile('DQAidentifiers.json');
     $sampledResourcesIds := $readIoFile('sampledResourcesIds.json');
     $birthDatesTimeLineAgg := $readIoFile('birthDatesTimeLineAgg.json');
+    $sampledResourcesIds := $readIoFile('sampledResourcesIds.json');
     
     $genderChart := $exists($dqaGenderDist) ? {
       'id': 'gender-chart',
@@ -442,22 +443,29 @@ export const reportRunSettings: Expression = jsonata(`
       'type': 'table',
       'columns': [
         {
-          "label": "my label",
-          "value": 20
+          'property': 'resourceType',
+          'label': 'Resource type'
         },
         {
-          "label": "my label 1",
-          "value": 20
-        },
-        {
-          "label": "my label 2",
-          "value": 20
-        },
-        {
-          "label": "my label 2",
-          "value": 20
+          'property': 'idRegexvalid',
+          'label': 'Is id valid?'
         }
-      ]
+        ,
+        {
+          'property': 'count',
+          'label': 'Count'
+        }
+      ],
+      'data': [
+        $sampledResourcesIds
+          {
+            resourceType&_&idRegex:{
+            'resourceType':resourceType~>$distinct()
+            ,'idRegexvalid':idRegex~>$distinct()~>$string()
+            ,'count':$count($)
+            }
+          }.*
+        ]
     };
     
     {
