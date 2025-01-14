@@ -79,6 +79,11 @@
       "id": "isReadHasId",
       "description": "(Test29) - The returned resource SHALL have an id element",
       "mapping": "isReadHasId"
+    },
+    {
+      "id": "doCountResources",
+      "description": "(Test26) - Count of resources supported by the server by resource type",
+      "mapping": "doCountResources"
     }
   ],
   "kits": [
@@ -186,6 +191,22 @@
                   "actions": [
                     "sample-wrapper",
                     "doExtractIds"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "resource-count",
+              "name": "Resource count",
+              "children": [
+                {
+                  "id": "test26",
+                  "name": "Count of resources by resource type",
+                  "description": "Count of resources supported by the server by resource type",
+                  "details": "Count of resources supported by the server by resource type",
+                  "actions": [
+                    "sample-wrapper",
+                    "doCountResources"
                   ]
                 }
               ]
