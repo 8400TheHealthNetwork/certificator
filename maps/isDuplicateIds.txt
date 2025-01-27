@@ -1,0 +1,43 @@
+// isDuplicateIds (Test28) -  Check the ID is unique for the resource type in the sampled data
+
+(
+  /*Write initial map status for UI to status file*/
+    {
+      'statusCode':'in-progress'
+      ,'statusText':'in-progress'
+    } ~> $writeFile('actionStatus_isDuplicateIds.json')
+  
+  // run test
+    ;$arr :=
+    (
+      $readDir()[$contains($,/\[.*\]_\[.*\].json/i)] // Extract all sampled file names
+      .$readFile($) // Conceptualy the file names provide the resourceType and resource.id but we read the files content just to be on the safe side
+      // Extract relevant elements from each sampled file
+      .{ 
+        'resourceType':resourceType
+        ,'id':id
+        ,'resourceType_id':resourceType&'_'&id
+      }
+      // Create aggregation key and aggregate acordingly
+      {
+        resourceType_id:$count($[resourceType_id=$.resourceType_id])
+      }
+    )
+
+  // Check for duplicate values (resourceType&id SHALL be unique)
+    ;$testResult := $not($arr.*~>$max()>1)
+
+    /*Prep pass & fail msg*/
+    ;$msgPassed :={
+      'statusCode':'passed'
+      ,'statusText':'Passed'
+    }
+  
+    ;$msgFailed := {
+      'statusCode':'failed'
+      ,'statusText':'Failed'
+    }
+
+  /*Write pass/fail msg based on test results*/
+    ;$writeFile(($testResult ? $msgPassed : $msgFailed),'actionStatus_isDuplicateIds.json')
+)
