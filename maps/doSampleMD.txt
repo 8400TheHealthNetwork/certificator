@@ -1,0 +1,73 @@
+// doSampleMD - sampling of MD resources, see 2 version attached
+
+// 1) Initial "light" version - sample some MD resources based on a simple search operation
+  (
+    $mdResourceTypes := [
+      'Practitioner'
+      ,'PractitionerRole'
+      ,'Organization'
+      ,'Location'
+    ]
+
+    ;$mdResourceTypes. // for each MD resource
+    $search($,{_count:$sampleSize }) // perform a Search while limiting the number of returend resources on each page to the sample size
+    .entry.resource // extract the resources from the result bundle
+    .$writeFile($,"[" & resourceType & "]_[" & id &"].json")
+  )
+
+// --------------------------------------------------------------------------------
+// 2) Code for mature version - this version should extract all refernces to Masetr Data from privusly sampeled transactional resources and resolve all said resources.
+
+  // List all sampled resources (only, exclude other files found in IO folder) file names
+    // $sampledResources := $readDir()[$contains(/\[[A-Za-z]+\]_\[[A-Za-z0-9\-\.]{1,64}\]\.json/)]
+
+  // A query to list all elements referencing MD resources
+      // (
+      //   /*$profilesSD.packages*/
+      //   $packageId := 'il.core.fhir.r4@0.16.1'
+
+      //   /*List all StructureDefinition contexts*/
+      //   ;$fhirCacheIndex.files
+      //   .*[
+      //     packageId = $packageId
+      //     and resourceType = 'StructureDefinition'
+      //     and type != 'Extension'
+      //     ]
+      //     [50]
+      //   .url
+      //   .$getSnapshot($)
+      //   // [snapshot.element.type.code ='Reference'] // filter only refernce elements
+      //   // .{'SDid':id, 'element_id':snapshot.id,'element_targetProfile':snapshot.type.targetProfile}
+
+      //   /*List all extensions from all profiles*/
+      //   // ;$profilesSD := $fhirCacheIndex.files.*[
+      //   // packageId = $packageId
+      //   // and resourceType = 'StructureDefinition'
+      //   // and $not(type in ['Extension','ActivityDefinition'])
+      //   // ].url.$getSnapshot($).snapshot.element.type.profile.{
+      //   // 'profile_id':%.%.%.%.id
+      //   // , 'element_id':%.%.id
+      //   // ,'element_profile':$
+      //   // }
+
+      //   /*QA step*/
+      //   // ;$extensionsAndProfiles := {'extensionContext':$extensionContext, 'profilesSD':$profilesSD}
+
+      //   /*FROM extensionContext left join profilesSD*/
+      //   // ;$extensionContext@$eC.{
+      //   // 'extensionContext':$eC
+      //   // ,'profilesSD':($exists($profilesSD[element_profile=$eC.url]) ? $profilesSD[element_profile=$eC.url] : '')
+      //   // }.{
+      //   // 'extension_id' : extensionContext.id
+      //   // ,'profilesSD': profilesSD
+      //   // }.(profilesSD='' ?
+      //   // {'extension_id':extension_id}
+      //   // : profilesSD.element_profile.{
+      //   // 'extension_id':%.%.extension_id
+      //   // ,'profile_id':%.profile_id
+      //   // ,'element_id':%.element_id
+      //   // }
+      //   // )
+
+      //   /*;$extensionsAndProfiles*/
+      // )
