@@ -1,1 +1,5 @@
-$readFile('getCapabilityStatement.json').data
+(
+    $doGetMetadata()
+
+    ;$readFile('getCapabilityStatement.json').data
+)
