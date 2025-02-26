@@ -31,6 +31,11 @@
       "mapping": "doExtractGender"
     },
     {
+      "id": "doSamplingInput",
+      "description": "doSamplingInput - Create input for sampling, one object for each resourceType (done on infoBinsDistinct.json), with the maximal historical depth",
+      "mapping": "doSamplingInput"
+    },
+    {
       "id": "sample-wrapper",
       "description": "Initiate the sampling process",
       "mapping": "doSampleWrapper"
@@ -42,7 +47,7 @@
     },
     {
       "id": "isFailedSearchOK",
-      "description": "Assert server responds to invalid search request according to spec",
+      "description": "(Test 114) Assert server responds to invalid search request according to spec",
       "mapping": "isFailedSearchOK"
     },
     {
@@ -82,14 +87,50 @@
     },
     {
       "id": "doCountResources",
-      "description": "(Test26) - Count of resources supported by the server by resource type",
+      "description": "(Test26) - Count health data protability act relevant resources supported by the server by resource type",
       "mapping": "doCountResources"
     },
     {
       "id": "isDuplicateIds",
       "description": "(Test28) - Check the ID is unique for the resource type in the sampled data",
       "mapping": "isDuplicateIds"
+    },
+    {
+      "id": "isSuccessfulSearchCode",
+      "description": "(test 115) - Assert server returned an HTTP 200 response code to a Successful search request",
+      "mapping": "isSuccessfulSearchCode"
+    },
+    {
+      "id": "isReadIdRegex",
+      "description": "(Test 85) - On simple read (GET), check response resource id matches the datatype id regex",
+      "mapping": "isReadIdRegex"
+    },
+    {
+      "id": "isPagingSearch",
+      "description": "(Test 118) - On simple read (GET), check response resource id matches the datatype id regex",
+      "mapping": "isPagingSearch"
+    },
+    {
+      "id": "doInfoBinsDistinct",
+      "description": "Create a distinct list of resourceTypes to be sampled",
+      "mapping": "doInfoBinsDistinct"
+    },
+    {
+      "id": "doPractitionerQualificationDist",
+      "description": "test 72 - Practitioner.qualification.code disterbution",
+      "mapping": "doPractitionerQualificationDist"
+    },
+    {
+      "id": "doSuccessfulSearch",
+      "description": "Perform a search operation based on the verified resource type",
+      "mapping": "doSuccessfulSearch"
+    },
+    {
+      "id": "isSuccessfulSearchBundle",
+      "description": "(Test 108) Validate search result is Bundle",
+      "mapping": "isSuccessfulSearchBundle"
     }
+
   ],
   "kits": [
     {
@@ -184,6 +225,22 @@
                 }
               ]
             },
+          {  
+            "id": "practitioner-dist",
+            "name": "Practitioner elements distributions",
+            "children": [
+              {
+                "id": "test72",
+                "name": "XXX",
+                "description": "XXX",
+                "details": "XXX",
+                "actions": [
+                  "sample-wrapper",
+                  "doPractitionerQualificationDist"
+                ]
+              }
+            ]
+          },
             {
               "id": "resource-validation",
               "name": "Resource validation",
@@ -220,7 +277,7 @@
                   "description": "Count of resources supported by the server by resource type",
                   "details": "Count of resources supported by the server by resource type",
                   "actions": [
-                    "sample-wrapper",
+                    "doInfoBinsDistinct",
                     "doCountResources"
                   ]
                 }
@@ -245,9 +302,54 @@
                     "doFailSearch",
                     "isFailedSearchOK"
                   ]
+                },
+                {
+                  "id": "test115",
+                  "name": "Check HTTP Success code 200 Successful search",
+                  "description": "Assert server returned an HTTP 200 response code to a Successful search request",
+                  "details": "If the search succeeds, the server SHALL return a 200 OK HTTP status code \n 3.1.0.9 search https://www.hl7.org/fhir/r4/http.html#search",
+                  "actions": [
+                    "sample-wrapper",
+                    "doSuccessfulSearch",
+                    "isSuccessfulSearchCode"
+                  ]
                 }
               ]
-            }
+            },
+            {
+              "id": "search-paging",
+              "name": "Paging search results",
+              "children": [
+                {
+                  "id": "test118",
+                  "name": "Assert endpoint pages results according to standart",
+                  "description": "Test FHIR endpoint pages results with required links via forced paging done by asking for a single resource on each page of a search set.",
+                  "details": "The result collection can be long, so servers may use paging. If they do, they SHALL use the method described below (adapted from RFC 5005 (Feed Paging and Archiving ) for breaking the collection into pages if appropriate.\n3.1.0.9 search \nhttps://www.hl7.org/fhir/r4/http.html#search\nPaged feed documents MUST have at least one of these link relations present\n3.  Paged Feeds\nhttps://datatracker.ietf.org/doc/html/rfc5005#section-3\n\n3.1.0.14 Paging \n,https://www.hl7.org/fhir/r4/http.html#paging",
+                  "actions": [
+                    "doInfoBinsDistinct"
+                    ,"doCountResources"
+                    ,"isPagingSearch"
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "bundle",
+              "name": "Bundle",
+              "children": [
+                {
+                  "id": "test108",
+                  "name": "Validate search interaction returns Bundle",
+                  "description": "the return content SHALL be a Bundle",
+                  "details": "the return content SHALL be a Bundle",
+                  "actions": [
+                    "sample-wrapper",
+                    "doSuccessfulSearch",
+                    "isSuccessfulSearchBundle"
+                  ]
+                }
+              ]
+            }  
           ]
         },
         {
@@ -278,6 +380,17 @@
                     "sample-wrapper",
                     "doSuccessfulReadResponse",
                     "isReadId"
+                  ]
+                },
+                {
+                  "id": "test85",
+                  "name": "Response resource id matches the datatype id regex",
+                  "description": "On simple read (GET), check response resource id matches the datatype id regex",
+                  "details": "The returned resource SHALL have an id element\n 3.1.0.2 read \n https://hl7.org/fhir/R4/http.html#read",
+                  "actions": [
+                    "sample-wrapper",
+                    "doSuccessfulReadResponse",
+                    "isReadIdRegex"
                   ]
                 },
                 {
