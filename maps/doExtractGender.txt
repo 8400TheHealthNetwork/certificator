@@ -22,9 +22,9 @@
   // /*Write flatten results to folder*/
     ;$writeFile($gender,'distributionGender.json')
 
-  /*Prep completed msg*/
-    ;$msgCompleted :={
+  /*Write completed msg*/
+    ;{
       'statusCode':'completed'
       ,'statusText':'Completed'
-    }
+    } ~> $writeFile('actionStatus_doExtractGender.json')
 )
