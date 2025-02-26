@@ -494,6 +494,49 @@ export const reportRunSettings: Expression = jsonata(`
       ],
       'data': [$doCountResources]
     };
+
+    $encounterClassDisterbution := $readIoFile('encounterClassDisterbution.json');
+    $identifierChart := $exists($encounterClassDisterbution) ? {
+      'id': 'encounter-class-disterbution',
+      'title': 'Encounter.class disterbution (Test 59)',
+      'type': 'table',
+      'columns': [
+        {
+          'property': 'system',
+          'label': 'System'
+        },
+        {
+          'property': 'code',
+          'label': 'Code'
+        },
+        {
+          'property': 'display',
+          'label': 'Display'
+        },
+        {
+          'property': 'count',
+          'label': 'Count'
+        }
+      ],
+      'data': [
+                (
+                  (
+                    $encounterClassDisterbution
+                    .pathValue
+                    {
+                    system&'_'&code&'_'&display:$count($)
+                    }
+                    ~>$spread()
+                  )
+                  .{
+                    'system':$split($keys($),'_')[0]
+                    ,'code':$split($keys($),'_')[1]
+                    ,'display':$split($keys($),'_')[2]
+                    ,'count':$string(*)
+                  }
+                )^(>count)
+      ]
+    };
     
     {
       'charts': [
