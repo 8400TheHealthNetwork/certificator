@@ -129,6 +129,11 @@
       "id": "isSuccessfulSearchBundle",
       "description": "(Test 108) Validate search result is Bundle",
       "mapping": "isSuccessfulSearchBundle"
+    },
+    {
+      "id": "doExtractEncounterClass",
+      "description": "(Test 59) - Encounter.class disterbution",
+      "mapping": "doExtractEncounterClass"
     }
 
   ],
@@ -225,22 +230,22 @@
                 }
               ]
             },
-          {  
-            "id": "practitioner-dist",
-            "name": "Practitioner elements distributions",
-            "children": [
-              {
-                "id": "test72",
-                "name": "XXX",
-                "description": "XXX",
-                "details": "XXX",
-                "actions": [
-                  "sample-wrapper",
-                  "doPractitionerQualificationDist"
-                ]
-              }
-            ]
-          },
+            {
+              "id": "encounter-dist",
+              "name": "Encounter elements distributions",
+              "children": [
+                {
+                  "id": "test59",
+                  "name": "Encounter class distribution",
+                  "description": "Encounter class distribution",
+                  "details": "Check if the distribution of Encounter.class system & code makes sense.",
+                  "actions": [
+                    "sample-wrapper",
+                    "doExtractEncounterClass"
+                  ]
+                }
+              ]
+            },
             {
               "id": "resource-validation",
               "name": "Resource validation",

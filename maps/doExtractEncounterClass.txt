@@ -1,0 +1,29 @@
+// doExtractEncounterClass (Test 59) - extract Encounter.class from sampeled instances and write to flat file
+(
+  /*Write initial map status for UI to status file*/
+    {
+      'statusCode':'in-progress'
+      ,'statusText':'in-progress'
+    } ~> $writeFile('actionStatus_doExtractEncounterClass.json')
+
+  /*List all sampled resources file names*/
+    ;$sampledResourcesNames := $readDir()[$contains(/\[Encounter\]_\[[A-Za-z0-9\-\.]{1,64}\]\.json/)]^($)
+    // ;$count($sampledResourcesNames)
+
+  /*Extract relevant elements from all sampled resources and flatten*/
+    ;$gender := $sampledResourcesNames.$readFile($).class.{
+      'resourceType' : %.resourceType
+      ,'resourceId' : %.id
+      ,'path' : 'Encounter.class'
+      ,'pathValue' : $
+      }
+
+  // /*Write flatten results to folder*/
+    ;$writeFile($gender,'encounterClassDisterbution.json')
+
+  /*Write completed msg*/
+    ;{
+      'statusCode':'completed'
+      ,'statusText':'Completed'
+    } ~> $writeFile('actionStatus_doExtractEncounterClass.json')
+)
