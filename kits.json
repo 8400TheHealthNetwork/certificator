@@ -84,6 +84,11 @@
       "id": "doCountResources",
       "description": "(Test26) - Count of resources supported by the server by resource type",
       "mapping": "doCountResources"
+    },
+    {
+      "id": "isDuplicateIds",
+      "description": "(Test28) - Check the ID is unique for the resource type in the sampled data",
+      "mapping": "isDuplicateIds"
     }
   ],
   "kits": [
@@ -191,6 +196,16 @@
                   "actions": [
                     "sample-wrapper",
                     "doExtractIds"
+                  ]
+                },
+                {
+                  "id": "test28",
+                  "name": "ID uniqueness within the sample",
+                  "description": "ID uniqueness within the sample",
+                  "details": "Check the ID is unique for the resource type in the sampled data.",
+                  "actions": [
+                    "sample-wrapper",
+                    "isDuplicateIds"
                   ]
                 }
               ]
