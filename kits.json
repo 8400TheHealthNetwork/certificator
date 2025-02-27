@@ -116,25 +116,30 @@
       "mapping": "doInfoBinsDistinct"
     },
     {
-      "id": "doPractitionerQualificationDist",
-      "description": "test 72 - Practitioner.qualification.code disterbution",
-      "mapping": "doPractitionerQualificationDist"
-    },
-    {
       "id": "doSuccessfulSearch",
       "description": "Perform a search operation based on the verified resource type",
       "mapping": "doSuccessfulSearch"
     },
     {
       "id": "isSuccessfulSearchBundle",
-      "description": "(Test 108) Validate search result is Bundle",
+      "description": "(Test 108) - Validate search result is Bundle",
       "mapping": "isSuccessfulSearchBundle"
     },
     {
       "id": "doExtractEncounterClass",
       "description": "(Test 59) - Encounter.class disterbution",
       "mapping": "doExtractEncounterClass"
-    }
+    },
+	{
+      "id": "isSuccessfulSearchBundleType",
+      "description": "(Test 109) - Validate search result is Bundle with type=searchset",
+      "mapping": "isSuccessfulSearchBundleType"
+    },
+	{
+	  "id": "isGetHttp200",
+      "description": "(Test 90) - Validate that the returned HTTP status is 200(OK)",
+      "mapping": "isGetHttp200"	
+	}
 
   ],
   "kits": [
@@ -351,8 +356,19 @@
                     "sample-wrapper",
                     "doSuccessfulSearch",
                     "isSuccessfulSearchBundle"
-                  ]
-                }
+                             ]
+                },
+		{
+                  "id": "test109",
+                  "name": "Validate search interaction returns Bundle of type searchset",
+                  "description": "The return content SHALL be a Bundle with type = searchset",
+                  "details": "The return content SHALL be a Bundle with type = searchset",
+                  "actions": [
+				       "sample-wrapper",
+				       "doSuccessfulSearch",
+					   "isSuccessfulSearchBundleType"
+                          ]
+                 }
               ]
             }  
           ]
@@ -418,8 +434,20 @@
                     "sample-wrapper",
                     "doSuccessfulReadResponse",
                     "isReadHasId"
-                  ]
-                }
+                       ]
+                },
+		{
+                  "id": "test90",
+                  "name": "HTTP status is 200",
+                  "description": "Confirm that the returned HTTP status is 200(OK)",
+                  "details": "Confirm that the returned HTTP status is 200(OK)",
+                  "actions": [
+				    "sample-wrapper",
+                    "doSuccessfulReadResponse", 
+                    "isGetHttp200"
+                             ]
+                } 
+		
               ]
             }
           ]
