@@ -538,6 +538,49 @@ export const reportRunSettings: Expression = jsonata(`
       ]
     };
     
+	$encounterTypeDistribution := $readIoFile('encounterTypeDistribution.json');
+    $chartEncounterTypeDistribution := $exists($encounterTypeDistribution) ? {
+      'id': 'encounter-type-distribution',
+      'title': 'Encounter.type distribution (Test 64)',
+      'type': 'table',
+      'columns': [
+        {
+          'property': 'system',
+          'label': 'System'
+        },
+        {
+          'property': 'code',
+          'label': 'Code'
+        },
+        {
+          'property': 'display',
+          'label': 'Display'
+        },
+        {
+          'property': 'count',
+          'label': 'Count'
+        }
+      ],
+      'data': [
+                (
+                  (
+                    $encounterTypeDistribution
+                    .pathValue.coding
+                    {
+                      system&'_'&code&'_'&display:$count($)
+                    }
+                    ~>$spread()
+                  )
+                  .{
+                    'system':$split($keys($),'_')[0]
+                    ,'code':$split($keys($),'_')[1]
+                    ,'display':$split($keys($),'_')[2]
+                    ,'count':$string(*)
+                  }
+                )^(>count)
+      ]
+    };
+	
     {
       'charts': [
                 $runAttributes
@@ -545,11 +588,15 @@ export const reportRunSettings: Expression = jsonata(`
                 ,$runSummary
                 ,$genderChart
                 ,$identifierChart
+				,$chartEncounterTypeDistribution
                 ,$birthdatesChart
                 ,$idValidityChart
                 ,$countResourcesTable
                 ]
     }
+	
+	
+    
 
   )
   `);
