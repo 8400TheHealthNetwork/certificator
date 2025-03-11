@@ -3,7 +3,6 @@ import path from 'path';
 import axios, { AxiosInstance } from 'axios';
 import { getList } from './getPackageList';
 
-const validatorUrl: string = 'https://github.com/hapifhir/org.hl7.fhir.core/releases/latest/download/validator_cli.jar';
 const registryUrl: string = 'https://packages.fhir.org';
 const assetsFolderPath: string = './assets';
 const server: AxiosInstance = axios.create();
@@ -11,16 +10,6 @@ const server: AxiosInstance = axios.create();
 if (!fs.existsSync(assetsFolderPath)) {
   fs.mkdirSync(assetsFolderPath);
   console.log(`Directory '${assetsFolderPath}' created successfully.`);
-};
-
-const downloadValidator = async () => {
-  const res = await server.get(validatorUrl, { responseType: 'arraybuffer' });
-  if (res?.data) {
-    console.log(`Downloaded latest version of HL7 Validator from ${validatorUrl}`);
-    const jarPath = path.join(assetsFolderPath, 'validator_cli.jar');
-    fs.writeFileSync(jarPath, res.data);
-    console.log(`Saved validator jar in: ${jarPath}`);
-  }
 };
 
 const downloadPackageTar = async (packageName: string, version: string) => {
@@ -40,8 +29,6 @@ const downloadPackageTar = async (packageName: string, version: string) => {
     }
   }
 };
-
-void downloadValidator();
 
 getList().filter(Boolean).map(async (p) => {
   console.log(`Downloading package ${p}`);

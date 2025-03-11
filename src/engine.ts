@@ -31,7 +31,11 @@ const reRouter = async (req: Request, res: Response, next: NextFunction) => {
 const logger = {
   info: () => { /* Do nothing with info level logging from FUME */ },
   warn: (input: any | any[]) => console.warn(input),
-  error: (input: any | any[]) => console.error(input)
+  error: (input: any | any[]) => {
+    if (!(input?.code && input.code === 'ERR_BAD_REQUEST' && input?.config && input.config?.url && input.config.url === 'https://packages.fhir.org//')) {
+      console.error(input);
+    }
+  }
 };
 
 // start the server
