@@ -8,8 +8,7 @@ export const validate = async (resource: any) => {
     const packageList = getPackageList();
     validator = await createValidatorInstance({
       sv: '4.0.1',
-      igs: packageList,
-      txServer: 'n/a'
+      igs: packageList
     });
   }
 
