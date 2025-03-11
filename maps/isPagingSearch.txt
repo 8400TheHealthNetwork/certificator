@@ -1,0 +1,46 @@
+// isPagingSearch (test 118) - Test FHIR endpoint pages results as reuired (_count support is mandatory, a search on any resourceType with 2 instances or more using _count=1 will force the server to page results)
+
+(
+  /*Write initial map status for UI to status file*/
+    {
+      'statusCode':'in-progress'
+      ,'statusText':'in-progress'
+    } ~> $writeFile('actionStatus_isPagingSearch.json')
+
+  /*Perform test*/
+    ;$testResult := (
+      // extract resource counts done by another mapping
+        $resourceCount := $readFile('doCountResources.json')[status=200]
+
+      // Search for the resourceType with the most instances
+        ;$maxResourceCount := $resourceCount.total~>$max()
+      
+      // Need to add a condition that fails the map if the maximum is 1 (cant page when there is a single instance)
+
+      // Extract the resourceType
+        ;$resourceType2extract := $resourceCount[total=$maxResourceCount].resourceType
+
+      // populate an array with the optional link realtion values https://datatracker.ietf.org/doc/html/rfc5005#section-3:~:text=The%20feed%20documents%20in%20a%20paged%20feed%20are%20tied%20together%20with%20the%0A%20%20%20following%20link%20relations
+        ;$linkRelationsApproved := ["self","next","last","first"]
+      
+      // Perform a search with count = 1 to force server to use paging
+        ;$linkRelationsReturned := $search($resourceType2extract,{'_count':1}).link.relation
+
+      // Check if at least one paging link conforms to required values
+        ;$filter($linkRelationsReturned, function($v){$v in $linkRelationsApproved})~>$count()>1
+    )
+
+  /*Prep pass & fail msg*/
+    ;$msgPassed :={
+      'statusCode':'passed'
+      ,'statusText':'Passed'
+    }
+
+    ;$msgFailed := {
+      'statusCode':'failed'
+      ,'statusText':'Failed'
+    }
+
+  /*Write pass/fail msg based on test results*/
+    ;$writeFile(($testResult ? $msgPassed : $msgFailed),'actionStatus_isPagingSearch.json')
+)

@@ -304,6 +304,10 @@ export const reportRunSettings: Expression = jsonata(`
           "label": "Sub Group"
         },
         {
+          "property": "testId",
+          "label": "Test ID"
+        },
+        {
           "property": "test",
           "label": "Test Name"
         },
@@ -325,6 +329,7 @@ export const reportRunSettings: Expression = jsonata(`
           'subGroup': subGroupName,
           'test': testName,
           'status': $status,
+          'testId' : $testId,
           'error': $status = 'Error' ? $getTestErrorDetails($testId)
         }
       )]
@@ -399,20 +404,17 @@ export const reportRunSettings: Expression = jsonata(`
     };
 
     $dqaGenderDist := $readIoFile('distributionGender.json');
-    $dqaIdDist := $readIoFile('DQAidentifiers.json');
-    $sampledResourcesIds := $readIoFile('sampledResourcesIds.json');
-    $birthDatesTimeLineAgg := $readIoFile('birthDatesTimeLineAgg.json');
-    
     $genderChart := $exists($dqaGenderDist) ? {
       'id': 'gender-chart',
-      'title': 'Patient.gender Distribution',
+      'title': 'Patient.gender distribution (Test 70)',
       'type': 'pie',
       'data': [($dqaGenderDist{pathValue: $count($)} ~> $spread()).{'label': $keys($), 'value': *}]
     };
 
+    $dqaIdDist := $readIoFile('DQAidentifiers.json');
     $identifierChart := $exists($dqaIdDist) ? {
       'id': 'identifier-chart',
-      'title': 'Patient.identifier.system Distribution',
+      'title': 'Patient.identifier.system Distribution (Test 57)',
       'type': 'table',
       'columns': [
         {
@@ -427,6 +429,7 @@ export const reportRunSettings: Expression = jsonata(`
       'data': [(($dqaIdDist[resourceType="Patient"]{system: $count($)} ~> $spread()).{'uri': $keys($), 'count': $string(*)})^(>count)]
     };
 
+    $birthDatesTimeLineAgg := $readIoFile('birthDatesTimeLineAgg.json');
     $birthdatesChart := $exists($birthDatesTimeLineAgg) ?
     {
       'id': 'birthdates-chart',
@@ -435,28 +438,103 @@ export const reportRunSettings: Expression = jsonata(`
       "data": [$birthDatesTimeLineAgg.{'label':date ,'value':count}]
     };
 
+    $sampledResourcesIds := $readIoFile('sampledResourcesIds.json');
     $idValidityChart := $exists($sampledResourcesIds) ?
     {
       'id': 'id-validity-chart',
-      'title': 'Sampled resources id validity by resource type',
-      "type": "pie",
-      "data": [
+      'title': 'Sampled resources id validity by resource type (Test 31)',
+      'type': 'table',
+      'columns': [
         {
-          "label": "my label",
-          "value": 20
+          'property': 'resourceType',
+          'label': 'Resource type'
         },
         {
-          "label": "my label 1",
-          "value": 20
-        },
-        {
-          "label": "my label 2",
-          "value": 20
-        },
-        {
-          "label": "my label 2",
-          "value": 20
+          'property': 'idRegexvalid',
+          'label': 'Is id valid?'
         }
+        ,
+        {
+          'property': 'count',
+          'label': 'Count'
+        }
+      ],
+      'data': [
+        $sampledResourcesIds
+          {
+            resourceType&_&idRegex:{
+            'resourceType':resourceType~>$distinct()
+            ,'idRegexvalid':idRegex~>$distinct()~>$string()
+            ,'count':$count($)
+            }
+          }.*
+        ]};
+
+
+    $doCountResources := $readIoFile('doCountResources.json');
+    $countResourcesTable := $exists($doCountResources) ?
+    {
+      'id': 'count-resources',
+      'title': 'Count of resources by resource type (Test 26)',
+      'type': 'table',
+      'columns': [
+        {
+          'property': 'resourceType',
+          'label': 'Resource type'
+        },
+        {
+          'property': 'status',
+          'label': 'Query HTTP response'
+        }
+        ,
+        {
+          'property': 'total',
+          'label': 'Count'
+        }
+      ],
+      'data': [$doCountResources]
+    };
+
+    $encounterClassDisterbution := $readIoFile('encounterClassDisterbution.json');
+    $identifierChart := $exists($encounterClassDisterbution) ? {
+      'id': 'encounter-class-disterbution',
+      'title': 'Encounter.class disterbution (Test 59)',
+      'type': 'table',
+      'columns': [
+        {
+          'property': 'system',
+          'label': 'System'
+        },
+        {
+          'property': 'code',
+          'label': 'Code'
+        },
+        {
+          'property': 'display',
+          'label': 'Display'
+        },
+        {
+          'property': 'count',
+          'label': 'Count'
+        }
+      ],
+      'data': [
+                (
+                  (
+                    $encounterClassDisterbution
+                    .pathValue
+                    {
+                    system&'_'&code&'_'&display:$count($)
+                    }
+                    ~>$spread()
+                  )
+                  .{
+                    'system':$split($keys($),'_')[0]
+                    ,'code':$split($keys($),'_')[1]
+                    ,'display':$split($keys($),'_')[2]
+                    ,'count':$string(*)
+                  }
+                )^(>count)
       ]
     };
     
@@ -469,6 +547,7 @@ export const reportRunSettings: Expression = jsonata(`
                 ,$identifierChart
                 ,$birthdatesChart
                 ,$idValidityChart
+                ,$countResourcesTable
                 ]
     }
 

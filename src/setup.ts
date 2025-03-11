@@ -10,6 +10,7 @@ import { getList } from './getPackageList';
 import chalk from 'chalk';
 
 export const ensureEnv = async (config: IConfig): Promise<IConfig> => {
+  const FHIR_PACKAGES = getList().map(p => p.trim().split('#').join('@')).join(',');
   if (!fs.existsSync('.env')) {
     console.log('.env file is missing, let\'s create one');
     const FHIR_SERVER_BASE: string = await input({ message: 'What is the FHIR server address?' });
@@ -60,7 +61,7 @@ FHIR_SERVER_TIMEOUT=${FHIR_SERVER_TIMEOUT}
     };
     return newConfig;
   } else {
-    return config;
+    return { ...config, FHIR_PACKAGES };
   }
 };
 

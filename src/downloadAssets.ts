@@ -13,22 +13,24 @@ if (!fs.existsSync(assetsFolderPath)) {
 };
 
 const downloadPackageTar = async (packageName: string, version: string) => {
-  const packFolder: string = path.join(assetsFolderPath, 'fhirPackages');
-  if (!fs.existsSync(packFolder)) {
-    fs.mkdirSync(packFolder);
-    console.log(`Directory '${packFolder}' created successfully.`);
-  };
-  const packageUrl: string = `${registryUrl}/${packageName}/${version}`;
-  const res = await server.get(packageUrl, { responseType: 'arraybuffer' });
-  if (res?.data) {
-    console.log(`Downloaded package ${packageName}@${version}`);
-    const tarPath = path.join(packFolder, `${packageName}#${version}.tgz`);
-    fs.writeFileSync(tarPath, res.data);
-    console.log(`Saved package in: ${tarPath}`);
+  if (packageName && version) {
+    const packFolder: string = path.join(assetsFolderPath, 'fhirPackages');
+    if (!fs.existsSync(packFolder)) {
+      fs.mkdirSync(packFolder);
+      console.log(`Directory '${packFolder}' created successfully.`);
+    };
+    const packageUrl: string = `${registryUrl}/${packageName}/${version}`;
+    const res = await server.get(packageUrl, { responseType: 'arraybuffer' });
+    if (res?.data) {
+      console.log(`Downloaded package ${packageName}@${version}`);
+      const tarPath = path.join(packFolder, `${packageName}#${version}.tgz`);
+      fs.writeFileSync(tarPath, res.data);
+      console.log(`Saved package in: ${tarPath}`);
+    }
   }
 };
 
-getList().map(async (p) => {
+getList().filter(Boolean).map(async (p) => {
   console.log(`Downloading package ${p}`);
   const parts: string[] = p.split('#');
   await downloadPackageTar(parts[0], parts[1]);

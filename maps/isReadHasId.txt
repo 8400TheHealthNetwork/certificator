@@ -1,17 +1,16 @@
-// isReadId (Test 87) - On simple read (GET), check response resource ID matches input ID
+// isReadHasId (Test29) - The returned resource SHALL have an id element
+
 (
   /*Write initial map status for UI to status file*/
     {
       'statusCode':'in-progress'
       ,'statusText':'in-progress'
-    } ~> $writeFile('actionStatus_isReadId.json')
+    } ~> $writeFile('actionStatus_isReadHasId.json')
 
   /*Perform test*/
     ;$testResult :=
     (
-      $id := $readFile('successfulReadResponse.json').data.id
-
-      ;$id = $readFile('successfulReadResponsePrms.json').instanceId // check if id on request = id on response
+      $readFile('successfulReadResponse.json').data.id~>$exists()
     )
 
   /*Prep pass & fail msg*/
@@ -26,5 +25,5 @@
     }
 
   /*Write pass/fail msg based on test results*/
-    ;$writeFile(($testResult ? $msgPassed : $msgFailed),'actionStatus_isReadId.json')
+    ;$writeFile(($testResult ? $msgPassed : $msgFailed),'actionStatus_isReadHasId.json')
 )
