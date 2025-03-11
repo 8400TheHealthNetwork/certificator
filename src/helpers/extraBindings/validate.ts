@@ -3,7 +3,7 @@ import { getList as getPackageList } from '../../getPackageList';
 
 let validator;
 
-export const validate = async (resource: any) => {
+export const validate = async (resource: any, profiles: string | string[]) => {
   if (validator === undefined) {
     const packageList = getPackageList();
     validator = await createValidatorInstance({
@@ -12,7 +12,7 @@ export const validate = async (resource: any) => {
     });
   }
 
-  const result = await validator.validate(resource);
+  const result = await validator.validate(resource, profiles);
   return result;
 };
 
