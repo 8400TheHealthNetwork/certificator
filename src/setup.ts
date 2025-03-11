@@ -94,10 +94,11 @@ export const checkPackages = () => {
 
 export const checkValidator = () => {
   if (sea.isSea()) {
-    if (!fs.existsSync('validator_cli.jar')) {
+    if (!fs.existsSync(path.join('.', 'bin', 'validator.jar'))) {
       console.log('Extracting HL7 Validator...');
-      const jarFile = sea.getAsset('validator_cli.jar');
-      fs.writeFileSync('validator_cli.jar', Buffer.from(jarFile));
+      const jarFile = sea.getAsset('validator.jar');
+      fs.ensureDirSync('bin');
+      fs.writeFileSync(path.join('.', 'bin', 'validator.jar'), Buffer.from(jarFile));
     }
   }
 };
