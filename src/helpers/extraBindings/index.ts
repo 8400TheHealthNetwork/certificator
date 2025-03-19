@@ -4,4 +4,6 @@ import { writeFile, readFile, makeDir, readDir, resolveCanonical, readPackageInd
 import { toMarkdown } from './markdown';
 import { validate } from './validate';
 
-export const extraBindings = { validate, http, writeFile, readFile, makeDir, readDir, resolveCanonical, readPackageIndex, toMarkdown };
+const instant = () => Date.now();
+
+export const extraBindings = { instant, validate, http, writeFile, readFile, makeDir, readDir, resolveCanonical, readPackageIndex, toMarkdown };
