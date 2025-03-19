@@ -3,8 +3,6 @@
   "version": "1.16.0",
   "description": "FHIR Certificator for Israeli MoH",
   "scripts": {
-    "preinstall:msg": "echo If preinstall fails, try to kill the 'OpenJDK Platform binary' process in the task manager and try again.",
-    "preinstall": "npm run preinstall:msg && rimraf node_modules",
     "clean": "rimraf dist && rimraf ui\\dist && rimraf report\\dist",
     "clean:ts": "rimraf dist",
     "build": "npm run build:ts && npm run build:ui && npm run build:report",
