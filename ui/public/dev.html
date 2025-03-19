@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Call & Save Example</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        textarea { width: 100%; height: 150px; font-family: monospace; white-space: pre; }
+        pre { background: #272822; color: #f8f8f2; padding: 10px; overflow: auto; border-radius: 5px; }
+        .error { color: red; }
+        .string { color: #a6e22e; }
+        .number { color: #ae81ff; }
+        .boolean { color: #66d9ef; }
+        .null { color: #f92672; }
+        .key { color: #f92672; }
+        .loading { display: none; color: blue; font-weight: bold; margin-left: 10px; }
+    </style>
+    <script>
+        const API_URL = 'http://localhost:8401';
+
+        function highlightJSON(json) {
+            if (!json) return "";
+            json = json.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+            return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(:)?|\b(true|false|null)\b|-?\d+(\.\d+)?([eE][+-]?\d+)?)/g, match => {
+                let cls = "number";
+                if (/^"/.test(match)) {
+                    if (/:$/.test(match)) {
+                        cls = "key";
+                    } else {
+                        cls = "string";
+                    }
+                } else if (/true|false/.test(match)) {
+                    cls = "boolean";
+                } else if (/null/.test(match)) {
+                    cls = "null";
+                }
+                return `<span class="${cls}">${match}</span>`;
+            });
+        }
+
+        function formatAndValidateJSON(id, outputId) {
+            const inputField = document.getElementById(id);
+            const outputField = document.getElementById(outputId);
+            try {
+                const parsed = JSON.parse(inputField.value);
+                inputField.value = JSON.stringify(parsed, null, 2);
+                outputField.innerHTML = highlightJSON(inputField.value);
+                outputField.classList.remove("error");
+            } catch (e) {
+                outputField.innerHTML = "<span class='error'>Invalid JSON</span>";
+                outputField.classList.add("error");
+            }
+        }
+
+        async function callAPI() {
+            const inputField = document.getElementById("input").value;
+            const mappingField = document.getElementById("mapping").value;
+            const resultField = document.getElementById("result");
+            const sendButton = document.getElementById("sendButton");
+            const loadingText = document.getElementById("loadingIndicator");
+
+            sendButton.disabled = true; 
+            loadingText.style.display = "inline";
+
+            try {
+                const inputJSON = inputField.trim() ? JSON.parse(inputField) : {};
+                
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ input: inputJSON, fume: mappingField })
+                });
+
+                const responseData = await response.json();
+                resultField.value = JSON.stringify(responseData, null, 2);
+                document.getElementById("resultPre").innerHTML = highlightJSON(resultField.value);
+            } catch (error) {
+                resultField.value = "Error: " + error.message;
+                document.getElementById("resultPre").innerHTML = "<span class='error'>Invalid JSON</span>";
+            } finally {
+                sendButton.disabled = false; 
+                loadingText.style.display = "none";
+            }
+        }
+
+        async function saveToFile() {
+            const text = document.getElementById("mapping").value;
+
+            if (window.showSaveFilePicker) {
+                try {
+                    const fileHandle = await window.showSaveFilePicker({
+                        suggestedName: "mapping.txt",
+                        types: [{ description: "TXT Files", accept: { "text/plain": [".txt"] } }]
+                    });
+                    const writable = await fileHandle.createWritable();
+                    await writable.write(text);
+                    await writable.close();
+                } catch (error) {
+                    alert("Error saving file: " + error.message);
+                }
+            } else {
+                const blob = new Blob([text], { type: "text/plain" });
+                const a = document.createElement("a");
+                a.href = URL.createObjectURL(blob);
+                a.download = "mapping.txt";
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            }
+        }
+    </script>
+</head>
+<body>
+    <h3>JSON Input</h3>
+    <textarea id="input" placeholder="Enter JSON" onblur="formatAndValidateJSON('input', 'inputPre')"></textarea>
+    <pre id="inputPre"></pre>
+
+    <h3>Mapping</h3>
+    <textarea id="mapping" placeholder="Enter Mapping"></textarea>
+    
+    <button id="sendButton" onclick="callAPI()">Send</button>
+    <span id="loadingIndicator" class="loading">Processing...</span>
+    <button onclick="saveToFile()">Save</button>
+
+    <h3>Result</h3>
+    <textarea id="result" placeholder="Response will appear here" readonly></textarea>
+    <pre id="resultPre"></pre>
+</body>
+</html>
