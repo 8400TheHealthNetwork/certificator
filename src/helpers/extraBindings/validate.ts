@@ -1,11 +1,13 @@
+/* eslint-disable @typescript-eslint/return-await */
 import createValidatorInstance from 'fhir-validator-js';
 import { getList as getPackageList } from '../../getPackageList';
 import os from 'os';
 
 const cpuCount = os.cpus().length;
-const numValidators = Math.min(cpuCount - 1, 4); // Max 4 validators
+const numValidators = Math.max(Math.min(cpuCount - 1, 3), 1); // Max 3 validators, min 1 validator
 const validators: any[] = [];
 const queues: Array<Promise<void>> = [];
+const batchSize = 4; // Maximum batch size per request
 
 /**
  * Initialize multiple validator instances.
@@ -37,23 +39,31 @@ export const validate = async (resource: any | any[], profiles: string | string[
   let _resource: any | any[];
   if (Array.isArray(resource) && resource.length === 1) { _resource = resource[0]; } else { _resource = resource; }; // Unwrap single resource
 
-  const results = Array.isArray(_resource) ? await validateBatch(_resource, profiles) : await assignToValidator(_resource, profiles, [0]);
+  let results: any | any[];
 
-  if (results.length === 1) return results[0].result; // Unwrap single result
-  return results.map(entry => entry.result);
+  if (Array.isArray(_resource)) {
+    results = await validateBatch(_resource, profiles);
+  } else {
+    results = await assignToValidator(_resource, profiles, [0]);
+  };
+
+  if (Array.isArray(results)) {
+    return results.map(result => result.result);
+  } else {
+    return results.result;
+  }
 };
 
 /**
  * Splits a resource array into batches and assigns them dynamically to validators.
  */
 const validateBatch = async (resources: any[], profiles: string | string[]) => {
-  const batchSize = 4; // Maximum batch size per validator
   const batches = chunkArrayWithIndices(resources, batchSize);
   const results: Array<{ index: number, result: any }> = [];
 
   // Assign each batch dynamically as soon as a validator is available
   const promises = batches.map(async ({ batch, indices }) =>
-    await assignToValidator(batch, profiles, indices)
+    assignToValidator(batch, profiles, indices)
   );
 
   // Wait for all validations to complete while preserving their indices
@@ -92,7 +102,7 @@ const assignToValidator = async (batch: any, profiles: string | string[], indice
 
   queues[minIndex] = newTask.catch(() => {}); // Prevent breaking queue on failure
 
-  return await newTask.then(results => {
+  return newTask.then(results => {
     if (!Array.isArray(results)) {
       results = [results]; // Wrap in array if necessary
     }
