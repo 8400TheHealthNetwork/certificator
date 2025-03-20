@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/return-await */
 import createValidatorInstance from 'fhir-validator-js';
-import { getList as getPackageList } from '../../getPackageList';
 import os from 'os';
 
 const cpuCount = os.cpus().length;
@@ -15,7 +14,7 @@ const batchSize = 4; // Maximum batch size per request
 const initializeValidators = async () => {
   if (validators.length === 0) {
     console.log(`Starting ${numValidators} validator instances...`);
-    const packageList = getPackageList();
+    const packageList = ['il.core.fhir.r4#0.17.0'];
 
     for (let i = 0; i < numValidators; i++) {
       validators[i] = await createValidatorInstance({
