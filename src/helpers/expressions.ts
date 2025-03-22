@@ -437,6 +437,16 @@ export const reportRunSettings: Expression = jsonata(`
       "type": "line",
       "data": [$birthDatesTimeLineAgg.{'label':date ,'value':count}]
     };
+	
+	$conditionRecordedDateDistribution := $readIoFile('conditionRecordedDateDistribution.json');
+    $recordedDateChart := $exists($conditionRecordedDateDistribution) ?
+    {
+      'id': 'recorded-date-chart',
+      'title': 'Recorded date distribution',
+      "type": "line",
+      "data": [$conditionRecordedDateDistribution.{'label':date ,'value':count}]
+    };
+	
 
     $sampledResourcesIds := $readIoFile('sampledResourcesIds.json');
     $idValidityChart := $exists($sampledResourcesIds) ?
@@ -590,6 +600,7 @@ export const reportRunSettings: Expression = jsonata(`
                 ,$identifierChart
 				,$chartEncounterTypeDistribution
                 ,$birthdatesChart
+				,$recordedDateChart
                 ,$idValidityChart
                 ,$countResourcesTable
                 ]
