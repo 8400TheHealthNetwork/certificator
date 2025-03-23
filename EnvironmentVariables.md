@@ -37,9 +37,9 @@ If `FHIR_SERVER_AUTH_TYPE=BASIC`, this variable must hold the password.
 Example in ENV file:  
 `FHIR_SERVER_PW=passw@rd`
 
-**Note**: If you don't want to hard code the passwrd in the env file you may set this as a system or user level environment variable and omit it from the `.env` file entirely.
+**Note**: If you don't want to hard code the password in the env file you may set this as a system or user level environment variable and omit it from the `.env` file entirely. Same goes for `FHIR_SERVER_UN`.
 
-#### 📌FHIR_SERVER_TIMEOUT
+### 📌FHIR_SERVER_TIMEOUT
 Timeout (in milliseconds) for FHIR server API calls. Default is 30000.
 
 Example in ENV file:  
