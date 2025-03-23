@@ -1,0 +1,66 @@
+// doExtractConditionRecordedDate (Test 174) - extract Condition.recordedDate from sampled instances and write to a flat file
+(
+  /*Write initial map status for UI to status file*/
+    {
+      'statusCode':'in-progress'
+      ,'statusText':'in-progress'
+    } ~> $writeFile('actionStatus_doExtractConditionRecordedDate.json');
+
+   // Given a recordedDate parameter, this function returns its day of the week number, 
+   // where Sunday is 1, Monday is 2, and so on
+   $getDayOfWeekSundayStart := function($recordedDate)
+   {
+     (
+      $dateMillis := $toMillis($recordedDate);
+      $daysSinceEpoch := $floor($dateMillis / (1000 * 60 * 60 * 24));
+      ($daysSinceEpoch + 4) % 7 + 1
+     )
+   };
+   
+   // Takes recordedDate as a parameter and returns the start date of its week 
+   $startOfTheWeek := function($recordedDate)
+   {
+     (
+       $dayOfWeekNumber := $getDayOfWeekSundayStart($recordedDate);
+       $millisecondsPerDay := 1000 * 60 * 60 * 24;
+       $daysToSubtract := $dayOfWeekNumber - 1;
+       $startDateMillis := $toMillis($recordedDate) - ($daysToSubtract * $millisecondsPerDay);
+       $fromMillis($startDateMillis, '[Y]-[M01]-[D01]')
+     )
+   };
+  /*List all sampled resources file names*/
+    $sampledResourcesNames := $readDir()[$contains(/\[Condition\]_\[[A-Za-z0-9\-\.]{1,64}\]\.json/)]^($);
+
+
+  /*Extract relevant elements from all sampled resources and flatten*/
+    $recordedDate := $sampledResourcesNames.$readFile($).recordedDate.
+	{
+      'resourceType' : %.resourceType,
+	  'resourceId' : %.id,
+	  'path' : 'Condition.recordedDate',
+	  'pathValue' : $,
+      'startOfTheWeek' : $startOfTheWeek($)
+    };
+	
+	// creates json object with  key-value pairs where each pair is start of the week date and its count, i.e. how many times this date appears in recordedDate array
+	$objectCntStartOfTheWeek := $recordedDate{startOfTheWeek:$count($)};
+    
+	// creates array from objectCntStartOfTheWeek. This array will be used later by reportrting functionality to dislay the "line" cart
+	$arrayCntStartOfTheWeek := $objectCntStartOfTheWeek.$each
+    (
+       $, function($value, $key) 
+      {
+        {"date": $key, "count": $value}
+      }
+    );
+
+
+  // /*Write flatten results to folder*/
+    $writeFile($arrayCntStartOfTheWeek,'conditionRecordedDateDistribution.json')
+
+  /*Write completed msg*/
+    {
+      'statusCode':'completed'
+      ,'statusText':'Completed'
+    } ~> $writeFile('actionStatus_doExtractConditionRecordedDate.json')
+)

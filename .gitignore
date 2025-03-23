@@ -310,4 +310,5 @@ Temporary Items
 
 fhirPackageIndex.json
 certificator.exe
+.validatorSession-*
 maps/doPractitionerQualificationDist.txt

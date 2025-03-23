@@ -292,6 +292,8 @@ const handler = async (req: Request, res: Response) => {
       } else if (route.startsWith('/api/kits/')) {
         await getKit(req, res);
       }
+    } else if (route === '/dev') {
+      await serveUiRoute('/dev.html', res);
     } else {
       // handle all else (assuming it's a ui file)
       await serveUiRoute(route, res);

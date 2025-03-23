@@ -437,6 +437,16 @@ export const reportRunSettings: Expression = jsonata(`
       "type": "line",
       "data": [$birthDatesTimeLineAgg.{'label':date ,'value':count}]
     };
+	
+	$conditionRecordedDateDistribution := $readIoFile('conditionRecordedDateDistribution.json');
+    $recordedDateChart := $exists($conditionRecordedDateDistribution) ?
+    {
+      'id': 'recorded-date-chart',
+      'title': 'Recorded date distribution',
+      "type": "line",
+      "data": [$conditionRecordedDateDistribution.{'label':date ,'value':count}]
+    };
+	
 
     $sampledResourcesIds := $readIoFile('sampledResourcesIds.json');
     $idValidityChart := $exists($sampledResourcesIds) ?
@@ -538,6 +548,49 @@ export const reportRunSettings: Expression = jsonata(`
       ]
     };
     
+	$encounterTypeDistribution := $readIoFile('encounterTypeDistribution.json');
+    $chartEncounterTypeDistribution := $exists($encounterTypeDistribution) ? {
+      'id': 'encounter-type-distribution',
+      'title': 'Encounter.type distribution (Test 64)',
+      'type': 'table',
+      'columns': [
+        {
+          'property': 'system',
+          'label': 'System'
+        },
+        {
+          'property': 'code',
+          'label': 'Code'
+        },
+        {
+          'property': 'display',
+          'label': 'Display'
+        },
+        {
+          'property': 'count',
+          'label': 'Count'
+        }
+      ],
+      'data': [
+                (
+                  (
+                    $encounterTypeDistribution
+                    .pathValue.coding
+                    {
+                      system&'_'&code&'_'&display:$count($)
+                    }
+                    ~>$spread()
+                  )
+                  .{
+                    'system':$split($keys($),'_')[0]
+                    ,'code':$split($keys($),'_')[1]
+                    ,'display':$split($keys($),'_')[2]
+                    ,'count':$string(*)
+                  }
+                )^(>count)
+      ]
+    };
+	
     {
       'charts': [
                 $runAttributes
@@ -545,11 +598,16 @@ export const reportRunSettings: Expression = jsonata(`
                 ,$runSummary
                 ,$genderChart
                 ,$identifierChart
+				,$chartEncounterTypeDistribution
                 ,$birthdatesChart
+				,$recordedDateChart
                 ,$idValidityChart
                 ,$countResourcesTable
                 ]
     }
+	
+	
+    
 
   )
   `);

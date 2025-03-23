@@ -127,7 +127,7 @@
     },
     {
       "id": "doExtractEncounterClass",
-      "description": "(Test 59) - Encounter.class disterbution",
+      "description": "(Test 59) - Encounter.class distribution",
       "mapping": "doExtractEncounterClass"
     },
 	{
@@ -139,7 +139,17 @@
 	  "id": "isGetHttp200",
       "description": "(Test 90) - Validate that the returned HTTP status is 200(OK)",
       "mapping": "isGetHttp200"	
-	}
+	},
+	{
+      "id": "doExtractEncounterType",
+      "description": "(Test 64) - Encounter.type distribution",
+      "mapping": "doExtractEncounterType"
+    },
+	{
+      "id": "doExtractConditionRecordedDate",
+      "description": "(Test 174) - Condition.recordedDate distribution",
+      "mapping": "doExtractConditionRecordedDate"
+    }
 
   ],
   "kits": [
@@ -247,6 +257,33 @@
                   "actions": [
                     "sample-wrapper",
                     "doExtractEncounterClass"
+                  ]
+                },
+				{
+                  "id": "test64",
+                  "name": "Encounter type distribution",
+                  "description": "Encounter type distribution",
+                  "details": "Check if the distribution of Encounter.type system & code makes sense.",
+                  "actions": [
+                    "sample-wrapper",
+                    "doExtractEncounterType"
+                  ]
+                }
+              ]
+            },
+			{
+              "id": "condition-dist",
+              "name": "Condition elements distributions",
+              "children": [
+                
+				{
+                  "id": "test174",
+                  "name": "Condition recorded date distribution",
+                  "description": "Condition recorded date distribution",
+                  "details": "Check if the distribution of Condition.recordedDate makes sense.",
+                  "actions": [
+                    "sample-wrapper",
+                    "doExtractConditionRecordedDate"
                   ]
                 }
               ]

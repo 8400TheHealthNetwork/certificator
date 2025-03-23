@@ -10,7 +10,7 @@ import { getList } from './getPackageList';
 import chalk from 'chalk';
 
 export const ensureEnv = async (config: IConfig): Promise<IConfig> => {
-  const FHIR_PACKAGES = getList().map(p => p.trim().split('#').join('@')).join(',');
+  const FHIR_PACKAGES = 'il.core.fhir.r4#0.17.0';
   if (!fs.existsSync('.env')) {
     console.log('.env file is missing, let\'s create one');
     const FHIR_SERVER_BASE: string = await input({ message: 'What is the FHIR server address?' });
@@ -22,7 +22,7 @@ export const ensureEnv = async (config: IConfig): Promise<IConfig> => {
       FHIR_SERVER_PW = await password({ message: 'Please enter the password', mask: true });
     }
     const FHIR_VERSION = '4.0.1';
-    const SERVER_PORT: string = await input({ message: 'Please enter a port for the Certificator API (default: 8400)', default: '8400' });
+    const SERVER_PORT = '8401';
     const FHIR_SERVER_TIMEOUT = await input({ message: 'Timeout (in Milliseconds) for FHIR server API calls? (default: 30000)', default: '30000' });
 
     const dotEnvFile: string = `
@@ -40,11 +40,12 @@ FHIR_SERVER_PW=${FHIR_SERVER_PW}
 
 FHIR_VERSION=${FHIR_VERSION}
 
-# The port the certificator API will be exposed at
-SERVER_PORT=${SERVER_PORT}
-
 # Timeout for FHIR server API calls
 FHIR_SERVER_TIMEOUT=${FHIR_SERVER_TIMEOUT}
+
+# Validator cache settings
+SESSION_CACHE_IMPLEMENTATION=PassiveExpiringSessionCache
+SESSION_CACHE_DURATION=-1
     `;
     fs.writeFileSync('.env', dotEnvFile);
     const newConfig: IConfig = {
@@ -95,10 +96,11 @@ export const checkPackages = () => {
 
 export const checkValidator = () => {
   if (sea.isSea()) {
-    if (!fs.existsSync('validator_cli.jar')) {
+    if (!fs.existsSync(path.join('.', 'bin', 'validator.jar'))) {
       console.log('Extracting HL7 Validator...');
-      const jarFile = sea.getAsset('validator_cli.jar');
-      fs.writeFileSync('validator_cli.jar', Buffer.from(jarFile));
+      const jarFile = sea.getAsset('validator.jar');
+      fs.ensureDirSync('bin');
+      fs.writeFileSync(path.join('.', 'bin', 'validator.jar'), Buffer.from(jarFile));
     }
   }
 };
