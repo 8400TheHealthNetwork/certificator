@@ -1,6 +1,8 @@
 # Certificator
 FHIR® Certificator for Ministry of Health, Israel
 
+For configuration & settings see [Environment Variables](EnvironmentVariables.md)
+
 # Entities
 
 ## Test
