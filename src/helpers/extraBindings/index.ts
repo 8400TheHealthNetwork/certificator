@@ -5,5 +5,6 @@ import { toMarkdown } from './markdown';
 import { validate } from './validate';
 
 const instant = () => Date.now();
+const setStatus = () => {}; // noop for dev mode. overridden with actual func when invoked as an action
 
-export const extraBindings = { instant, validate, http, writeFile, readFile, makeDir, readDir, resolveCanonical, readPackageIndex, toMarkdown };
+export const extraBindings = { setStatus, instant, validate, http, writeFile, readFile, makeDir, readDir, resolveCanonical, readPackageIndex, toMarkdown };
