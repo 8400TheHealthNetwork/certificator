@@ -144,6 +144,11 @@
       "id": "doExtractEncounterType",
       "description": "(Test 64) - Encounter.type distribution",
       "mapping": "doExtractEncounterType"
+    },
+	{
+      "id": "doExtractConditionRecordedDate",
+      "description": "(Test 174) - Condition.recordedDate distribution",
+      "mapping": "doExtractConditionRecordedDate"
     }
 
   ],
@@ -262,6 +267,23 @@
                   "actions": [
                     "sample-wrapper",
                     "doExtractEncounterType"
+                  ]
+                }
+              ]
+            },
+			{
+              "id": "condition-dist",
+              "name": "Condition elements distributions",
+              "children": [
+                
+				{
+                  "id": "test174",
+                  "name": "Condition recorded date distribution",
+                  "description": "Condition recorded date distribution",
+                  "details": "Check if the distribution of Condition.recordedDate makes sense.",
+                  "actions": [
+                    "sample-wrapper",
+                    "doExtractConditionRecordedDate"
                   ]
                 }
               ]
