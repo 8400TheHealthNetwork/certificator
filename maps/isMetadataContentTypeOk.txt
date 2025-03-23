@@ -5,17 +5,6 @@
       ($readFile('getCapabilityStatement.json').headers.'content-type')
     ,'application/fhir+json')
   
-  /*Prep pass & fail msg*/
-    ;$msgPassed :={
-      'statusCode':'passed'
-      ,'statusText':'Passed'
-    }
-  
-    ;$msgFailed := {
-      'statusCode':'failed'
-      ,'statusText':'Failed'
-    }
-
   /*Write pass/fail msg based on test results*/
-    ;$writeFile(($testResult ? $msgPassed : $msgFailed),'actionStatus_isMetadataContentTypeOk.json')
+    ;$testResult ? $setStatus('passed', 'Passed') : $setStatus('failed', 'Failed')
 )

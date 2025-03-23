@@ -8,17 +8,6 @@
       ;$idRegexMatch($id) // check if id matches HL7 id data type defined rexeg
     )
 
-  /*Prep pass & fail msg*/
-    ;$msgPassed :={
-      'statusCode':'passed'
-      ,'statusText':'Passed'
-    }
-  
-    ;$msgFailed := {
-      'statusCode':'failed'
-      ,'statusText':'Failed'
-    }
-
   /*Write pass/fail msg based on test results*/
-    ;$writeFile(($testResult ? $msgPassed : $msgFailed),'actionStatus_isReadIdRegex.json')
+    ;$testResult ? $setStatus('passed', 'Passed') : $setStatus('failed', 'Failed')
 )
