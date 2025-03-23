@@ -22,7 +22,7 @@ export const ensureEnv = async (config: IConfig): Promise<IConfig> => {
       FHIR_SERVER_PW = await password({ message: 'Please enter the password', mask: true });
     }
     const FHIR_VERSION = '4.0.1';
-    const SERVER_PORT: string = await input({ message: 'Please enter a port for the Certificator API (default: 8400)', default: '8400' });
+    const SERVER_PORT = '8401';
     const FHIR_SERVER_TIMEOUT = await input({ message: 'Timeout (in Milliseconds) for FHIR server API calls? (default: 30000)', default: '30000' });
 
     const dotEnvFile: string = `
@@ -39,9 +39,6 @@ FHIR_SERVER_UN=${FHIR_SERVER_UN}
 FHIR_SERVER_PW=${FHIR_SERVER_PW}
 
 FHIR_VERSION=${FHIR_VERSION}
-
-# The port the certificator API will be exposed at
-SERVER_PORT=${SERVER_PORT}
 
 # Timeout for FHIR server API calls
 FHIR_SERVER_TIMEOUT=${FHIR_SERVER_TIMEOUT}
