@@ -1,4 +1,4 @@
-// doBirthDateDist (Test 68) - Patient.birthDate disterbution
+// doBirthDateDist (Test 68) - Patient.birthDate distribution
 (
   /*Write initial map status for UI to status file*/
     {

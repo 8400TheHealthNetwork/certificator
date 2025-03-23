@@ -433,12 +433,12 @@ export const reportRunSettings: Expression = jsonata(`
     $birthdatesChart := $exists($birthDatesTimeLineAgg) ?
     {
       'id': 'birthdates-chart',
-      'title': 'Patient birthdates disterbution',
+      'title': 'Patient birthdates distribution',
       "type": "line",
       "data": [$birthDatesTimeLineAgg.{'label':date ,'value':count}]
     };
-	
-	$conditionRecordedDateDistribution := $readIoFile('conditionRecordedDateDistribution.json');
+
+  $conditionRecordedDateDistribution := $readIoFile('conditionRecordedDateDistribution.json');
     $recordedDateChart := $exists($conditionRecordedDateDistribution) ?
     {
       'id': 'recorded-date-chart',
@@ -446,7 +446,6 @@ export const reportRunSettings: Expression = jsonata(`
       "type": "line",
       "data": [$conditionRecordedDateDistribution.{'label':date ,'value':count}]
     };
-	
 
     $sampledResourcesIds := $readIoFile('sampledResourcesIds.json');
     $idValidityChart := $exists($sampledResourcesIds) ?
@@ -505,10 +504,10 @@ export const reportRunSettings: Expression = jsonata(`
       'data': [$doCountResources]
     };
 
-    $encounterClassDisterbution := $readIoFile('encounterClassDisterbution.json');
-    $identifierChart := $exists($encounterClassDisterbution) ? {
-      'id': 'encounter-class-disterbution',
-      'title': 'Encounter.class disterbution (Test 59)',
+    $encounterClassDistribution := $readIoFile('encounterClassDistribution.json');
+    $identifierChart := $exists($encounterClassDistribution) ? {
+      'id': 'encounter-class-distribution',
+      'title': 'Encounter.class distribution (Test 59)',
       'type': 'table',
       'columns': [
         {
@@ -531,7 +530,7 @@ export const reportRunSettings: Expression = jsonata(`
       'data': [
                 (
                   (
-                    $encounterClassDisterbution
+                    $encounterClassDistribution
                     .pathValue
                     {
                     system&'_'&code&'_'&display:$count($)
@@ -548,7 +547,7 @@ export const reportRunSettings: Expression = jsonata(`
       ]
     };
     
-	$encounterTypeDistribution := $readIoFile('encounterTypeDistribution.json');
+  $encounterTypeDistribution := $readIoFile('encounterTypeDistribution.json');
     $chartEncounterTypeDistribution := $exists($encounterTypeDistribution) ? {
       'id': 'encounter-type-distribution',
       'title': 'Encounter.type distribution (Test 64)',
@@ -590,7 +589,7 @@ export const reportRunSettings: Expression = jsonata(`
                 )^(>count)
       ]
     };
-	
+  
     {
       'charts': [
                 $runAttributes
@@ -598,15 +597,15 @@ export const reportRunSettings: Expression = jsonata(`
                 ,$runSummary
                 ,$genderChart
                 ,$identifierChart
-				,$chartEncounterTypeDistribution
+        ,$chartEncounterTypeDistribution
                 ,$birthdatesChart
-				,$recordedDateChart
+        ,$recordedDateChart
                 ,$idValidityChart
                 ,$countResourcesTable
                 ]
     }
-	
-	
+  
+  
     
 
   )

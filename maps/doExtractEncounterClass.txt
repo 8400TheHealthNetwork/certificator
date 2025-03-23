@@ -19,7 +19,7 @@
       }
 
   // /*Write flatten results to folder*/
-    ;$writeFile($gender,'encounterClassDisterbution.json')
+    ;$writeFile($gender,'encounterClassDistribution.json')
 
   /*Write completed msg*/
     ;{

@@ -39,7 +39,7 @@ Example in ENV file:
 
 **Note**: If you don't want to hard code the passwrd in the env file you may set this as a system or user level environment variable and omit it from the `.env` file entirely.
 
-#### 📌FHIR_SERVER_TIMEOUT
+### 📌FHIR_SERVER_TIMEOUT
 Timeout (in milliseconds) for FHIR server API calls. Default is 30000.
 
 Example in ENV file:  
