@@ -15,10 +15,4 @@
 
   // /*Write flatten results to folder*/
     ;$writeFile($gender,'encounterClassDistribution.json')
-
-  /*Write completed msg*/
-    ;{
-      'statusCode':'completed'
-      ,'statusText':'Completed'
-    } ~> $writeFile('actionStatus_doExtractEncounterClass.json')
 )

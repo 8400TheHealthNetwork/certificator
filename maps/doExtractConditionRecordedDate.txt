@@ -52,9 +52,4 @@
   // /*Write flatten results to folder*/
     $writeFile($arrayCntStartOfTheWeek,'conditionRecordedDateDistribution.json')
 
-  /*Write completed msg*/
-    {
-      'statusCode':'completed'
-      ,'statusText':'Completed'
-    } ~> $writeFile('actionStatus_doExtractConditionRecordedDate.json')
 )
