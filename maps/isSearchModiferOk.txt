@@ -1,13 +1,8 @@
 /*isSearchModiferOk - Test28 - Server SHALL reject any search request that contains a modifier that the server does not support for that parameter*/
 (
-  /*Write initial map status for UI to status file*/
-    {
-      'statusCode':'in-progress'
-      ,'statusText':'in-progress'
-    } ~> $writeFile('actionStatus_isSearchModiferOk.json')
 
   /*Fetch base url*/
-    ;$baseUrl := $search('Patient').link[relation='self'].url~>$substringBefore('Patient?')
+    $baseUrl := $search('Patient').link[relation='self'].url~>$substringBefore('Patient?')
   
   /*Search with an unsupported modifer*/
     ;$testResult := $http({

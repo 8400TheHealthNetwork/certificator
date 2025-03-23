@@ -1,13 +1,7 @@
 // isReadResource (Test 84) - On simple read (GET), Check simple read returns a resource and not a bundle
 (
-  /*Write initial map status for UI to status file*/
-    {
-      'statusCode':'in-progress'
-      ,'statusText':'in-progress'
-    } ~> $writeFile('actionStatus_isReadResource.json')
-
   /*Perform test*/
-    ;$testResult :=
+    $testResult :=
     (
         $responseResourceType := $readFile('successfulReadResponse.json').data.resourceType;
 

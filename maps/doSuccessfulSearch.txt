@@ -1,12 +1,6 @@
 // doSuccessfulSearch - store the result of a random succsesful search for use in varius tests
 
  (
-   /*Write initial map status for UI to status file*/
-    {
-      'statusCode':'in-progress'
-      ,'statusText':'in-progress'
-    } ~> $writeFile('actionStatus_doSuccessfulSearch.json');
-
   // Extract a known to be active FHIR endpiont
     $randomSampleResourceType := $readDir()[$contains($,/\[.*\]_\[.*\].json/i)][0].$readFile($).resourceType;
   

@@ -1,14 +1,7 @@
 /*isSuccessfulSearchBundleType (Test109) - This map validates that search result is Bundle of type 'searchset' */
 (
-   
- /*Write initial map status for UI to status file*/
-    {
-      'statusCode':'in-progress'
-      ,'statusText':'in-progress'
-    } ~> $writeFile('actionStatus_isSuccessfulSearchBundleType.json')
-
   /*Perform test*/
-    ;$testResult := $readFile('SuccessfulSearchResponse.json').data.type = 'searchset'
+    $testResult := $readFile('SuccessfulSearchResponse.json').data.type = 'searchset'
 
   /*Prep pass & fail msg*/
     ;$msgPassed :={

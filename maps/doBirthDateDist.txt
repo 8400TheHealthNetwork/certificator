@@ -1,13 +1,8 @@
 // doBirthDateDist (Test 68) - Patient.birthDate distribution
 (
-  /*Write initial map status for UI to status file*/
-    {
-      'statusCode':'in-progress'
-      ,'statusText':'in-progress'
-    } ~> $writeFile('actionStatus_doBirthDateDist.json')
 
   // List all sampled Patient instances (only) file names
-    ;$sampledResources := $readDir()[$startsWith($, '[Patient]_[') and $endsWith($,'].json')]
+    $sampledResources := $readDir()[$startsWith($, '[Patient]_[') and $endsWith($,'].json')]
 
   // For each sampled resource create an object with relevant data (file name, resource id etc) including if the id is or is not valid
     ;$birthDates := $sampledResources@$fn.$readFile($fn).{

@@ -1,14 +1,8 @@
 // isPagingSearch (test 118) - Test FHIR endpoint pages results as reuired (_count support is mandatory, a search on any resourceType with 2 instances or more using _count=1 will force the server to page results)
 
 (
-  /*Write initial map status for UI to status file*/
-    {
-      'statusCode':'in-progress'
-      ,'statusText':'in-progress'
-    } ~> $writeFile('actionStatus_isPagingSearch.json')
-
   /*Perform test*/
-    ;$testResult := (
+    $testResult := (
       // extract resource counts done by another mapping
         $resourceCount := $readFile('doCountResources.json')[status=200]
 

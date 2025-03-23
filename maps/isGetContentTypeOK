@@ -1,13 +1,8 @@
 // isGetContentTypeOK - This map Assert Content-Type='application/fhir+json' on a simple read (GET) response
 (
-  /*Write initial map status for UI to status file*/
-    {
-      'statusCode':'in-progress'
-      ,'statusText':'in-progress'
-    } ~> $writeFile('actionStatus_isGetContentTypeOK.json')
 
   /*Perform test*/
-    ;$testResult :=   $contains(
+    $testResult :=   $contains(
       ($readFile('successfulReadResponse.json').headers.'content-type')
     ,'application/fhir+json')
   

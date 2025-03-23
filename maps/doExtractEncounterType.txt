@@ -1,13 +1,7 @@
 // doExtractEncounterType (Test 64) - extract Encounter.type from sampeled instances and write to flat file
 (
-  /*Write initial map status for UI to status file*/
-    {
-      'statusCode':'in-progress'
-      ,'statusText':'in-progress'
-    } ~> $writeFile('actionStatus_doExtractEncounterType.json')
-
   /*List all sampled resources file names*/
-    ;$sampledResourcesNames := $readDir()[$contains(/\[Encounter\]_\[[A-Za-z0-9\-\.]{1,64}\]\.json/)]^($)
+    $sampledResourcesNames := $readDir()[$contains(/\[Encounter\]_\[[A-Za-z0-9\-\.]{1,64}\]\.json/)]^($)
 
 
   /*Extract relevant elements from all sampled resources and flatten*/

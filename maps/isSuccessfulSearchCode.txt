@@ -1,14 +1,8 @@
 // isSuccessfulSearchCode (test 115) - Assert server returned an HTTP 200 response code to a Successful search request => If the search succeeds, the server SHALL return a 200 OK HTTP status code 3.1.0.9 search https://www.hl7.org/fhir/r4/http.html#search
 
 ( 
-  /*Write initial map status for UI to status file*/
-    {
-      'statusCode':'in-progress'
-      ,'statusText':'in-progress'
-    } ~> $writeFile('actionStatus_isSuccessfulSearchCode.json')
-  
   /*Perform test*/
-    ;$testResult := ($readFile('SuccessfulSearchResponse.json').status = 200) // Assert HTTP response code is 200 as required
+    $testResult := ($readFile('SuccessfulSearchResponse.json').status = 200) // Assert HTTP response code is 200 as required
 
   /*Prep pass & fail msg*/
     ;$msgPassed :={

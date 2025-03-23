@@ -1,13 +1,7 @@
 /*isMetaDataHttp200 - This map checks if the response for fetching the serveres CapabilityStatement indludes status = 200*/
 (
-  /*Write initial map status for UI to status file*/
-    {
-      'statusCode':'in-progress'
-      ,'statusText':'in-progress'
-    } ~> $writeFile('actionStatus_isMetaDataHttp200.json')
-
   /*Perform test*/
-    ;$testResult := $readFile('getCapabilityStatement.json').status = 200
+    $testResult := $readFile('getCapabilityStatement.json').status = 200
 
   /*Prep pass & fail msg*/
     ;$msgPassed :={

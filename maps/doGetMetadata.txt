@@ -1,13 +1,7 @@
 /*doGetMetadata - This map trys to fetch the provided server CapabilityStatement and saves it to file for later steps*/
 (
-  /*Write initial map status for UI to status file*/
-    {
-      'statusCode':'in-progress'
-      ,'statusText':'in-progress'
-    } ~> $writeFile('actionStatus_doGetMetadata.json')
-  
   /*Fetch base url*/
-    ;$baseUrl := $fhirServer
+    $baseUrl := $fhirServer
 
   /*Get metadata and write it to file*/
     ;$readResponse := $http({

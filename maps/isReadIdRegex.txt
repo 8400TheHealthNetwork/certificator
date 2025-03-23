@@ -1,13 +1,7 @@
 // isReadIdRegex (Test 85) - On simple read (GET), check response resource id matches the datatype id regex
 (
-  /*Write initial map status for UI to status file*/
-    {
-      'statusCode':'in-progress'
-      ,'statusText':'in-progress'
-    } ~> $writeFile('actionStatus_isReadIdRegex.json')
-
   /*Perform test*/
-    ;$testResult :=
+    $testResult :=
     (
       $id := $readFile('successfulReadResponse.json').data.id
 

@@ -1,14 +1,8 @@
 /*doExtractIdentifiers - extract resource identifiers from all sampled instances*/
 (
-  /*Write initial map status for UI to status file*/
-    {
-      'statusCode':'in-progress'
-      ,'statusText':'in-progress'
-    } ~> $writeFile('actionStatus_doExtractIdentifiers.json')
-
   /*Extract identifiers*/
     /*List all sampled resources file names*/
-      ;$sampledResources := $readDir()[$contains($,/\[.*\]_\[.*\].json/i)]
+      $sampledResources := $readDir()[$contains($,/\[.*\]_\[.*\].json/i)]
     
     /*For each sampled resource, extract and faltten the identifer and write to disk*/
       ;$identifiers := $sampledResources.$readFile($).identifier.system.{

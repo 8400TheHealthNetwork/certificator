@@ -1,14 +1,9 @@
 (
   /*isGetHttp200 - This mapping ensures a 200 status code is returned for successful read (GET) request, which is implemented in the 'doSuccessfulReadResponse' mapping
   /*Write initial map status for UI to status file*/
-  
-    {
-      'statusCode':'in-progress'
-      ,'statusText':'in-progress'
-    } ~> $writeFile('actionStatus_isGetHttp200.json')
 
   /*Perform test*/
-    ;$testResult := $readFile('successfulReadResponse.json').status = 200
+    $testResult := $readFile('successfulReadResponse.json').status = 200
 
   /*Prep pass & fail msg*/
     ;$msgPassed :={

@@ -1,13 +1,7 @@
 /*isMetadataContentTypeOk - This map Assert Content-Type='application/fhir+json'*/
 (
-    /*Write initial map status for UI to status file*/
-    {
-      'statusCode':'in-progress'
-      ,'statusText':'in-progress'
-    } ~> $writeFile('actionStatus_isMetadataResourceTypeOk.json')
-
   /*Perform test*/
-    ;$testResult :=   $contains(
+    $testResult :=   $contains(
       ($readFile('getCapabilityStatement.json').headers.'content-type')
     ,'application/fhir+json')
   

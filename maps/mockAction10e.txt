@@ -1,8 +1,4 @@
 (
-    {
-      'statusCode':'in-progress'
-      ,'statusText':'in-progress'
-    } ~> $writeFile('actionStatus_mockAction10e.json');
     $wait(10000);
     $error('This is also an intentional error but with a longer text so we cacn see how it looks in the table of the report web page. Some more text is added here just to make it extra long');
 )

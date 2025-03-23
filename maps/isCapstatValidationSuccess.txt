@@ -1,11 +1,5 @@
 /*isCapstatValidationSuccess - This map Gets Validates and Assert CapabilityStatement validation passed succesfuly (done on the correct file & did not raise any errors)*/
 (
-  /*Write initial map status for UI to status file*/
-    {
-      'statusCode':'in-progress'
-      ,'statusText':'in-progress'
-    } ~> $writeFile('actionStatus_isCapstatValidationSuccess.json')
-
   /*Extract the CapStat from the HTTP response and write to a new file*/
     ;$CapabilityStatement := $readFile('getCapabilityStatement.json').data
     

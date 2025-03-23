@@ -1,14 +1,8 @@
 /*isSuccessfulSearchBundle (Test108) - This map validates that search reslut is Bundle*/
 
 (
-  /*Write initial map status for UI to status file*/ 
-    {
-      'statusCode':'in-progress'
-      ,'statusText':'in-progress'
-    } ~> $writeFile('actionStatus_isSuccessfulSearchBundle.json')
-
   /*Perform test*/
-    ;$testResult := $readFile('SuccessfulSearchResponse.json').data.resourceType = 'Bundle'
+    $testResult := $readFile('SuccessfulSearchResponse.json').data.resourceType = 'Bundle'
 
   /*Prep pass & fail msg*/
     ;$msgPassed :={

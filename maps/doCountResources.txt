@@ -2,11 +2,6 @@
 // doInfoBinsDistinct
 
 (
-  /*Write initial map status for UI to status file*/
-    {
-      'statusCode':'in-progress'
-      ,'statusText':'in-progress'
-    } ~> $writeFile('actionStatus_doCountResources.json')
   
   /*Extract data*/
       ;$baseUrl := $search('Patient').entry[0].fullUrl.$substringBefore($,'Patient')

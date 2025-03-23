@@ -1,14 +1,9 @@
 // isDuplicateIds (Test28) -  Check the ID is unique for the resource type in the sampled data
 
 (
-  /*Write initial map status for UI to status file*/
-    {
-      'statusCode':'in-progress'
-      ,'statusText':'in-progress'
-    } ~> $writeFile('actionStatus_isDuplicateIds.json')
-  
+ 
   // run test
-    ;$arr :=
+    $arr :=
     (
       $readDir()[$contains($,/\[.*\]_\[.*\].json/i)] // Extract all sampled file names
       .$readFile($) // Conceptualy the file names provide the resourceType and resource.id but we read the files content just to be on the safe side
