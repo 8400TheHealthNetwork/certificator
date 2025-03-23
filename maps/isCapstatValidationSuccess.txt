@@ -12,8 +12,8 @@
     ;$writeFile($CapabilityStatement,'CapabilityStatement.json')
   
   /*Get and Validate Capstat*/
-    ;$validate('CapabilityStatement.json', {'output': 'ValidationResults-CapabilityStatement.json'})
-    ;$ValidationResultsCapabilityStatement := $readFile('ValidationResults-CapabilityStatement.json')
+    ;$ValidationResultsCapabilityStatement := $validate($CapabilityStatement)
+    ;$writeFile($ValidationResultsCapabilityStatement,'ValidationResults-CapabilityStatement.json')
 
   /*Perform test*/
     ;$testResult := (
