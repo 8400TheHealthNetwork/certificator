@@ -45,6 +45,10 @@ SERVER_PORT=${SERVER_PORT}
 
 # Timeout for FHIR server API calls
 FHIR_SERVER_TIMEOUT=${FHIR_SERVER_TIMEOUT}
+
+# Validator cache settings
+SESSION_CACHE_IMPLEMENTATION=PassiveExpiringSessionCache
+SESSION_CACHE_DURATION=-1
     `;
     fs.writeFileSync('.env', dotEnvFile);
     const newConfig: IConfig = {
