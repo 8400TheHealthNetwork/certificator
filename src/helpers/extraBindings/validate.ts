@@ -1,13 +1,26 @@
 /* eslint-disable @typescript-eslint/return-await */
 import createValidatorInstance from 'fhir-validator-js';
-import { getList as getPackageList } from '../../getPackageList';
 import os from 'os';
+import fs from 'fs-extra';
+import path from 'path';
 
 const cpuCount = os.cpus().length;
-const numValidators = Math.max(Math.min(cpuCount - 1, 3), 1); // Max 3 validators, min 1 validator
+const numValidators = cpuCount >= 4 ? 4 : cpuCount; // Max 4 validators, min 1 validator
 const validators: any[] = [];
 const queues: Array<Promise<void>> = [];
-const batchSize = 4; // Maximum batch size per request
+const minBatchSize = 5;
+const maxBatchSize = 13;
+
+const readSessionId = (validatorIndex: number) => {
+  const filePath: string = path.join('.', `.validatorSession-${String(validatorIndex)}`);
+  const data: string = fs.readFileSync(filePath).toString();
+  return data;
+};
+
+const writeSessionId = (sessionId: string, validatorIndex: number) => {
+  const filePath: string = path.join('.', `.validatorSession-${String(validatorIndex)}`);
+  fs.writeFileSync(filePath, sessionId);
+};
 
 /**
  * Initialize multiple validator instances.
@@ -15,19 +28,53 @@ const batchSize = 4; // Maximum batch size per request
 const initializeValidators = async () => {
   if (validators.length === 0) {
     console.log(`Starting ${numValidators} validator instances...`);
-    const packageList = getPackageList();
+    const packageList = ['il.core.fhir.r4#0.17.0'];
 
     for (let i = 0; i < numValidators; i++) {
+      let sessionId: string | null;
+      try {
+        sessionId = readSessionId(i);
+      } catch {
+        sessionId = null;
+      }
       validators[i] = await createValidatorInstance({
         sv: '4.0.1',
         igs: packageList,
-        txServer: null
+        txServer: null,
+        sessionId
       });
 
       queues[i] = Promise.resolve(); // ✅ Initialize with resolved promise
+      writeSessionId(validators[i].sessionId, i);
     }
     console.log(`✅ All ${numValidators} validator instances are ready.`);
   }
+};
+
+const determineBatchSize = (numResources: number, numValidators: number): number => {
+  let bestBatchSize = minBatchSize;
+  let bestScore = -Infinity; // Higher is better
+
+  for (let batchSize = minBatchSize; batchSize <= maxBatchSize; batchSize++) {
+    const totalBatches = Math.ceil(numResources / batchSize);
+
+    // Score 1: How well batch size divides resources (higher remainder = better, except zero is best)
+    const resourceBalance = numResources % batchSize;
+    const resourceScore = (resourceBalance === 0 ? batchSize : resourceBalance) / batchSize;
+
+    // Score 2: How well batches distribute across validators (higher remainder = better, except zero is best)
+    const validatorBalance = totalBatches % numValidators;
+    const validatorScore = (validatorBalance === 0 ? numValidators : validatorBalance) / numValidators;
+
+    const score = (resourceScore + validatorScore * numValidators);
+
+    if (score > bestScore) {
+      bestScore = score;
+      bestBatchSize = batchSize;
+    }
+  }
+
+  return bestBatchSize;
 };
 
 /**
@@ -48,7 +95,7 @@ export const validate = async (resource: any | any[], profiles: string | string[
   };
 
   if (Array.isArray(results)) {
-    return results.map(result => result.result);
+    return results.length === 1 ? results[0].result : results.map(result => result.result);
   } else {
     return results.result;
   }
@@ -58,30 +105,44 @@ export const validate = async (resource: any | any[], profiles: string | string[
  * Splits a resource array into batches and assigns them dynamically to validators.
  */
 const validateBatch = async (resources: any[], profiles: string | string[]) => {
-  const batches = chunkArrayWithIndices(resources, batchSize);
+  const batches = chunkArrayWithIndices(resources, determineBatchSize(resources.length, numValidators));
   const results: Array<{ index: number, result: any }> = [];
+  let nextBatchIndex = 0;
 
-  // Assign each batch dynamically as soon as a validator is available
-  const promises = batches.map(async ({ batch, indices }) =>
-    assignToValidator(batch, profiles, indices)
-  );
+  // Create a queue system for validators
+  const validatorQueues = new Array(numValidators).fill(Promise.resolve());
 
-  // Wait for all validations to complete while preserving their indices
-  const resolvedResults = await Promise.allSettled(promises);
+  // Function to assign a batch to the next available validator
+  const processNextBatch = async (validatorIndex: number): Promise<void> => {
+    if (nextBatchIndex >= batches.length) return; // No more batches left
 
-  // Flatten and restore original order
-  resolvedResults.forEach((res, i) => {
-    if (res.status === 'fulfilled') {
-      res.value.forEach((item: any, j: number) => {
-        results.push({ index: batches[i].indices[j], result: item });
-      });
-    } else {
-      console.error(`❌ Validation error at batch ${i}:`, res.reason);
+    const { batch, indices } = batches[nextBatchIndex++];
+    try {
+      const batchResults = await validators[validatorIndex].validate(batch, profiles);
+      if (Array.isArray(batchResults)) {
+        batchResults.forEach((result: any, i: number) => {
+          results[indices[i]] = { index: indices[i], result }; // Store results with original index
+        });
+      } else {
+        results[indices[0]] = { index: indices[0], result: batchResults }; // Store single result with original index
+      }
+    } catch (error) {
+      console.error(`❌ Validator ${validatorIndex} failed on batch ${nextBatchIndex - 1}:`, error);
     }
+
+    // Recursively process the next batch on the same validator
+    await processNextBatch(validatorIndex);
+  };
+
+  // Kick off initial batch processing
+  validatorQueues.forEach((_, validatorIndex) => {
+    validatorQueues[validatorIndex] = processNextBatch(validatorIndex);
   });
 
-  // ✅ The only place where sorting is needed
-  return results.sort((a, b) => a.index - b.index).map(entry => entry.result);
+  // Wait for all validators to finish their work
+  await Promise.all(validatorQueues);
+
+  return results; // ✅ No sorting needed, results are placed in correct order
 };
 
 /**

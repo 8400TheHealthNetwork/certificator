@@ -1,6 +1,6 @@
 {
   "name": "il-fhir-certificator",
-  "version": "1.16.0",
+  "version": "1.17.0",
   "description": "FHIR Certificator for Israeli MoH",
   "scripts": {
     "clean": "rimraf dist && rimraf ui\\dist && rimraf report\\dist",
@@ -10,8 +10,9 @@
     "build:report": "cd report && npm install && npm run build && cd .. && npm run copy:report",
     "copy:report": "node -e \"require('fs').cpSync('./report/dist', './ui/dist/report', {recursive: true})\"",
     "build:ts": "tsc -b",
-    "serve": "node dist/src/app.js",
+    "serve": "set SESSION_CACHE_IMPLEMENTATION=PassiveExpiringSessionCache&& set SESSION_CACHE_DURATION=-1&& node dist/src/app.js",
     "serve:engine": "node dist/src/engine.js",
+    "serve:fresh": "npm run build:ts && npm run serve",
     "start": "npm run clean && npm run build && npm run serve",
     "start:engine": "npm run clean:ts && npm run build:ts && npm run serve:engine",
     "dev": "cross-env NODE_ENV=dev nodemon -w src --exec \"npm run start\"",
@@ -31,7 +32,7 @@
     "axios": "^1.7.9",
     "chalk": "^4.1.2",
     "dotenv": "^16.4.7",
-    "fhir-validator-js": "^1.2.0",
+    "fhir-validator-js": "^1.3.0",
     "fs-extra": "^11.2.0",
     "fume-fhir-converter": "^2.16.2",
     "json2md": "^2.0.1",
