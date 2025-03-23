@@ -118,25 +118,6 @@ const getKit = async (req: Request, res: Response) => {
   res.status(200).json(transformed);
 };
 
-const runTest = async (testId: string) => {
-  console.log(`Starting execution of test ${testId}`);
-  const actionsToRun: string[] = await getTestActions.evaluate({}, { kits, testId });
-  let errorDetails: string;
-  await setTestStatus(testId, 'in-progress', 'in-progress');
-  try {
-    await runActionList(actionsToRun);
-  } catch (e) {
-    errorDetails = (e instanceof Error) ? `${e.name}: ${e.message}` : JSON.stringify(e);
-    console.log(`Error executing test ${testId}. Details: ${errorDetails}`);
-  };
-  const lastMappingId: string = actionsToRun[actionsToRun.length - 1];
-  const lastActionStatusJson = await getActionStatus(lastMappingId);
-  errorDetails = errorDetails ?? lastActionStatusJson?.details;
-  const testStatus: string = errorDetails ? 'error' : lastActionStatusJson.statusCode;
-  const testStatusText: string = errorDetails ? 'Error' : lastActionStatusJson.statusText;
-  await setTestStatus(testId, testStatus, testStatusText, errorDetails);
-};
-
 const setActionStatus = async (mappingId: string, statusCode: string, statusText: string, details?: string) => {
   await writeJsonFile(actionStatusFilePath(mappingId), { statusCode, statusText, details });
 };
@@ -157,7 +138,33 @@ const runAction = async (mappingId: string) => {
     await setActionStatus(mappingId, 'init', 'Initialized');
     try {
       console.log(`Executing mapping ${mappingId}`);
-      engineResponse = await engineApi.post(`/Mapping/${mappingId}`, {});
+      engineResponse = await engineApi.post('/', {
+        input: {},
+        contentType: 'application/json',
+        fume: `(
+        // declaring a mapping-specific $setStatus() function
+        $setStatus := function($code,$text,$details){
+          $writeFile(
+            {
+              'statusCode': $code,
+              'statusText':$text,
+              'details': $details
+            },
+            'actionStatus_${mappingId}.json'
+          )
+        };
+        // setting action status to 'in-progress'
+        $setStatus('in-progress','In Progress');
+
+        // executing the mapping
+        $${mappingId}(
+          {}, // empty object as input
+          // binding the $setStatus function to the mapping
+          {
+            'setStatus': $setStatus
+          }
+        ))`
+      });
       const currentActionStatus = await getActionStatus(mappingId);
       if (currentActionStatus?.statusCode === 'in-progress' || currentActionStatus?.statusCode === 'init') {
         if (engineResponse.status === 200) {
@@ -179,12 +186,31 @@ const runAction = async (mappingId: string) => {
   }
 };
 
-const runTestList = async (testList: string[]) => {
-  await runTestListExpr.evaluate({}, { testList, runTest });
-};
-
 const runActionList = async (actionList: string[]) => {
   await runActionListExpr.evaluate({}, { actionList, runAction });
+};
+
+const runTest = async (testId: string) => {
+  console.log(`Starting execution of test ${testId}`);
+  const actionsToRun: string[] = await getTestActions.evaluate({}, { kits, testId });
+  let errorDetails: string;
+  await setTestStatus(testId, 'in-progress', 'in-progress');
+  try {
+    await runActionList(actionsToRun);
+  } catch (e) {
+    errorDetails = (e instanceof Error) ? `${e.name}: ${e.message}` : JSON.stringify(e);
+    console.log(`Error executing test ${testId}. Details: ${errorDetails}`);
+  };
+  const lastMappingId: string = actionsToRun[actionsToRun.length - 1];
+  const lastActionStatusJson = await getActionStatus(lastMappingId);
+  errorDetails = errorDetails ?? lastActionStatusJson?.details;
+  const testStatus: string = errorDetails ? 'error' : lastActionStatusJson.statusCode;
+  const testStatusText: string = errorDetails ? 'Error' : lastActionStatusJson.statusText;
+  await setTestStatus(testId, testStatus, testStatusText, errorDetails);
+};
+
+const runTestList = async (testList: string[]) => {
+  await runTestListExpr.evaluate({}, { testList, runTest });
 };
 
 const runKit = async (req: Request, res: Response) => {
