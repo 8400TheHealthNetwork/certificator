@@ -17,11 +17,8 @@
 
   /*Perform test*/
     ;$testResult := (
-      /*Check we are evluating a file that looks like the validation results of CapStat*/
-        ($ValidationResultsCapabilityStatement.extension[url='http://hl7.org/fhir/StructureDefinition/operationoutcome-file'].valueString~>$contains('[CapabilityStatement]_['))
-      and
       /*check there are no errors*/
-        $not('error' in $ValidationResultsCapabilityStatement.issue.severity)
+        $not('ERROR' in $ValidationResultsCapabilityStatement.issues.level)
       )
   
   /*Prep pass & fail msg*/
