@@ -77,7 +77,7 @@
     },
     {
       "id": "doBirthDateDist",
-      "description": "(Test 68) - Patient.birthDate disterbution",
+      "description": "(Test 68) - Patient.birthDate distribution",
       "mapping": "doBirthDateDist"
     },
     {
@@ -369,7 +369,7 @@
               "children": [
                 {
                   "id": "test118",
-                  "name": "Assert endpoint pages results according to standart",
+                  "name": "Assert endpoint pages results according to standard",
                   "description": "Test FHIR endpoint pages results with required links via forced paging done by asking for a single resource on each page of a search set.",
                   "details": "The result collection can be long, so servers may use paging. If they do, they SHALL use the method described below (adapted from RFC 5005 (Feed Paging and Archiving ) for breaking the collection into pages if appropriate.\n3.1.0.9 search \nhttps://www.hl7.org/fhir/r4/http.html#search\nPaged feed documents MUST have at least one of these link relations present\n3.  Paged Feeds\nhttps://datatracker.ietf.org/doc/html/rfc5005#section-3\n\n3.1.0.14 Paging \n,https://www.hl7.org/fhir/r4/http.html#paging",
                   "actions": [
