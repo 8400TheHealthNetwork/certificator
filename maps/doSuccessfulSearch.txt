@@ -17,8 +17,5 @@
     ~> $writeFile('SuccessfulSearchResponse.json');
 
   /*Write final map status for UI to status file*/
-    {
-    'statusCode':'passed',
-    'statusText':'passed'
-    } ~> $writeFile('actionStatus_doSuccessfulSearch.json')
+    $setStatus('passed', 'Passed')
 )	

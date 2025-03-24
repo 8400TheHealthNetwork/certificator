@@ -1,7 +1,4 @@
 (
     $wait(10000);
-    {
-      'statusCode':'passed'
-      ,'statusText':'Passed'
-    } ~> $writeFile('actionStatus_mockAction10s.json');
+    $setStatus('passed', 'Passed');
 )
