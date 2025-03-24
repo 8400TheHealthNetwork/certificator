@@ -149,7 +149,14 @@
       "id": "doExtractConditionRecordedDate",
       "description": "(Test 174) - Condition.recordedDate distribution",
       "mapping": "doExtractConditionRecordedDate"
+    },
+	{
+      "id": "doExtractPractitionerIdentifier",
+      "description": "(Test 58) - Practitioner.identifier distribution",
+      "mapping": "doExtractPractitionerIdentifier"
     }
+	
+	
 
   ],
   "kits": [
@@ -247,7 +254,7 @@
             },
             {
               "id": "encounter-dist",
-              "name": "Encounter elements distributions",
+              "name": "Encounter elements distribution",
               "children": [
                 {
                   "id": "test59",
@@ -284,6 +291,22 @@
                   "actions": [
                     "sample-wrapper",
                     "doExtractConditionRecordedDate"
+                  ]
+                }
+              ]
+            },
+			{
+              "id": "practitioner-dist",
+              "name": "Practitioner elements distribution",
+              "children": [
+                {
+                  "id": "test58",
+                  "name": "Practitioner identifier distribution",
+                  "description": "Practitioner identifier distribution",
+                  "details": "Check if the distribution of Practitioner.identifier system makes sense.",
+                  "actions": [
+                    "sample-wrapper",
+                    "doExtractPractitionerIdentifier"
                   ]
                 }
               ]

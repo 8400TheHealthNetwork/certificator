@@ -102,6 +102,13 @@
       "searchParam": "birthdate",
       "elementName": "birthDate"
     },
+	{
+      "resourceType": "Practitioner",
+      "amountToCollect": 1000,
+      "historicalDepthYears": 100,
+      "searchParam": "birthdate",
+      "elementName": "birthDate"
+    },
     {
       "resourceType": "Procedure",
       "amountToCollect": 1000,

@@ -546,7 +546,43 @@ export const reportRunSettings: Expression = jsonata(`
                 )^(>count)
       ]
     };
+ 
+
     
+  
+$practitionerIdentifierDistribution := $readIoFile('practitionerIdentifierDistribution.json');
+    $identifierChart := $exists($practitionerIdentifierDistribution) ? {
+      'id': 'practitioner-identifier-distribution',
+      'title': 'Practitioner.identifier distribution (Test 58)',
+      'type': 'table',
+      'columns': [
+        {
+          'property': 'system',
+          'label': 'System'
+        },
+        {
+          'property': 'count',
+          'label': 'Count'
+        }
+      ],
+      'data': [
+                (
+                  (
+                    $practitionerIdentifierDistribution
+                    .pathValue
+                    {
+                    system:$count($)
+                    }
+                    ~>$spread()
+                  )
+                  .{
+                    'system':$split($keys($),'_')[0]
+                   ,'count':$string(*)
+                  }
+                )^(>count)
+      ]
+    };
+      
   $encounterTypeDistribution := $readIoFile('encounterTypeDistribution.json');
     $chartEncounterTypeDistribution := $exists($encounterTypeDistribution) ? {
       'id': 'encounter-type-distribution',
