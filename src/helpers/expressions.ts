@@ -546,7 +546,88 @@ export const reportRunSettings: Expression = jsonata(`
                 )^(>count)
       ]
     };
+
+ 
+ $conditionCodeDistribution := $readIoFile('conditionCodeDistribution.json');
+    $conditionCodeChart := $exists($conditionCodeDistribution) ? {
+      'id': 'condition-code-distribution',
+      'title': 'Condition.code.coding.system distribution (Test 178)',
+      'type': 'table',
+      'columns': [
+        {
+          'property': 'system',
+          'label': 'System'
+        },
+        {
+          'property': 'code',
+          'label': 'Code'
+        },
+        {
+          'property': 'display',
+          'label': 'Display'
+        },
+        {
+          'property': 'count',
+          'label': 'Count'
+        }
+      ],
+      'data': [
+                (
+                  (
+                    $conditionCodeDistribution
+                    .pathValue.coding
+                    {
+                    system&'_'&code&'_'&display:$count($)
+                    }
+                    ~>$spread()
+                  )
+                  .{
+                    'system':$split($keys($),'_')[0]
+                    ,'code':$split($keys($),'_')[1]
+                    ,'display':$split($keys($),'_')[2]
+                    ,'count':$string(*)
+                  }
+                )^(>count)
+      ]
+    };
+ 
+ 
+
     
+  
+$practitionerIdentifierDistribution := $readIoFile('practitionerIdentifierDistribution.json');
+    $identifierChart := $exists($practitionerIdentifierDistribution) ? {
+      'id': 'practitioner-identifier-distribution',
+      'title': 'Practitioner.identifier distribution (Test 58)',
+      'type': 'table',
+      'columns': [
+        {
+          'property': 'system',
+          'label': 'System'
+        },
+        {
+          'property': 'count',
+          'label': 'Count'
+        }
+      ],
+      'data': [
+                (
+                  (
+                    $practitionerIdentifierDistribution
+                    .pathValue
+                    {
+                    system:$count($)
+                    }
+                    ~>$spread()
+                  )
+                  .{
+                    'system':$split($keys($),'_')[0]
+                   ,'count':$string(*)
+                  }
+                )^(>count)
+      ]
+    };
+      
   $encounterTypeDistribution := $readIoFile('encounterTypeDistribution.json');
     $chartEncounterTypeDistribution := $exists($encounterTypeDistribution) ? {
       'id': 'encounter-type-distribution',
@@ -597,9 +678,10 @@ export const reportRunSettings: Expression = jsonata(`
                 ,$runSummary
                 ,$genderChart
                 ,$identifierChart
-        ,$chartEncounterTypeDistribution
+				,$conditionCodeChart
+                ,$chartEncounterTypeDistribution
                 ,$birthdatesChart
-        ,$recordedDateChart
+                ,$recordedDateChart
                 ,$idValidityChart
                 ,$countResourcesTable
                 ]
