@@ -130,40 +130,36 @@
       "description": "(Test 59) - Encounter.class distribution",
       "mapping": "doExtractEncounterClass"
     },
-	{
+    {
       "id": "isSuccessfulSearchBundleType",
       "description": "(Test 109) - Validate search result is Bundle with type=searchset",
       "mapping": "isSuccessfulSearchBundleType"
     },
-	{
-	  "id": "isGetHttp200",
+    {
+      "id": "isGetHttp200",
       "description": "(Test 90) - Validate that the returned HTTP status is 200(OK)",
-      "mapping": "isGetHttp200"	
-	},
-	{
+      "mapping": "isGetHttp200"
+    },
+    {
       "id": "doExtractEncounterType",
       "description": "(Test 64) - Encounter.type distribution",
       "mapping": "doExtractEncounterType"
     },
-	{
+    {
       "id": "doExtractConditionRecordedDate",
       "description": "(Test 174) - Condition.recordedDate distribution",
       "mapping": "doExtractConditionRecordedDate"
     },
-	{
+    {
       "id": "doExtractPractitionerIdentifier",
       "description": "(Test 58) - Practitioner.identifier distribution",
       "mapping": "doExtractPractitionerIdentifier"
     },
-	{
+    {
       "id": "doExtractConditionCode",
       "description": "(Test 178) - Condition.code.coding.system distribution",
       "mapping": "doExtractConditionCode"
     }
-	
-	
-	
-
   ],
   "kits": [
     {
@@ -272,7 +268,7 @@
                     "doExtractEncounterClass"
                   ]
                 },
-				{
+                {
                   "id": "test64",
                   "name": "Encounter type distribution",
                   "description": "Encounter type distribution",
@@ -284,12 +280,11 @@
                 }
               ]
             },
-			{
+            {
               "id": "condition-dist",
               "name": "Condition elements distributions",
               "children": [
-                
-				{
+                {
                   "id": "test174",
                   "name": "Condition recorded date distribution",
                   "description": "Condition recorded date distribution",
@@ -299,7 +294,7 @@
                     "doExtractConditionRecordedDate"
                   ]
                 },
-				{
+                {
                   "id": "test178",
                   "name": "Condition code distribution",
                   "description": "Condition code distribution",
@@ -311,7 +306,7 @@
                 }
               ]
             },
-			{
+            {
               "id": "practitioner-dist",
               "name": "Practitioner elements distribution",
               "children": [
@@ -412,9 +407,9 @@
                   "description": "Test FHIR endpoint pages results with required links via forced paging done by asking for a single resource on each page of a search set.",
                   "details": "The result collection can be long, so servers may use paging. If they do, they SHALL use the method described below (adapted from RFC 5005 (Feed Paging and Archiving ) for breaking the collection into pages if appropriate.\n3.1.0.9 search \nhttps://www.hl7.org/fhir/r4/http.html#search\nPaged feed documents MUST have at least one of these link relations present\n3.  Paged Feeds\nhttps://datatracker.ietf.org/doc/html/rfc5005#section-3\n\n3.1.0.14 Paging \n,https://www.hl7.org/fhir/r4/http.html#paging",
                   "actions": [
-                    "doInfoBinsDistinct"
-                    ,"doCountResources"
-                    ,"isPagingSearch"
+                    "doInfoBinsDistinct",
+                    "doCountResources",
+                    "isPagingSearch"
                   ]
                 }
               ]
@@ -432,21 +427,21 @@
                     "sample-wrapper",
                     "doSuccessfulSearch",
                     "isSuccessfulSearchBundle"
-                             ]
+                  ]
                 },
-		{
+                {
                   "id": "test109",
                   "name": "Validate search interaction returns Bundle of type searchset",
                   "description": "The return content SHALL be a Bundle with type = searchset",
                   "details": "The return content SHALL be a Bundle with type = searchset",
                   "actions": [
-				       "sample-wrapper",
-				       "doSuccessfulSearch",
-					   "isSuccessfulSearchBundleType"
-                          ]
-                 }
+                    "sample-wrapper",
+                    "doSuccessfulSearch",
+                    "isSuccessfulSearchBundleType"
+                  ]
+                }
               ]
-            }  
+            }
           ]
         },
         {
@@ -503,27 +498,26 @@
                 },
                 {
                   "id": "test29",
-                  "name": "Cehck ID element exist",
+                  "name": "Check ID element exists",
                   "description": "Check the returned resource SHALL have an id element",
                   "details": "Check the returned resource SHALL have an id element",
                   "actions": [
                     "sample-wrapper",
                     "doSuccessfulReadResponse",
                     "isReadHasId"
-                       ]
+                  ]
                 },
-		{
+                {
                   "id": "test90",
                   "name": "HTTP status is 200",
                   "description": "Confirm that the returned HTTP status is 200(OK)",
                   "details": "Confirm that the returned HTTP status is 200(OK)",
                   "actions": [
-				    "sample-wrapper",
-                    "doSuccessfulReadResponse", 
+                    "sample-wrapper",
+                    "doSuccessfulReadResponse",
                     "isGetHttp200"
-                             ]
-                } 
-		
+                  ]
+                }
               ]
             }
           ]
