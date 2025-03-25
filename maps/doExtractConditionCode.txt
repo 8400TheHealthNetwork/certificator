@@ -1,13 +1,7 @@
 // doExtractConditionCode (Test 178) - extract Condition.code from sampled instances and write to flat file
 (
-  /*Write initial map status for UI to status file*/
-    {
-      'statusCode':'in-progress'
-      ,'statusText':'in-progress'
-    } ~> $writeFile('actionStatus_doExtractConditionCode.json')
-
   /*List all sampled resources file names*/
-    ;$sampledResourcesNames := $readDir()[$contains(/\[Condition\]_\[[A-Za-z0-9\-\.]{1,64}\]\.json/)]^($)
+    $sampledResourcesNames := $readDir()[$contains(/\[Condition\]_\[[A-Za-z0-9\-\.]{1,64}\]\.json/)]^($)
     // ;$count($sampledResourcesNames)
 
   /*Extract relevant elements from all sampled resources and flatten*/
@@ -20,10 +14,4 @@
 
   // /*Write flatten  results to folder*/
     ;$writeFile($code,'conditionCodeDistribution.json')
-
-  /*Write completed msg*/
-    ;{
-      'statusCode':'completed'
-      ,'statusText':'Completed'
-    } ~> $writeFile('actionStatus_doExtractConditionCode.json')
 )
