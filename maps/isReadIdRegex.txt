@@ -1,30 +1,13 @@
 // isReadIdRegex (Test 85) - On simple read (GET), check response resource id matches the datatype id regex
 (
-  /*Write initial map status for UI to status file*/
-    {
-      'statusCode':'in-progress'
-      ,'statusText':'in-progress'
-    } ~> $writeFile('actionStatus_isReadIdRegex.json')
-
   /*Perform test*/
-    ;$testResult :=
+    $testResult :=
     (
       $id := $readFile('successfulReadResponse.json').data.id
 
       ;$idRegexMatch($id) // check if id matches HL7 id data type defined rexeg
     )
 
-  /*Prep pass & fail msg*/
-    ;$msgPassed :={
-      'statusCode':'passed'
-      ,'statusText':'Passed'
-    }
-  
-    ;$msgFailed := {
-      'statusCode':'failed'
-      ,'statusText':'Failed'
-    }
-
   /*Write pass/fail msg based on test results*/
-    ;$writeFile(($testResult ? $msgPassed : $msgFailed),'actionStatus_isReadIdRegex.json')
+    ;$testResult ? $setStatus('passed', 'Passed') : $setStatus('failed', 'Failed')
 )

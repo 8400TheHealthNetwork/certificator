@@ -1,13 +1,7 @@
 // doExtractIds (Test31) - Check if all sampled instances resource.id comply with FHIR id datatype requirements
 (
-  /*Write initial map status for UI to status file*/
-    {
-      'statusCode':'in-progress'
-      ,'statusText':'in-progress'
-    } ~> $writeFile('actionStatus_doExtractIds.json')
-
   // List all sampled resources (only, exclude other files found in IO folder) file names
-    ;$sampledResources := $readDir()[$contains(/\[[A-Za-z]+\]_\[[A-Za-z0-9\-\.]{1,64}\]\.json/)]
+    $sampledResources := $readDir()[$contains(/\[[A-Za-z]+\]_\[[A-Za-z0-9\-\.]{1,64}\]\.json/)]
 
   // For each sampled resource create an object with relevant data (file name, resource id etc) including if the id is or is not valid
     ;$sampledResourcesIds := $sampledResources@$fn.$readFile($fn).{

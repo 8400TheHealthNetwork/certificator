@@ -1,11 +1,4 @@
 (
-    {
-      'statusCode':'in-progress'
-      ,'statusText':'in-progress'
-    } ~> $writeFile('actionStatus_mockAction1f.json');
     $wait(1000);
-    {
-      'statusCode':'failed'
-      ,'statusText':'Failed'
-    } ~> $writeFile('actionStatus_mockAction1f.json');
+    $setStatus('failed', 'Failed');
 )

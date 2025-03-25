@@ -1,11 +1,5 @@
 // doExtractConditionRecordedDate (Test 174) - extract Condition.recordedDate from sampled instances and write to a flat file
 (
-  /*Write initial map status for UI to status file*/
-    {
-      'statusCode':'in-progress'
-      ,'statusText':'in-progress'
-    } ~> $writeFile('actionStatus_doExtractConditionRecordedDate.json');
-
    // Given a recordedDate parameter, this function returns its day of the week number, 
    // where Sunday is 1, Monday is 2, and so on
    $getDayOfWeekSundayStart := function($recordedDate)
@@ -58,9 +52,4 @@
   // /*Write flatten results to folder*/
     $writeFile($arrayCntStartOfTheWeek,'conditionRecordedDateDistribution.json')
 
-  /*Write completed msg*/
-    {
-      'statusCode':'completed'
-      ,'statusText':'Completed'
-    } ~> $writeFile('actionStatus_doExtractConditionRecordedDate.json')
 )

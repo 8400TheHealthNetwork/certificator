@@ -1,12 +1,6 @@
 (
   // doSampleWrapper - execute building an input file & sampling
 
-  /*Write initial map status for UI to status file*/
-  {
-    'statusCode':'in-progress'
-    ,'statusText':'in-progress'
-  } ~> $writeFile('actionStatus_doSampleWrapper.json');
-
   // Create a flattened sampeling input file
   $doSamplingInput();
 

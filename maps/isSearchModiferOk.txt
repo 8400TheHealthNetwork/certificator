@@ -1,13 +1,8 @@
 /*isSearchModiferOk - Test28 - Server SHALL reject any search request that contains a modifier that the server does not support for that parameter*/
 (
-  /*Write initial map status for UI to status file*/
-    {
-      'statusCode':'in-progress'
-      ,'statusText':'in-progress'
-    } ~> $writeFile('actionStatus_isSearchModiferOk.json')
 
   /*Fetch base url*/
-    ;$baseUrl := $search('Patient').link[relation='self'].url~>$substringBefore('Patient?')
+    $baseUrl := $search('Patient').link[relation='self'].url~>$substringBefore('Patient?')
   
   /*Search with an unsupported modifer*/
     ;$testResult := $http({
@@ -17,17 +12,6 @@
         'url': 'Patient?birthdate:xyz=eq3000-01-01' /*:xyz is a made up modifier name and hence no server will support it for any SPs*/
         }).status = 400
 
-  /*Prep pass & fail msg*/
-    ;$msgPassed :={
-      'statusCode':'passed'
-      ,'statusText':'Passed'
-    }
-  
-    ;$msgFailed := {
-      'statusCode':'failed'
-      ,'statusText':'Failed'
-    }
-
   /*Write pass/fail msg based on test results*/
-    ;$writeFile(($testResult ? $msgPassed : $msgFailed),'actionStatus_isSearchModiferOk.json')
+    ;$testResult ? $setStatus('passed', 'Passed') : $setStatus('failed', 'Failed')
 )

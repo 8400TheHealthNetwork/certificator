@@ -8,17 +8,6 @@
       ('OperationOutcome' in $readFile('failedSearchResponse.json').data.resourceType) // Assert response includes OperationOutcome as required
       )
 
-  /*Prep pass & fail msg*/
-    ;$msgPassed :={
-      'statusCode':'passed'
-      ,'statusText':'Passed'
-    }
-
-  ;$msgFailed := {
-      'statusCode':'failed'
-      ,'statusText':'Failed'
-    }
-
-  /*Write pass/fail msg based on test results*/
-    ;$writeFile(($testResult ? $msgPassed : $msgFailed),'actionStatus_isFailedSearchOK.json')
+    /*Write pass/fail msg based on test results*/
+    ;$testResult ? $setStatus('passed', 'Passed') : $setStatus('failed', 'Failed')
 )
