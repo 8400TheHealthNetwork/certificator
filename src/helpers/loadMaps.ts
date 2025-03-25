@@ -8,8 +8,8 @@ import chalk from 'chalk';
 const folderPath: string = path.join(path.resolve('.'), 'maps');
 
 const toFunction = (mapping: string) => {
-  return async (input: any | any[]) => {
-    const res: any | any[] = await getFumeServer().transform(input, mapping);
+  return async (input: any | any[], bindings: Record<string, any | any[]> = {}) => {
+    const res = await getFumeServer().transform(input, mapping, bindings);
     return res;
   };
 };
