@@ -1,6 +1,6 @@
 {
   "name": "il-fhir-certificator",
-  "version": "1.18.0",
+  "version": "1.19.0",
   "description": "FHIR Certificator for Israeli MoH",
   "scripts": {
     "clean": "rimraf dist && rimraf ui\\dist && rimraf report\\dist",
