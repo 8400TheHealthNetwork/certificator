@@ -154,7 +154,13 @@
       "id": "doExtractPractitionerIdentifier",
       "description": "(Test 58) - Practitioner.identifier distribution",
       "mapping": "doExtractPractitionerIdentifier"
+    },
+	{
+      "id": "doExtractConditionCode",
+      "description": "(Test 178) - Condition.code.coding.system distribution",
+      "mapping": "doExtractConditionCode"
     }
+	
 	
 	
 
@@ -291,6 +297,16 @@
                   "actions": [
                     "sample-wrapper",
                     "doExtractConditionRecordedDate"
+                  ]
+                },
+				{
+                  "id": "test178",
+                  "name": "Condition code distribution",
+                  "description": "Condition code distribution",
+                  "details": "Check if the distribution of Condition.code.coding.system makes sense.",
+                  "actions": [
+                    "sample-wrapper",
+                    "doExtractConditionCode"
                   ]
                 }
               ]
