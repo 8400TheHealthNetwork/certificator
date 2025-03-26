@@ -32,6 +32,7 @@ import * as dotenv from 'dotenv';
 import { version as CERTIFICATOR_VERSION } from '../package.json';
 import type { Express, Request, Response } from 'express';
 
+// Load .env file contents into process.env
 dotenv.config();
 
 export let kits = kitsFile;

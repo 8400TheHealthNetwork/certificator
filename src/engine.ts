@@ -10,6 +10,7 @@ import type { Request, Response, NextFunction } from 'express';
 import chalk from 'chalk';
 import * as dotenv from 'dotenv';
 
+// Load .env file contents into process.env
 dotenv.config();
 let configObject: IConfig;
 const port: number = 8401;
