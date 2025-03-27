@@ -433,7 +433,7 @@ export const reportRunSettings: Expression = jsonata(`
     $birthdatesChart := $exists($birthDatesTimeLineAgg) ?
     {
       'id': 'birthdates-chart',
-      'title': 'Patient birthdates distribution',
+	  'title': 'Patient.birthDate distribution (Test 68)',
       "type": "line",
       "data": [$birthDatesTimeLineAgg.{'label':date ,'value':count}]
     };
