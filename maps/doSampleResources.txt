@@ -212,18 +212,43 @@
     /* iteration function that adds resources recursively, as long as: */
     /* 1. the previous step succeeded in finding a new resource */
     /* 2. the requested amount hasn't been collected yet */
-    $iterator := function($currentList, $previousList){(
+    $iterator := function($currentList, $previousList, $emptyListCounter)
+	{(
       $warning('$iterator called with following params');
       $warning({'$currentList count = ' : $count($currentList), '$previousList count = ': $count($previousList)});
-      $count($currentList)>0 and ($count($currentList) = $count($previousList) or $count($currentList) >= $amountToCollect) ? (
+      
+	  $count($currentList) > 0 and 
+	  ($count($currentList) = $count($previousList) or $count($currentList) >= $amountToCollect) ? 
+	  (
         /* the stop condition is met - return list and stop iterating */
         $currentList
-      ) : (
+      ) : 
+	  (
         /* try to add one resource and continue */
         $updatedList := $addResource($resourceType, $searchParam, $elementName, $minDate, $maxDate, $currentList);
         $warning({'$updatedList count': $count($updatedList)});
-        /* tail call */
-        $iterator($updatedList, $currentList)
+        
+		$updatedEmptyListCounter := $count($updatedList) = 0 and $count($currentList) = 0 ? 
+		  (
+		    $exists($emptyListCounter) ? 
+		      $emptyListCounter + 1 
+		      : 
+		      1
+		  ) 
+		  : 
+		  0;
+        $warning({'$updatedEmptyListCounter': $updatedEmptyListCounter});
+
+        $updatedEmptyListCounter > 2 ? 
+	      ( // Adjust the threshold as needed
+            $warning('Iterator stopping because the list has remained empty for too many consecutive iterations.');
+            $currentList
+          ) 
+		  : 
+		  (
+		  /* tail call */
+          $iterator($updatedList, $currentList, $updatedEmptyListCounter)
+		  )
       )
     )};
     /* call the iterator with empty initial lists */
