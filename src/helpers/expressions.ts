@@ -442,7 +442,7 @@ export const reportRunSettings: Expression = jsonata(`
     $recordedDateChart := $exists($conditionRecordedDateDistribution) ?
     {
       'id': 'recorded-date-chart',
-      'title': 'Recorded date distribution',
+      'title': 'Condition.recordedDate distribution (Test 174)',
       "type": "line",
       "data": [$conditionRecordedDateDistribution.{'label':date ,'value':count}]
     };
