@@ -1,4 +1,4 @@
-# Certificator
+# IL Certificator
 FHIR® Certificator for Ministry of Health, Israel
 
 ## Install & Run
@@ -26,6 +26,9 @@ When you are ready to contribute your work back to the upstream repository, foll
 3. Open a pull request.
 
 Only pull requests from forks will be reviewed and possibly merged by the moderators.
+
+## Implementing Tests
+See [Authoring Actions](AuthoringMaps.md) and [Managing Test Kits](ManageKits.md) for more details.
 
 ## Orchestrator
 Running the Certificator app will start an orchestration process that spawns between 2 and 3 HTTP servers, each on a separate thread:
