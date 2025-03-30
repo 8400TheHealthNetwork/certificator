@@ -1,6 +1,6 @@
 {
   "name": "il-fhir-certificator",
-  "version": "1.19.0",
+  "version": "2.0.0",
   "description": "FHIR Certificator for Israeli MoH",
   "scripts": {
     "clean": "npm run clean:ts && rimraf ui\\dist && rimraf report\\dist && rimraf build",
