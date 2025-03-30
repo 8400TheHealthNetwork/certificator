@@ -10,7 +10,7 @@ export interface HttpOptions {
   timeout: number
 };
 
-export const server: AxiosInstance = axios.create();
+export const server: AxiosInstance = axios.create({ baseURL: process.env.FHIR_SERVER_BASE });
 
 export const http = async (options: HttpOptions) => {
   try {

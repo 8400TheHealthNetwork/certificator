@@ -3,14 +3,10 @@
  (
   // Extract a known to be active FHIR endpiont
     $randomSampleResourceType := $readDir()[$contains($,/\[.*\]_\[.*\].json/i)][0].$readFile($).resourceType;
-  
-  /*Fetch base url*/
-    $baseUrl := $fhirServer;
 
   // Perform search on the known to be active endpoint and save results for further use
     $http({
           'method':'get',
-          'baseUrl': $baseUrl,
           'headers' : {'accept': 'application/fhir+json'},
           'url': $randomSampleResourceType
           })

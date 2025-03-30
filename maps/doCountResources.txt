@@ -4,10 +4,8 @@
 (
   
   /*Extract data*/
-      $baseUrl := $search('Patient').entry[0].fullUrl.$substringBefore($,'Patient')
 
-      ;$resourceCount := $readFile('infoBinsDistinct.json').resourceType@$rt.$http({
-        'baseUrl': $baseUrl,
+      $resourceCount := $readFile('infoBinsDistinct.json').resourceType@$rt.$http({
         'url': resourceType
       }).{
         'resourceType' : $rt

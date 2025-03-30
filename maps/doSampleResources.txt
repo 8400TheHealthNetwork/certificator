@@ -3,8 +3,6 @@
 (
   $warning({'=========> Map start <=========' : $now()});
   
-  /* get the base url of the fhir server by making a dummy search */
-  $baseUrl := $fhirServer;
   /* set the maximum number of failed search attempts */
   $maxFailedAttempts := 5;
   /* set a base interval (in milliseconds) for the delay - this will be doubled in each retry */
@@ -35,7 +33,6 @@
         }
       ) : (
         $httpResponse := $http({
-          'baseUrl': $baseUrl,
           'url': $literal,
 		      'timeout' : 50000
         });
@@ -74,7 +71,6 @@
         }
       ) : (
         $httpResponse := $http({
-          'baseUrl': $baseUrl,
           'url': $resourceType,
           'params': $params,
 		      'timeout' : 50000
