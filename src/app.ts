@@ -1,3 +1,10 @@
+/**
+ * This is the main entry point for the Certificator app.
+ * It sets up the Express server, loads the kits.json file, and starts the engine as a forked process.
+ * Inside the Node SEA exe, this will be the default script
+ *   e.g. - the one that starts up if no arguments were passed to the exe.
+ */
+
 import config from './serverConfig';
 import fs from 'fs-extra';
 import {
@@ -6,7 +13,9 @@ import {
   checkValidator,
   checkMaps,
   ensureRunsDir,
-  printReadyBox
+  printReadyBox,
+  checkWebFolder,
+  checkJdkFolder
 } from './setup';
 import {
   getKitTransformer,
@@ -20,56 +29,49 @@ import {
   validateTree,
   addMockKit
 } from './helpers/expressions';
-import { fork } from 'node:child_process';
+import { ChildProcess, fork } from 'node:child_process';
 import path from 'path';
 import cors from 'cors';
 import express from 'express';
-import axios, { AxiosResponse } from 'axios';
+import { AxiosResponse } from 'axios';
 import kitsFile from '../kits.json';
 import { serveUiRoute } from './helpers/serveUiFiles';
 import chalk from 'chalk';
 import * as dotenv from 'dotenv';
 import { version as CERTIFICATOR_VERSION } from '../package.json';
 import type { Express, Request, Response } from 'express';
+import { createEngineClient, readJsonFile, writeJsonFile } from './helpers';
+import {
+  workingDir,
+  currentRunDir,
+  ioDir,
+  kitStatusFilePath,
+  workflowFilePath,
+  getActionStatusFilePath,
+  getTestStatusFilePath,
+  engineScriptPath
+} from './helpers/paths';
 
+// Load .env file contents into process.env
 dotenv.config();
 
 export let kits = kitsFile;
 export const certificatorVersion = CERTIFICATOR_VERSION;
+
+// set the main application port (web app) and the engine port (backend)
 const port: number = 8400;
 const enginePort: number = 8401;
 
 const app: Express = express();
-const workingDir: string = path.resolve('.');
-const currentRunDir: string = path.join(workingDir, 'runs', 'current');
-const ioDir: string = path.join(workingDir, 'io');
 
-const engineApi = axios.create({
-  baseURL: `http://localhost:${enginePort.toString()}`,
-  validateStatus: function (status) {
-    return true;
-  }
-});
+// create an axios client for engine communication over http
+const engineApi = createEngineClient(enginePort);
 
-// TODO: This will not work in SEA mode
-// will need to have engine.js as asset and export to file.
-// + possibly another node.exe will be needed
-const newEngine = () => fork(path.join(__dirname, 'engine.js'));
-let engine = newEngine();
-
-const kitStatusFilePath = path.join(currentRunDir, 'kitStatus.json');
-const workflowFilePath = path.join(currentRunDir, 'workflow.json');
-export const testStatusFilePath: Function = (testId: string) => path.join(currentRunDir, `testStatus_${testId}.json`);
-const actionStatusFilePath: Function = (mappingId: string): string => path.join(ioDir, `actionStatus_${mappingId}.json`);
-
-export const readJsonFile = async (filePath: string) => {
-  if (await fs.exists(filePath)) {
-    const content: string = (await fs.readFile(filePath)).toString();
-    return content === '' ? {} : JSON.parse(content);
-  } else return undefined;
-};
-
-const writeJsonFile = async (filePath: string, content: any) => await fs.writeFile(filePath, JSON.stringify(content, null, 2));
+// create a function that spawns the engine as a forked process
+// In dev mode this is a regular fork - the regular node EXE is called with the script as argument
+// In the SEA EXE this will call the SEA binary with the script as argument, and this will trigger the embedded engine script
+const newEngine = () => fork(engineScriptPath);
+let engine: ChildProcess;
 
 export const getKitStatus = async (kitId: string) => {
   // if there's a kit status file then read it and see if it's referring to the requested kit id
@@ -89,16 +91,23 @@ const setKitStatus = async (kitId: string, status: string, details?: string) => 
 };
 
 export const getTestStatus = async (testId: string) => {
-  if (await fs.exists(testStatusFilePath(testId))) {
-    const testStatusFileContent = await readJsonFile(testStatusFilePath(testId));
+  if (await fs.exists(getTestStatusFilePath(testId))) {
+    const testStatusFileContent = await readJsonFile(getTestStatusFilePath(testId));
     return testStatusFileContent?.status;
   };
   return 'ready';
 };
 
+/**
+ * Get the current status of an action
+ * If the action status file exists, read it and return the content
+ * If the file does not exist, return a default status object (ready)
+ * @param mappingId The mapping (action) id
+ * @returns A status object
+ */
 export const getActionStatus = async (mappingId: string) => {
-  if (await fs.exists(actionStatusFilePath(mappingId))) {
-    const actionStatusFileContent = await readJsonFile(actionStatusFilePath(mappingId));
+  if (await fs.exists(getActionStatusFilePath(mappingId))) {
+    const actionStatusFileContent = await readJsonFile(getActionStatusFilePath(mappingId));
     return actionStatusFileContent;
   };
   return {
@@ -119,11 +128,11 @@ const getKit = async (req: Request, res: Response) => {
 };
 
 const setActionStatus = async (mappingId: string, statusCode: string, statusText: string, details?: string) => {
-  await writeJsonFile(actionStatusFilePath(mappingId), { statusCode, statusText, details });
+  await writeJsonFile(getActionStatusFilePath(mappingId), { statusCode, statusText, details });
 };
 
 const setTestStatus = async (testId: string, status: string, statusText: string, details?: string) => {
-  await writeJsonFile(testStatusFilePath(testId), { status, statusText, details });
+  await writeJsonFile(getTestStatusFilePath(testId), { status, statusText, details });
 };
 
 const setSkippedTests = async (skippedTests: string[]) => {
@@ -137,7 +146,7 @@ const runAction = async (mappingId: string) => {
   if (initialStatusJson.statusCode === 'ready') {
     await setActionStatus(mappingId, 'init', 'Initialized');
     try {
-      console.log(`Executing mapping ${mappingId}`);
+      console.log(`Executing action: ${mappingId}`);
       engineResponse = await engineApi.post('/', {
         input: {},
         contentType: 'application/json',
@@ -353,6 +362,8 @@ const ensureCleanStart = async () => {
   checkValidator();
   checkMaps();
   ensureRunsDir();
+  checkWebFolder();
+  checkJdkFolder();
   await abortRun();
   console.log(chalk.grey('Ensuring referential integrity in kits.json...'));
   await validateTree.evaluate(kits);
@@ -367,6 +378,8 @@ const init = async () => {
     };
 
     await ensureCleanStart();
+    // start the engine
+    engine = newEngine();
 
     // register callback function for close event
     engine.on('close', (code) => {

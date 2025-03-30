@@ -3,9 +3,6 @@ import createValidatorInstance from 'fhir-validator-js';
 import os from 'os';
 import fs from 'fs-extra';
 import path from 'path';
-import * as dotenv from 'dotenv';
-
-dotenv.config();
 
 const cpuCount = os.cpus().length;
 const numValidators = cpuCount >= 4 ? 4 : cpuCount; // Max 4 validators, min 1 validator

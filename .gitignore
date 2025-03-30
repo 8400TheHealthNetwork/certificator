@@ -1,5 +1,4 @@
 io
-assets
 sea-config.json
 *.jar
 mapFileList.json
@@ -312,3 +311,4 @@ fhirPackageIndex.json
 certificator.exe
 .validatorSession-*
 maps/doPractitionerQualificationDist.txt
+build
