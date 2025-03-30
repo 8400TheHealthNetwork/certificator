@@ -37,7 +37,7 @@ const getAssets = () => {
   assetsObj['main.js'] = mainScriptAssetPath;
   assetsObj['engine.js'] = engineScriptAssetPath;
   assetsObj['web.zip'] = webAssetZipPath;
-  assetsObj['zdk.zip'] = jdkAssetZipPath;
+  assetsObj['jdk.zip'] = jdkAssetZipPath;
   return assetsObj;
 };
 
