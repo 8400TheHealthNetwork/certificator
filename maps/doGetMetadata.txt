@@ -1,12 +1,8 @@
 /*doGetMetadata - This map trys to fetch the provided server CapabilityStatement and saves it to file for later steps*/
 (
-  /*Fetch base url*/
-    $baseUrl := $fhirServer
-
   /*Get metadata and write it to file*/
-    ;$readResponse := $http({
+    $readResponse := $http({
           'method':'get',
-          'baseUrl': $baseUrl,
           'headers' : {'accept': 'application/fhir+json'},
           'url': 'metadata'
           })

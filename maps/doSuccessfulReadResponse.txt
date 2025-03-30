@@ -22,7 +22,6 @@
   // Capture the HTTP search response for a search based on the sampled resourceType and write it to file
     ;$successfulReadResponse := $http({
           'method':'get'
-          ,'baseUrl': $capabilities().implementation.url
           ,'headers' : {'content-type': 'application/fhir+json'}
           ,'url': $resourceType & '/' & $instanceId
     })
