@@ -1,11 +1,12 @@
 
 import fs from 'fs-extra';
 import path from 'path';
-import { getFumeServer } from '../config';
+import { getFumeServer } from './configFumeServer';
 import kits from '../../kits.json';
 import chalk from 'chalk';
+import { mapDirPath } from './paths';
 
-const folderPath: string = path.join(path.resolve('.'), 'maps');
+const folderPath: string = mapDirPath;
 
 const toFunction = (mapping: string) => {
   return async (input: any | any[], bindings: Record<string, any | any[]> = {}) => {

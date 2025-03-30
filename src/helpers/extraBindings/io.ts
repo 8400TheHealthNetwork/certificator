@@ -1,8 +1,6 @@
 import fs from 'fs-extra';
-import os from 'os';
 import path from 'path';
-
-const ioFolderPath = './io';
+import { packageCachePath, ioDir as ioFolderPath } from '../paths';
 
 if (!fs.existsSync(ioFolderPath)) {
   fs.mkdirSync(ioFolderPath);
@@ -44,22 +42,18 @@ export const makeDir = (relativePath: string) => {
   const absPath: string = path.join(ioFolderPath, relativePath);
   if (!fs.existsSync(absPath)) {
     fs.mkdirSync(absPath, { recursive: true });
-    // console.log(`Directory '${absPath}' created successfully.`);
   }
-  // else {
-  //   console.log(`Directory '${absPath}' already exists.`);
-  // }
 };
 
 export const readPackageIndex = (packageId: string, version: string) => {
-  const filePath: string = path.join(os.homedir(), '.fhir', 'packages', `${packageId}#${version}`, 'package', '.index.json');
+  const filePath: string = path.join(packageCachePath, `${packageId}#${version}`, 'package', '.index.json');
   return JSON.parse(fs.readFileSync(filePath).toString());
 };
 
 export const resolveCanonical = (packageId: string, version: string, url: string) => {
   const index = readPackageIndex(packageId, version);
   const fileRecord = index.files.filter((file: Record<string, string>) => file.url === url)[0];
-  const filePath: string = path.join(os.homedir(), '.fhir', 'packages', `${packageId}#${version}`, 'package', fileRecord.filename);
+  const filePath: string = path.join(packageCachePath, `${packageId}#${version}`, 'package', fileRecord.filename);
   const resource = JSON.parse(fs.readFileSync(filePath).toString());
   return resource;
 };

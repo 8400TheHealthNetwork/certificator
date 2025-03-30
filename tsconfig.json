@@ -29,7 +29,7 @@
   ],
   "exclude": [
     "dist/**/*",
-    "assets/**/*",
+    "build/**/*",
     "**/*.mjs"
   ]
 }

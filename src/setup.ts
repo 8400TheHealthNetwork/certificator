@@ -1,15 +1,16 @@
 import fs from 'fs-extra';
-import os from 'os';
 import path from 'path';
 import sea from 'node:sea';
 import tar from 'tar';
 import temp from 'temp';
-import { IConfig } from 'fume-fhir-converter';
+// import { IConfig } from 'fume-fhir-converter';
 import { input, password, select } from '@inquirer/prompts';
 import { getList } from './getPackageList';
 import chalk from 'chalk';
+import { packageCachePath, uiDistPath, validatorJarAssetPath, workingDir } from './helpers/paths';
+import { extractZipFromSEA } from './helpers/extractZipAsset';
 
-export const ensureEnv = async (config: IConfig): Promise<IConfig> => {
+export const ensureEnv = async (config) => {
   const FHIR_PACKAGES = 'il.core.fhir.r4#0.17.0';
   if (!fs.existsSync('.env')) {
     console.log('.env file is missing, let\'s create one');
@@ -48,7 +49,7 @@ SESSION_CACHE_IMPLEMENTATION=PassiveExpiringSessionCache
 SESSION_CACHE_DURATION=-1
     `;
     fs.writeFileSync('.env', dotEnvFile);
-    const newConfig: IConfig = {
+    const newConfig = {
       FHIR_SERVER_BASE,
       FHIR_SERVER_AUTH_TYPE,
       FHIR_SERVER_UN,
@@ -70,25 +71,29 @@ export const checkPackages = () => {
   if (sea.isSea()) {
     const list: string[] = getList();
     list.forEach(p => {
-      const packagePath: string = path.join(os.homedir(), '.fhir', 'packages', p);
+      const packagePath: string = path.join(packageCachePath, p);
       if (!fs.existsSync(packagePath)) {
         console.log(`Package ${p} is missing, extracting it...`);
-        const tarFile = sea.getAsset(`${p}.tgz`);
-        // console.log(`Creating folder: ${packagePath}`);
-        // fs.mkdirSync(packagePath);
-        // Create a temporary file and write the package to there
-        temp.track();
-        const tempFile = temp.openSync();
-        fs.writeFileSync(tempFile.path, Buffer.from(tarFile));
-        // Extract the package to a temporary directory
-        const tempDirectory = temp.mkdirSync();
-        tar.x({
-          cwd: tempDirectory,
-          file: tempFile.path,
-          sync: true,
-          strict: true
-        });
-        fs.moveSync(tempDirectory, packagePath);
+        try {
+          const tarFile = sea.getAsset(`${p}.tgz`);
+          // console.log(`Creating folder: ${packagePath}`);
+          // fs.mkdirSync(packagePath);
+          // Create a temporary file and write the package to there
+          temp.track();
+          const tempFile = temp.openSync();
+          fs.writeFileSync(tempFile.path, Buffer.from(tarFile));
+          // Extract the package to a temporary directory
+          const tempDirectory = temp.mkdirSync();
+          tar.x({
+            cwd: tempDirectory,
+            file: tempFile.path,
+            sync: true,
+            strict: true
+          });
+          fs.moveSync(tempDirectory, packagePath);
+        } catch (error) {
+          console.error(`Error extracting package ${p}:`, error);
+        }
       }
     });
   }
@@ -96,11 +101,11 @@ export const checkPackages = () => {
 
 export const checkValidator = () => {
   if (sea.isSea()) {
-    if (!fs.existsSync(path.join('.', 'bin', 'validator.jar'))) {
+    const jarPath: string = validatorJarAssetPath;
+    if (!fs.existsSync(jarPath)) {
       console.log('Extracting HL7 Validator...');
       const jarFile = sea.getAsset('validator.jar');
-      fs.ensureDirSync('bin');
-      fs.writeFileSync(path.join('.', 'bin', 'validator.jar'), Buffer.from(jarFile));
+      fs.writeFileSync(jarPath, Buffer.from(jarFile));
     }
   }
 };
@@ -116,6 +121,25 @@ export const checkMaps = () => {
           fs.writeFileSync(filePath, Buffer.from(sea.getAsset(filename)));
         });
       }
+    }
+  }
+};
+
+export const checkWebFolder = () => {
+  if (sea.isSea()) {
+    if (!fs.existsSync(uiDistPath)) {
+      extractZipFromSEA('web.zip', uiDistPath);
+      console.log(`Extracted web assets to ${uiDistPath}`);
+    }
+  }
+};
+
+export const checkJdkFolder = () => {
+  if (sea.isSea()) {
+    const jdkPath = path.join(workingDir, 'jdk');
+    if (!fs.existsSync(jdkPath)) {
+      extractZipFromSEA('jdk.zip', jdkPath);
+      console.log(`Extracted JDK assets to ${uiDistPath}`);
     }
   }
 };

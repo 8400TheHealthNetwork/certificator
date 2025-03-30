@@ -1,10 +1,9 @@
 import fs from 'fs-extra';
-import path from 'path';
 import axios, { AxiosInstance } from 'axios';
 import { getList } from './getPackageList';
+import { assetsFolderPath, fhirPackagesAssetsPath, getTarAssetsFilePath } from './helpers/paths';
 
 const registryUrl: string = 'https://packages.fhir.org';
-const assetsFolderPath: string = './assets';
 const server: AxiosInstance = axios.create();
 
 if (!fs.existsSync(assetsFolderPath)) {
@@ -14,18 +13,22 @@ if (!fs.existsSync(assetsFolderPath)) {
 
 const downloadPackageTar = async (packageName: string, version: string) => {
   if (packageName && version) {
-    const packFolder: string = path.join(assetsFolderPath, 'fhirPackages');
+    const packFolder: string = fhirPackagesAssetsPath;
     if (!fs.existsSync(packFolder)) {
       fs.mkdirSync(packFolder);
       console.log(`Directory '${packFolder}' created successfully.`);
     };
     const packageUrl: string = `${registryUrl}/${packageName}/${version}`;
-    const res = await server.get(packageUrl, { responseType: 'arraybuffer' });
-    if (res?.data) {
-      console.log(`Downloaded package ${packageName}@${version}`);
-      const tarPath = path.join(packFolder, `${packageName}#${version}.tgz`);
-      fs.writeFileSync(tarPath, res.data);
-      console.log(`Saved package in: ${tarPath}`);
+    try {
+      const res = await server.get(packageUrl, { responseType: 'arraybuffer' });
+      if (res?.data) {
+        console.log(`Downloaded package ${packageName}@${version}`);
+        const tarPath = getTarAssetsFilePath(packageName, version);
+        fs.writeFileSync(tarPath, res.data);
+        console.log(`Saved package in: ${tarPath}`);
+      }
+    } catch (error) {
+      console.error(`Error downloading package ${packageName}@${version}:`, error);
     }
   }
 };

@@ -678,7 +678,7 @@ $practitionerIdentifierDistribution := $readIoFile('practitionerIdentifierDistri
                 ,$runSummary
                 ,$genderChart
                 ,$identifierChart
-				,$conditionCodeChart
+                ,$conditionCodeChart
                 ,$chartEncounterTypeDistribution
                 ,$birthdatesChart
                 ,$recordedDateChart

@@ -5,14 +5,17 @@ import { isFiletypeChunked } from './chunkedFileTypes';
 import contentTypeMap from './contentTypeMap.json';
 import { getKitTransformer, reportRunSettings } from './expressions';
 import { sampleSize } from './getSampleSize';
-import { kits, getKitStatus, getActionStatus, getTestStatus, readJsonFile, testStatusFilePath, certificatorVersion } from '../app';
+import {
+  kits,
+  getKitStatus,
+  getActionStatus,
+  getTestStatus,
+  certificatorVersion
+} from '../app';
+import { readJsonFile } from './jsonFileIo';
 import { readFile as readIoFile } from './extraBindings/io';
 import type { Response } from 'express';
-
-const workingDir = path.resolve('.');
-const uiDistPath = path.join(workingDir, 'ui', 'dist');
-const currentRunDir: string = path.join(workingDir, 'runs', 'current');
-const workflowFilePath = path.join(currentRunDir, 'workflow.json');
+import { getTestStatusFilePath, uiDistPath, workflowFilePath } from './paths';
 
 // cache for ui files
 const cachedFiles = {};
@@ -71,12 +74,12 @@ const getKitJson = async (kitId: string) => {
 };
 
 const getTestErrorDetails = async (testId: string) => {
-  const testStatusFileContent = await readJsonFile(testStatusFilePath(testId));
+  const testStatusFileContent = await readJsonFile(getTestStatusFilePath(testId));
   return testStatusFileContent?.details;
 };
 
 const getTestStatusText = async (testId: string) => {
-  const testStatusFileContent = await readJsonFile(testStatusFilePath(testId));
+  const testStatusFileContent = await readJsonFile(getTestStatusFilePath(testId));
   return testStatusFileContent?.statusText;
 };
 

@@ -1,8 +1,15 @@
+/**
+ * This is the main entry point for the Certificator backend engine.
+ * This is meant to run as a forked process, separate from the main app.
+ * It sets up the FUME server, loads the maps, and manages the validator process.
+ * Inside the Node SEA exe, this is the script that will run if the first argument ends with 'engine.js'
+ */
+
 import config from './serverConfig';
 import { ensureEnv } from './setup';
 import { IConfig, FumeServer } from 'fume-fhir-converter';
 import { extraBindings } from './helpers';
-import { setFumeServer } from './config';
+import { setFumeServer } from './helpers/configFumeServer';
 import { loadMapFiles } from './helpers/loadMaps';
 import { version as CERTIFICATOR_VERSION } from '../package.json';
 import { sampleSize } from './helpers/getSampleSize';
