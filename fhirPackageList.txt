@@ -3,7 +3,6 @@ hl7.fhir.r4.core#4.0.1
 hl7.fhir.r4.examples#4.0.1
 hl7.fhir.us.core#3.1.1
 hl7.fhir.us.core#6.1.0
-hl7.fhir.us.core#7.0.0
 hl7.fhir.us.core#8.0.0-ballot
 hl7.fhir.us.core.v311#3.1.1
 hl7.fhir.us.core.v610#6.1.0
@@ -33,6 +32,4 @@ il.core.fhir.r4#0.16.2
 il.core.fhir.r4#0.17.0
 us.cdc.phinvads#0.12.0
 us.nlm.vsac#0.11.0
-us.nlm.vsac#0.18.0
-us.nlm.vsac#0.19.0
 us.nlm.vsac#0.21.0
