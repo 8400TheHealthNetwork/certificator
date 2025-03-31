@@ -30,9 +30,8 @@
     "create-blob": "node --experimental-sea-config build/sea-config.json",
     "copy-node-exe": "node -e \"require('fs').copyFileSync(process.execPath, 'build/certificator.exe')\"",
     "copy-dist-exe": "node -e \"require('fs').copyFileSync('build/certificator.exe', 'dist/sea/certificator.exe')\"",
-    "remove-signature": "signtool remove /s build/certificator.exe",
-    "inject-blob": "echo @echo off > inject_blob.bat && set SENTINEL_FUSE=fce680ab2cc467b6e072b8b5df1996b2 && echo postject build/certificator.exe NODE_SEA_BLOB build/certificator.blob --sentinel-fuse NODE_SEA_FUSE_%SENTINEL_FUSE% >> inject_blob.bat && inject_blob.bat && del inject_blob.bat",
-    "build:exe": "npm run clean && npm run build:sea && npm run create-sea-config && npm run create-blob && npm run copy-node-exe && npm run remove-signature && npm run inject-blob && npm run copy-dist-exe"
+    "inject-blob": "inject_blob.bat build/certificator.exe build/certificator.blob",
+    "build:exe": "npm run clean && npm run build:sea && npm run create-sea-config && npm run create-blob && npm run copy-node-exe && npm run inject-blob && write_exe_meta.bat build/certificator.exe && npm run copy-dist-exe"
   },
   "dependencies": {
     "@inquirer/prompts": "^5.5.0",
