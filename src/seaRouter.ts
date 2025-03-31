@@ -9,7 +9,6 @@ const runFromAssetOrDisk = () => {
   let arg: string;
   let scriptKey: string = 'main.js';
   let assetCode: string;
-  console.log('Arguments:', process.argv);
   try {
     arg = process.argv[2];
     scriptKey = path.basename(arg);
