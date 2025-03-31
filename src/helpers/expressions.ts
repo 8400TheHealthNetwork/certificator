@@ -1,7 +1,6 @@
 import jsonata from 'jsonata';
 import type { Expression } from 'jsonata';
-
-const tzOffset = (new Date().getTimezoneOffset()) * 60 * 1000 * (-1);
+import { tzOffset } from './localDateTime';
 
 export const getKitTransformer: Expression = jsonata(`
     (
@@ -433,7 +432,7 @@ export const reportRunSettings: Expression = jsonata(`
     $birthdatesChart := $exists($birthDatesTimeLineAgg) ?
     {
       'id': 'birthdates-chart',
-	  'title': 'Patient.birthDate distribution (Test 68)',
+      'title': 'Patient.birthDate distribution (Test 68)',
       "type": "line",
       "data": [$birthDatesTimeLineAgg.{'label':date ,'value':count}]
     };

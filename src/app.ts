@@ -51,6 +51,7 @@ import {
   getTestStatusFilePath,
   engineScriptPath
 } from './helpers/paths';
+import { getLocalDateTime } from './helpers/localDateTime';
 
 // Load .env file contents into process.env
 dotenv.config();
@@ -146,7 +147,7 @@ const runAction = async (mappingId: string) => {
   if (initialStatusJson.statusCode === 'ready') {
     await setActionStatus(mappingId, 'init', 'Initialized');
     try {
-      console.log(`Executing action: ${mappingId}`);
+      console.log(getLocalDateTime(), `Executing action: ${mappingId}`);
       engineResponse = await engineApi.post('/', {
         input: {},
         contentType: 'application/json',
@@ -186,10 +187,10 @@ const runAction = async (mappingId: string) => {
           await setActionStatus(mappingId, 'error', 'Error', details);
         }
       };
-      console.log(`Mapping ${mappingId} execution finished`);
+      console.log(getLocalDateTime(), `Mapping ${mappingId} execution finished`);
     } catch (e) {
       const details: string = (e instanceof Error) ? `${e.name}: ${e.message}` : JSON.stringify(e);
-      console.log(`Error executing mapping ${mappingId}. Details: ${details}`);
+      console.log(getLocalDateTime(), `Error executing mapping ${mappingId}. Details: ${details}`);
       await setActionStatus(mappingId, 'error', 'Error', details);
     }
   }
