@@ -411,7 +411,7 @@ export const reportRunSettings: Expression = jsonata(`
     };
 
     $dqaIdDist := $readIoFile('DQAidentifiers.json');
-    $identifierChart := $exists($dqaIdDist) ? {
+    $patientIdentifierSystemTable := $exists($dqaIdDist) ? {
       'id': 'identifier-chart',
       'title': 'Patient.identifier.system Distribution (Test 57)',
       'type': 'table',
@@ -504,7 +504,7 @@ export const reportRunSettings: Expression = jsonata(`
     };
 
     $encounterClassDistribution := $readIoFile('encounterClassDistribution.json');
-    $identifierChart := $exists($encounterClassDistribution) ? {
+    $encounterClassTable := $exists($encounterClassDistribution) ? {
       'id': 'encounter-class-distribution',
       'title': 'Encounter.class distribution (Test 59)',
       'type': 'table',
@@ -595,7 +595,7 @@ export const reportRunSettings: Expression = jsonata(`
     
   
 $practitionerIdentifierDistribution := $readIoFile('practitionerIdentifierDistribution.json');
-    $identifierChart := $exists($practitionerIdentifierDistribution) ? {
+    $practitionerIdentifierSystemTable := $exists($practitionerIdentifierDistribution) ? {
       'id': 'practitioner-identifier-distribution',
       'title': 'Practitioner.identifier distribution (Test 58)',
       'type': 'table',
@@ -676,7 +676,9 @@ $practitionerIdentifierDistribution := $readIoFile('practitionerIdentifierDistri
                 ,$count($skippedTests.data) > 0 ? $skippedTests
                 ,$runSummary
                 ,$genderChart
-                ,$identifierChart
+                ,$patientIdentifierSystemTable
+				,$practitionerIdentifierSystemTable
+				,$encounterClassTable
                 ,$conditionCodeChart
                 ,$chartEncounterTypeDistribution
                 ,$birthdatesChart
