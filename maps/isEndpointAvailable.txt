@@ -1,0 +1,14 @@
+// isEndpointAvailable - Confirm Patient endpoint is available based on the following logic:
+// GET [base]/[resourceType]?_count=1 SHALL return a valid FHIR search response (a bundle with 1 or fewer resources) with HTTP status = 200
+(
+
+  /*Perform test*/
+    $testResult :=    $http({
+          'method':'get'
+          ,'headers' : {'content-type': 'application/fhir+json'}
+          ,'url': 'Patient' & '?_count=1' 
+    }).status = 200;
+  
+  /*Write pass/fail msg based on test results*/
+    $testResult ? $setStatus('passed', 'Passed') : $setStatus('failed', 'Failed')
+)
