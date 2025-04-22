@@ -159,7 +159,13 @@
       "id": "doExtractConditionCode",
       "description": "(Test 178) - Condition.code.coding.system distribution",
       "mapping": "doExtractConditionCode"
+    },
+	{
+      "id": "isEndpointAvailable",
+      "description": "Confirm endpoint is available",
+      "mapping": "isEndpointAvailable"
     }
+	
   ],
   "kits": [
     {
@@ -516,6 +522,27 @@
                     "sample-wrapper",
                     "doSuccessfulReadResponse",
                     "isGetHttp200"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+		{
+          "id": "restful-api",
+          "name": "RESTful API",
+          "children": [
+            {
+              "id": "endpoint-availability",
+              "name": "resourceType defined in HDP endpoint availability",
+              "children": [
+                {
+                  "id": "test210",
+                  "name": "Patient",
+                  "description": "Confirm Patient endpoint is available",
+                  "details": "Confirm Patient endpoint is available based on the following logic: GET [base]/[resourceType]?_count=1 SHALL return a valid FHIR search response (a bundle with 1 or fewer resources) with HTTP status = 200",
+                  "actions": [
+                    "isEndpointAvailable"
                   ]
                 }
               ]
