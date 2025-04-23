@@ -1,4 +1,4 @@
-// isEndpointAvailable - Confirm Patient endpoint is available based on the following logic:
+// isPatientEndpointAvailable - Confirm Patient endpoint is available based on the following logic:
 // GET [base]/[resourceType]?_count=1 SHALL return a valid FHIR search response (a bundle with 1 or fewer resources) with HTTP status = 200
 (
 
