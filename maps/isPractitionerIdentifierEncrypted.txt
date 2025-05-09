@@ -1,6 +1,8 @@
 // isPractitionerIdentifierEncrypted (Test 270) - extract Practitioner.Identifier from sampled instances, check if it's encrypted and write to flat file
 (
+  // !!! this should be refactored into an expand operation on the ValueSet !!!
  $valueSetPassportEncUri := $getCodeSystem('http://fhir.health.gov.il/cs/passport-enc-uri');
+ 
  /*Read Practitioners from DQAidentifiers.json*/
     $Practitioners := $readFile('DQAidentifiers.json')[resourceType="Practitioner"]
   

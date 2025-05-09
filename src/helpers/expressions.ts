@@ -684,9 +684,9 @@ $practitionerIdentifierDistribution := $readIoFile('practitionerIdentifierDistri
                 ,$count($skippedTests.data) > 0 ? $skippedTests
                 ,$runSummary
                 ,$genderChart
-				,$encrIdentChart
-                ,$patientIdentifierSystemTable
+				,$patientIdentifierSystemTable
 				,$practitionerIdentifierSystemTable
+				,$encrIdentChart
 				,$encounterClassTable
                 ,$conditionCodeChart
                 ,$chartEncounterTypeDistribution
