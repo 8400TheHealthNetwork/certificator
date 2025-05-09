@@ -409,6 +409,14 @@ export const reportRunSettings: Expression = jsonata(`
       'type': 'pie',
       'data': [($dqaGenderDist{pathValue: $count($)} ~> $spread()).{'label': $keys($), 'value': *}]
     };
+	
+	 $dqaPractEncrIdentifier := $readIoFile('encrPractitionerIdentifierDistribution.json');
+     $encrIdentChart := $exists($dqaPractEncrIdentifier) ? {
+      'id': 'encr-ident-chart',
+      'title': 'Distribution of Practitioners with encrypted identifier (Test 270)',
+      'type': 'pie',
+      'data': [($dqaPractEncrIdentifier{encryptedIdentifier: $count($)} ~> $spread()).{'label': $keys($), 'value': *}]
+    };
 
     $dqaIdDist := $readIoFile('DQAidentifiers.json');
     $patientIdentifierSystemTable := $exists($dqaIdDist) ? {
@@ -676,8 +684,9 @@ $practitionerIdentifierDistribution := $readIoFile('practitionerIdentifierDistri
                 ,$count($skippedTests.data) > 0 ? $skippedTests
                 ,$runSummary
                 ,$genderChart
-                ,$patientIdentifierSystemTable
+				,$patientIdentifierSystemTable
 				,$practitionerIdentifierSystemTable
+				,$encrIdentChart
 				,$encounterClassTable
                 ,$conditionCodeChart
                 ,$chartEncounterTypeDistribution

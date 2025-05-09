@@ -164,6 +164,11 @@
       "id": "isPatientEndpointAvailable",
       "description": "Confirm Patient endpoint is available",
       "mapping": "isPatientEndpointAvailable"
+    },
+	{
+      "id": "isPractitionerIdentifierEncrypted",
+      "description": "(Test 270) - Distribution of Practitioners with encrypted identifier",
+      "mapping": "isPractitionerIdentifierEncrypted"
     }
 	
   ],
@@ -323,7 +328,19 @@
                   "details": "Check if the distribution of Practitioner.identifier system makes sense.",
                   "actions": [
                     "sample-wrapper",
+					"extract-identifiers",
                     "doExtractPractitionerIdentifier"
+                  ]
+                },
+				{
+                  "id": "test270",
+                  "name": "Distribution of Practitioners with encrypted identifier",
+                  "description": "Distribution of Practitioners with encrypted identifier",
+                  "details": "Practitioner should be identified by at least one of the following encrypted identifiers [enc-il-id], [enc-ppn]",
+                  "actions": [
+                    "sample-wrapper",
+					"extract-identifiers",
+                    "isPractitionerIdentifierEncrypted"
                   ]
                 }
               ]

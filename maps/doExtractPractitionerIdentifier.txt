@@ -1,18 +1,18 @@
-
 // doExtractPractitionerIdentifier (Test 58) - extract Practitioner.Identifier from sampled instances and write to flat file
 (
- /*List all sampled resources file names*/
-    $Practitioners := $readFile('DQAidentifiers.json')[resourceType="Practitioner"]
-    // ;$count($sampledResourcesNames)
+ /*Read Practitioners from DQAidentifiers.json*/
+   $Practitioners := $readFile('DQAidentifiers.json')[resourceType="Practitioner"];
+   
 
-  /*Extract relevant elements from all sampled resources and flatten*/
-    ;$identifier := $Practitioners.
+  /*Extract relevant elements and flatten*/
+    $identifier := $Practitioners.
 	{
-      'resourceType' : resourceType,
-      'pathValue' : {
+      'resourceType' : resourceType
+      ,'resourceId' : resourceId
+      ,'path' : 'Practitioner.identifier'
+      ,'pathValue' : {
                "system": $.system
-              },
-      'resourceId' :resourceId
+              }
     };
 
   // /*Write flatten !!!distinct!!! results to folder*/

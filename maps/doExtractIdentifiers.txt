@@ -1,17 +1,27 @@
 /*doExtractIdentifiers - extract resource identifiers from all sampled instances*/
 (
   /*Extract identifiers*/
-    /*List all sampled resources file names*/
-      $sampledResources := $readDir()[$contains($,/\[.*\]_\[.*\].json/i)]
+  /*List all sampled resources file names*/
+  $sampledResources := $readDir()[$contains($,/\[.*\]_\[.*\].json/i)];
     
-    /*For each sampled resource, extract and faltten the identifer and write to disk*/
-      ;$identifiers := $sampledResources.$readFile($).identifier.system.{
+  /*For each sampled resource, extract and faltten the identifer and write to disk*/
+  $identifiers := $sampledResources.$readFile($).identifier.system.{
         'resourceType' : %.%.resourceType
         ,'resourceId' : %.%.id
         ,'use' : %.use
         ,'system' : %.system
-        ,'value' : %.value
-        }
+        ,'value' : $exists(%.value) ? %.value : %._value
+        };
 
-      ;$writeFile($identifiers,'DQAidentifiers.json')
+  $identifiersIncludingDarFlag  :=  $identifiers.
+      {
+        'resourceType' : resourceType,
+        'resourceId' : resourceId,
+        'use' : use,
+        'system' : system,
+        'value' : value,
+        'dataAbsetReason' : value.extension.url = 'http://hl7.org/fhir/StructureDefinition/data-absent-reason' ? true :false
+      };
+
+  $writeFile($identifiersIncludingDarFlag,'DQAidentifiers.json')
 )

@@ -1,0 +1,41 @@
+// isPractitionerIdentifierEncrypted (Test 270) - extract Practitioner.Identifier from sampled instances, check if it's encrypted and write to flat file
+(
+  // !!! this should be refactored into an expand operation on the ValueSet !!!
+ $valueSetPassportEncUri := $getCodeSystem('http://fhir.health.gov.il/cs/passport-enc-uri');
+ 
+ /*Read Practitioners from DQAidentifiers.json*/
+    $Practitioners := $readFile('DQAidentifiers.json')[resourceType="Practitioner"]
+  
+ /*Extract relevant elements and flatten*/
+    ;$identifier := $Practitioners.
+	{
+      'resourceType' : resourceType,
+      "system" : $.system,
+			        
+			       
+         "encryptedIdentifier": (
+                                  $.system = 'http://fhir.health.gov.il/identifier/encrypted-id-primary-moh'
+                                  or 
+                                  $.value in $valueSetPassportEncUri.concept.code
+                                ) 
+                                and dataAbsetReason = false,
+     
+      'resourceId' : resourceId
+    };
+
+    $encrIdentifier := $each
+    (
+      $identifier { resourceId: $ }, function($value, $key) 
+      {
+        {
+          "resourceId": $key,
+          "encryptedIdentifier" : $count($value[encryptedIdentifier = true]) > 0 ? "encrypted" : "not encrypted"
+        }
+      }
+   );
+
+
+    /*Write flatten results to folder*/
+    $writeFile($encrIdentifier,'encrPractitionerIdentifierDistribution.json')
+
+)
