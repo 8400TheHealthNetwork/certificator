@@ -401,7 +401,15 @@ export const reportRunSettings: Expression = jsonata(`
         }
       ]
     };
-
+    
+	 $dqaPatientOfficialId := $readIoFile('officialIdPatientDistribution.json');
+     $officialIdChart := $exists($dqaPatientOfficialId) ? {
+      'id': 'official-ident-chart',
+      'title': 'Patient official Id presence distribution (Test 271)',
+      'type': 'pie',
+      'data': [($dqaPatientOfficialId{officialID: $count($)} ~> $spread()).{'label': $keys($), 'value': *}]
+    };
+	
     $dqaGenderDist := $readIoFile('distributionGender.json');
     $genderChart := $exists($dqaGenderDist) ? {
       'id': 'gender-chart',
@@ -677,6 +685,7 @@ $practitionerIdentifierDistribution := $readIoFile('practitionerIdentifierDistri
                 ,$runSummary
                 ,$genderChart
                 ,$patientIdentifierSystemTable
+				,$officialIdChart
 				,$practitionerIdentifierSystemTable
 				,$encounterClassTable
                 ,$conditionCodeChart
