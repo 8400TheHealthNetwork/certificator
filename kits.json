@@ -164,6 +164,11 @@
       "id": "isPatientEndpointAvailable",
       "description": "Confirm Patient endpoint is available",
       "mapping": "isPatientEndpointAvailable"
+    },
+	{
+      "id": "doCheckPatientHasOfficialId",
+      "description": "(Test 271) - Patient must have at least one identifier from slices il-id or ppn",
+      "mapping": "doCheckPatientHasOfficialId"
     }
 	
   ],
@@ -238,7 +243,18 @@
                     "extract-identifiers"
                   ]
                 },
-                {
+				{
+                  "id": "test271",
+                  "name": "Patient official Id presence distribution",
+                  "description": "Patient official Id presence distribution",
+                  "details": "Patient must have at least one identifier from slices il-id or ppn",
+                  "actions": [
+                    "sample-wrapper",
+                    "extract-identifiers", 
+					"doCheckPatientHasOfficialId"
+                  ]
+                },
+			    {
                   "id": "test70",
                   "name": "Patient gender distribution",
                   "description": "Patient gender value distribution",
@@ -323,6 +339,7 @@
                   "details": "Check if the distribution of Practitioner.identifier system makes sense.",
                   "actions": [
                     "sample-wrapper",
+					"extract-identifiers", 
                     "doExtractPractitionerIdentifier"
                   ]
                 }

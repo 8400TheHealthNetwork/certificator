@@ -1,0 +1,45 @@
+// doCheckPatientHasOfficialId (Test 271) - extract Patient.Identifier from sampled instances, check if it has required official ID and write to flat file
+(
+ $valueSetPassportUri :=  $getValueSet('http://fhir.health.gov.il/ValueSet/passport-uri');
+ 
+ /*Read Patients from DQAidentifiers.json*/
+  $Patients := $readFile('DQAidentifiers.json')[resourceType="Patient"];
+
+ /*Extract/add relevant elements and flatten*/
+    $allPatientsIdentifiers := $Patients.
+	{
+      'resourceType' : resourceType,
+      "system" : $.system,
+
+
+         "officialID": (
+                                  $.system = 'http://fhir.health.gov.il/Identifier/il-id'
+                                  or 
+                                  $.system in $valueSetPassportUri.compose.include.concept.code
+                                ) 
+                                and dataAbsetReason = false,
+
+      'resourceId' : resourceId
+    };
+	
+    /* Takes patient identifiers from  $allPatientsIdentifiers, group by resourceId. 
+	     For each unique resourceId: 
+       Checks if any of the associated identifiers have a property officialID set to true.
+       Creates a new summary object containing the resourceId and a message stating whether it "Has official ID" or "Doesn't have official ID */
+
+    $identifierInfoPerRresource := $each
+    (
+      $allPatientsIdentifiers { resourceId: $ }, function($value, $key) 
+      {
+        {
+          "resourceId": $key,
+          "officialID" : $count($value[officialID = true]) > 0 ? "Has official ID" : "No official ID"
+        }
+      }
+   );
+
+
+    /*Write flatten results to folder*/
+    $writeFile($identifierInfoPerRresource,'officialIdPatientDistribution.json')
+
+)
